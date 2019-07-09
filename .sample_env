@@ -1,0 +1,70 @@
+# EXCHANGE APIS:
+#
+#
+
+#Functions
+#
+# On/Off (1 = On, 0 = Off)
+Tradepairs = 1
+Sentiment = 0
+Livefeed = 0
+Accountdatas = 0
+
+#Binance
+#
+#
+BINANCE_APIKEY= 
+BINANCE_APISECRET= 
+
+# API delay, safety delay for update loop in millisec (Default: 12000)
+#
+api_delay = 12000
+
+
+# MySQL Database Config 
+#
+#
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASS=pass
+MYSQL_DB=stockml
+
+#Sentiment
+
+# Reddit API
+#
+#
+reddit_clientId = 
+reddit_clientSecret = 
+reddit_username = 
+reddit_password = 
+
+# Reddit api loop timeout, avoid rate limit! (in sec) (Recommend: 450)
+#
+reddit_update_timeout = 450
+
+# Twitter API
+#
+#
+consumerKey = 
+consumerSecret = 
+accessToken = 
+accessTokenSecret = 
+callBackUrl = 
+
+# Twitter api loop timeout, avoid rate limit! (in sec) (Recommend: 450)
+#
+twitter_update_timeout = 450
+
+
+# Application settings
+# 
+#
+
+# Max Exchange Candlestick history timeframe in day (Recommend: 180 day)
+#
+history_timeframe = 180
+
+# Max Exchange livefeed storage in hours (Recommend: 24h)
+#
+livefeed_history_size = 48
