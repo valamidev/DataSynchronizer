@@ -1,7 +1,7 @@
 "use strict";
 
 const logger = require("../../logger");
-const DB = new (require("./queries"))();
+const pool = require("../../database");
 
 class DB_LAYER {
   constructor(table_name) {
@@ -10,10 +10,16 @@ class DB_LAYER {
 
   async candlestick_table_check() {
     try {
-      let rows = await DB.query_candlestick_table_exist(this.table_name);
+      let [rows] = await pool.query(
+        "SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;",
+        [process.env.MYSQL_DB, this.table_name]
+      );
 
       if (rows.length != 1) {
-        await DB.query_candlestick_create_table(this.table_name);
+        let [rows] = await pool.query(
+          "CREATE TABLE `" + this.table_name + "` LIKE `def_def_def`;"
+        );
+        return rows;
       }
     } catch (e) {
       logger.error("Error", e);
@@ -22,7 +28,11 @@ class DB_LAYER {
 
   async candlestick_endTime() {
     try {
-      let rows = await DB.query_candlestick_select_time_asc(this.table_name);
+      let [rows] = await pool.query(
+        "SELECT time FROM `" +
+          this.table_name +
+          "` ORDER BY `time` ASC limit 1;"
+      );
 
       if (rows[0]) {
         return rows[0].time;
@@ -36,7 +46,11 @@ class DB_LAYER {
 
   async candlestick_startTime() {
     try {
-      let rows = await DB.query_candlestick_select_time_desc(this.table_name);
+      let [rows] = await pool.query(
+        "SELECT time FROM `" +
+          this.table_name +
+          "` ORDER BY `time` DESC limit 1;"
+      );
 
       if (rows[0]) {
         return rows[0].time;
@@ -51,7 +65,12 @@ class DB_LAYER {
 
   async candlestick_replace(ticks) {
     try {
-      await DB.query_candlestick_replace(this.table_name, ticks);
+      await pool.query(
+        "REPLACE INTO `" +
+          this.table_name +
+          "` (`time`, `open`, `high`, `low`, `close`, `volume`, `closeTime`, `assetVolume`, `trades`, `buyBaseVolume`, `buyAssetVolume`, `ignored`) VALUES ?;",
+        [ticks]
+      );
 
       return;
     } catch (e) {
@@ -61,9 +80,11 @@ class DB_LAYER {
 
   async candlestick_select_all() {
     try {
-      let data = await DB.query_candlestick_select_all(this.table_name);
+      let [rows] = await pool.query(
+        "SELECT * FROM `" + this.table_name + "` ORDER BY `time` ASC;"
+      );
 
-      return data;
+      return rows;
     } catch (e) {
       logger.error("Error", e);
     }
@@ -71,9 +92,15 @@ class DB_LAYER {
 
   async candlestick_history_size() {
     try {
-      let data = await DB.query_candlestick_history_size(this.table_name);
+      let [rows] = await pool.query(
+        "SELECT count(*) as count FROM `" + this.table_name + "`;"
+      );
 
-      return data;
+      if (rows.length > 0) {
+        return rows[0].count;
+      } else {
+        return 0;
+      }
     } catch (e) {
       logger.error("Error", e);
     }
