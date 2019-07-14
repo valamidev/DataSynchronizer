@@ -1,5 +1,15 @@
 # DataSynchronizer
 
+This package allow you to fetch Candlestick datas from exchanges and other data sources into a MySQL databases.
+
+**Supported exchanges:**
+- Binance(Crypto)
+
+**Supported Sentiment sources:**
+- Twitter
+- Reddit
+
+
 Install:
 
 1. Run NPM install:
