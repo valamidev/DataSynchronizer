@@ -1,9 +1,7 @@
 "use strict";
 
 const logger = require("../logger");
-const util = require("../utils");
 const _ = require("lodash");
-
 // CCXT
 const ccxt = require("ccxt");
 
@@ -17,7 +15,7 @@ class ExchangeAPI {
     exchange,
     interval,
     since = undefined,
-    limit = 250
+    limit = 100
   ) {
     try {
       let API = this.load_exchange_api(exchange);
@@ -58,7 +56,10 @@ class ExchangeAPI {
   }
 
   init_new_exchanges(exchange) {
-    try {
+    exchange = exchange.toLowerCase();
+
+    // Check exchange is valid
+    if (_.isObject(ccxt[exchange])) {
       let api = new ccxt[exchange]();
 
       let new_exchanges = { exchange, api };
@@ -66,8 +67,8 @@ class ExchangeAPI {
       this.exchanges.push(new_exchanges);
 
       return new_exchanges;
-    } catch (e) {
-      logger.error("CCXT API error ", e);
+    } else {
+      throw `Invalid Exchange ${exchange}`;
     }
   }
 }

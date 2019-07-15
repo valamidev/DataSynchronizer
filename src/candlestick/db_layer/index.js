@@ -38,7 +38,7 @@ class DB_LAYER {
         return rows[0].time;
       }
 
-      return null;
+      return 0;
     } catch (e) {
       logger.error("Error", e);
     }
@@ -56,7 +56,7 @@ class DB_LAYER {
         return rows[0].time;
       }
 
-      return false;
+      return 0;
       // Throw error no entry in the Database
     } catch (e) {
       logger.error("Error", e);
@@ -68,7 +68,7 @@ class DB_LAYER {
       await pool.query(
         "REPLACE INTO `" +
           this.table_name +
-          "` (`time`, `open`, `high`, `low`, `close`, `volume`, `closeTime`, `assetVolume`, `trades`, `buyBaseVolume`, `buyAssetVolume`, `ignored`) VALUES ?;",
+          "` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;",
         [ticks]
       );
 

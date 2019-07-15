@@ -54,6 +54,8 @@ const util = {
   },
 
   candlestick_name: (exchange, symbol, interval) => {
+    symbol = symbol.replace("/", "");
+
     let name = exchange + "_" + symbol + "_" + util.interval_toString(interval);
 
     //Lowercase only

@@ -29,10 +29,10 @@ class Tradepairs {
         let trade_pair = this.tradepairs[i];
 
         let expected_update =
-          trade_pair.Candlestick.startTime + trade_pair.interval_sec * 1000 * 2;
+          trade_pair.Candlestick.startTime + trade_pair.interval_sec * 1000;
 
         if (time_now > expected_update) {
-          update_promises.push(trade_pair.Candlestick.update_db(4));
+          update_promises.push(trade_pair.Candlestick.update_db());
         }
       }
       // Error should be critical!
@@ -43,12 +43,9 @@ class Tradepairs {
         // Update tradepairs
         await this.update_tradepairs();
       }
-
-      setTimeout(() => {
-        this.candlestick_update_loop();
-      }, 100);
     } catch (e) {
       logger.error("Candlestick Update ", e);
+    } finally {
       setTimeout(() => {
         this.candlestick_update_loop();
       }, 100);

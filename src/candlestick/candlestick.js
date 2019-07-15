@@ -1,11 +1,13 @@
 // Load Exchanges
 "use strict";
 // Load Exchange APIs
-const Binance = require("../exchange/Binance");
+const CCXT_API = require("../exchange/");
 const logger = require("../logger");
 const util = require("../utils");
 const DB_LAYER = require("./db_layer");
 const _ = require("lodash");
+
+const { history_limit, ccxt_candlelimit } = process.env;
 
 // Get Candlestick
 
@@ -15,7 +17,6 @@ class Candlestick {
     this.symbol = symbol;
     this.interval = interval;
     this.interval_string = util.interval_toString(interval);
-    this.Exchange_API = Binance;
     this.table_name = util.candlestick_name(exchange, symbol, interval);
     this.DB_LAYER = new DB_LAYER(this.table_name);
     this.startTime = 0;
@@ -76,26 +77,32 @@ class Candlestick {
 
   async init_build_history() {
     try {
-      // Check first timestamp and go backward!
-      let endTime = await this.DB_LAYER.candlestick_endTime();
+      // Check first timestamp and go forward!
+      let startTime = await this.DB_LAYER.candlestick_startTime();
 
-      let ticks = await this.Exchange_API.promise_get_candlestick(
+      // Clean DB
+      if (startTime == 0) {
+        // Get genesis history time in ms
+        startTime = Date.now() - history_limit * this.interval * 1000;
+      }
+
+      let ticks = await CCXT_API.get_candlestick(
         this.symbol,
+        this.exchange,
         this.interval_string,
-        {
-          endTime
-        }
+        startTime,
+        ccxt_candlelimit
       );
 
-      // Don't build more than 3500 candle history!
+      // Check history limit
       let check_size = await this.DB_LAYER.candlestick_history_size();
 
-      if (check_size > 3000) {
+      if (check_size > history_limit) {
         return;
       }
 
       // Only store full responses and history time limit!
-      if (ticks.length >= 499 && _.last(ticks)[0] >= util.history_limit()) {
+      if (ticks.length == ccxt_candlelimit) {
         await this.DB_LAYER.candlestick_replace(ticks);
         await this.init_build_history();
       } else {
@@ -106,22 +113,18 @@ class Candlestick {
     }
   }
 
-  async update_db(limit = 500) {
+  async update_db() {
     try {
       // Get most fresh data
-
-      let endTime = Date.now(); // Current time
       let startTime = await this.DB_LAYER.candlestick_startTime();
 
-      if (startTime) {
-        let ticks = await this.Exchange_API.promise_get_candlestick(
+      if (startTime != 0) {
+        let ticks = await CCXT_API.get_candlestick(
           this.symbol,
+          this.exchange,
           this.interval_string,
-          {
-            limit,
-            endTime,
-            startTime
-          }
+          startTime,
+          ccxt_candlelimit
         );
 
         if (ticks.length > 0) {
