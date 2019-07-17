@@ -29,7 +29,7 @@ class Tradepairs {
         let trade_pair = this.tradepairs[i];
 
         let expected_update =
-          trade_pair.Candlestick.startTime + trade_pair.interval_sec * 1000;
+          trade_pair.Candlestick.startTime + trade_pair.interval_sec * 1000 * 2;
 
         if (time_now > expected_update) {
           update_promises.push(trade_pair.Candlestick.update_db());

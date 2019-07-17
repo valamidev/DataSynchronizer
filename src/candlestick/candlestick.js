@@ -86,13 +86,7 @@ class Candlestick {
         startTime = Date.now() - history_limit * this.interval * 1000;
       }
 
-      let ticks = await CCXT_API.get_candlestick(
-        this.symbol,
-        this.exchange,
-        this.interval_string,
-        startTime,
-        ccxt_candlelimit
-      );
+      let ticks = await this.get_ticks(startTime);
 
       // Check history limit
       let check_size = await this.DB_LAYER.candlestick_history_size();
@@ -119,25 +113,47 @@ class Candlestick {
       let startTime = await this.DB_LAYER.candlestick_startTime();
 
       if (startTime != 0) {
-        let ticks = await CCXT_API.get_candlestick(
-          this.symbol,
-          this.exchange,
-          this.interval_string,
-          startTime,
-          ccxt_candlelimit
-        );
+        let ticks = await this.get_ticks(startTime);
+
+        console.log("Update ticks lenght:", ticks.length, this.startTime);
 
         if (ticks.length > 0) {
           await this.DB_LAYER.candlestick_replace(ticks);
         }
 
-        if (ticks.length > 1) {
+        if (ticks.length == ccxt_candlelimit) {
           await this.update_db();
         } else {
           this.startTime = await this.DB_LAYER.candlestick_startTime();
           return;
         }
       }
+    } catch (e) {
+      logger.error("", e);
+    }
+  }
+
+  async get_ticks(startTime) {
+    try {
+      let ticks = [];
+
+      ticks = await CCXT_API.get_candlestick(
+        this.symbol,
+        this.exchange,
+        this.interval_string,
+        startTime,
+        ccxt_candlelimit
+      );
+
+      // https://github.com/ccxt/ccxt/issues/2937
+      // Last Candle can be unfinished always
+      if (ticks.length > 0) {
+        if (_.last(ticks)[0] + this.interval * 1000 > _.now()) {
+          ticks.pop();
+        }
+      }
+
+      return ticks;
     } catch (e) {
       logger.error("", e);
     }
