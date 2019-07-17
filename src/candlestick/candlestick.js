@@ -115,8 +115,6 @@ class Candlestick {
       if (startTime != 0) {
         let ticks = await this.get_ticks(startTime);
 
-        console.log("Update ticks lenght:", ticks.length, this.startTime);
-
         if (ticks.length > 0) {
           await this.DB_LAYER.candlestick_replace(ticks);
         }
@@ -146,7 +144,7 @@ class Candlestick {
       );
 
       // https://github.com/ccxt/ccxt/issues/2937
-      // Last Candle can be unfinished always
+      // Last Candle can be unfinished
       if (ticks.length > 0) {
         if (_.last(ticks)[0] + this.interval * 1000 > _.now()) {
           ticks.pop();
