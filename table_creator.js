@@ -1,35 +1,30 @@
 const json_mysql = require("json-mysql");
 
 let resp = {
-  limits: { amount: [Object], price: [Object], cost: [Object] },
-  precision: { amount: 4, price: 8 },
-  tierBased: false,
-  percentage: true,
-  taker: 0.001,
-  maker: 0.001,
-  id: "SNC-BTC",
-  symbol: "SNC/BTC",
-  baseId: "SNC",
-  quoteId: "BTC",
-  base: "SNC",
-  quote: "BTC",
-  active: true,
+  symbol: "BNTY/ETH",
+  timestamp: undefined,
+  high: 0.00001459,
+  low: 0.0000131,
+  bid: 0.00001311,
+  ask: 0.00001342,
+  last: 0.00001326,
+  change: -8.3e-7,
+  percentage: -5.89,
+  baseVolume: 1107261.7554,
+  quoteVolume: 15.053002368749,
   info: {
-    symbol: "SNC-BTC",
-    quoteMaxSize: "99999999",
-    enableTrading: true,
-    priceIncrement: "0.00000001",
-    feeCurrency: "BTC",
-    baseMaxSize: "10000000000",
-    baseCurrency: "SNC",
-    quoteCurrency: "BTC",
-    market: "BTC",
-    quoteIncrement: "0.00000001",
-    baseMinSize: "1",
-    quoteMinSize: "0.00001",
-    name: "SNC-BTC",
-    baseIncrement: "0.0001"
+    symbol: "BNTY-ETH",
+    high: "0.00001459",
+    vol: "1107261.7554",
+    last: "0.00001326",
+    low: "0.0000131",
+    buy: "0.00001311",
+    sell: "0.00001342",
+    changePrice: "-0.00000083",
+    averagePrice: "0.00001439",
+    changeRate: "-0.0589",
+    volValue: "15.053002368749"
   }
 };
 
-console.log(new json_mysql("account_orders", resp).query);
+console.log(new json_mysql("price_tickers", resp).query);

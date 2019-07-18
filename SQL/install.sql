@@ -230,7 +230,6 @@ CREATE TABLE `trade_strategies_evaluation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-
 CREATE TABLE `market_datas` (
   `exchange` varchar(30) NOT NULL DEFAULT '',
   `limits` text NOT NULL,
@@ -249,10 +248,29 @@ CREATE TABLE `market_datas` (
   `info` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `price_tickers` (
+  `exchange` varchar(255) NOT NULL,
+  `symbol` varchar(255) NOT NULL,
+  `timestamp` bigint(20) NOT NULL DEFAULT '0',
+  `high` float NOT NULL DEFAULT '0',
+  `low` float NOT NULL DEFAULT '0',
+  `bid` float NOT NULL DEFAULT '0',
+  `ask` float NOT NULL DEFAULT '0',
+  `last` float NOT NULL DEFAULT '0',
+  `change` float NOT NULL DEFAULT '0',
+  `percentage` float NOT NULL DEFAULT '0',
+  `baseVolume` float NOT NULL DEFAULT '0',
+  `quoteVolume` float NOT NULL DEFAULT '0',
+  `info` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `price_tickers`
+  ADD UNIQUE KEY `exchange` (`exchange`,`symbol`);
+
 
 ALTER TABLE `market_datas`
   ADD UNIQUE KEY `exchange` (`exchange`,`id`);
-COMMIT;
 
 
 --

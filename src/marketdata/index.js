@@ -7,7 +7,7 @@ const CCXT_API = require("../exchange");
 class MarketData {
   constructor() {
     this.exchanges = [];
-    this.update_frequency = 30000; // in ms
+    this.update_frequency = 3600 * 1000; // in ms
   }
 
   async start(exchanges) {
@@ -59,7 +59,7 @@ class MarketData {
 
       // TODO: Better matching of stored and new market datas: new pairs etc.
       if (new_market_data.length != market_data.length) {
-        this.market_data_replace(new_market_data);
+        await this.market_data_replace(new_market_data);
         logger.verbose(`New market data for ${exchange}`);
       }
 

@@ -37,3 +37,10 @@ test("Marketdata check", async () => {
 
   expect(result).toBeTruthy();
 });
+
+// Get PriceTickers
+test("Pricetickers check", async () => {
+  let result = await exchangeAPI.get_pricetickers("kucoin");
+
+  expect(result).toBeTruthy();
+});

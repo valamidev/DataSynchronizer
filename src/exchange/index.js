@@ -41,12 +41,28 @@ class ExchangeAPI {
     }
   }
 
+  async get_pricetickers(exchange) {
+    try {
+      let API = this.load_exchange_api(exchange);
+
+      let pricetickers = await API.fetchTickers();
+
+      return pricetickers;
+    } catch (e) {
+      logger.error("CCXT marketdata error ", e);
+    }
+  }
+
+  /* CCXT API STUFF */
+
   load_exchange_api(exchange) {
     try {
+      // Check if CCXT API already loaded
       let exchange_data = this.exchanges.filter(
         elem => elem.exchange == exchange
       );
 
+      // CCTX API load from buffer add to the buffer
       if (exchange_data.length == 0) {
         exchange_data = this.init_new_exchanges(exchange);
       } else {
@@ -75,6 +91,8 @@ class ExchangeAPI {
       throw `Invalid Exchange ${exchange}`;
     }
   }
+
+  /* CCXT API STUFF */
 }
 
 module.exports = new ExchangeAPI();
