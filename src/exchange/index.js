@@ -20,20 +20,24 @@ class ExchangeAPI {
     try {
       let API = this.load_exchange_api(exchange);
 
+      /* [[time,open,high,close,volume]] */
       let candledata = await API.fetchOHLCV(symbol, interval, since, limit);
 
       return candledata;
-
-      /*
-      1504541580000, // UTC timestamp in milliseconds, integer
-        4235.4,        // (O)pen price, float
-        4240.6,        // (H)ighest price, float
-        4230.0,        // (L)owest price, float
-        4230.7,        // (C)losing price, float
-        37.72941911    // (V)olume (in terms of the base currency), float 
-      */
     } catch (e) {
       logger.error("CCXT candlestick error ", e);
+    }
+  }
+
+  async get_marketdata(exchange) {
+    try {
+      let API = this.load_exchange_api(exchange);
+
+      let marketdata = await API.loadMarkets();
+
+      return marketdata;
+    } catch (e) {
+      logger.error("CCXT marketdata error ", e);
     }
   }
 

@@ -5,10 +5,15 @@
 #Functions
 #
 # On/Off (1 = On, 0 = Off)
-Tradepairs = 1
+Tradepairs = 0
+MarketData = 0
 Sentiment = 0
 Livefeed = 0
-Accountdatas = 0
+
+#Exchanges
+#
+# List of supportable exchanges with "," separated, read CCTX for supported exhcange list 
+exchange_list = kucoin
 
 #Binance
 #

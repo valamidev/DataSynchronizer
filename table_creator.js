@@ -1,22 +1,35 @@
 const json_mysql = require("json-mysql");
 
 let resp = {
-  symbol: "BTCUSDT",
-  orderId: 353270073,
-  clientOrderId: "web_e30e87ff257c458999ff4ccd81863f4e",
-  price: "5735.00000000",
-  origQty: "0.01489000",
-  executedQty: "0.00000000",
-  cummulativeQuoteQty: "0.00000000",
-  status: "NEW",
-  timeInForce: "GTC",
-  type: "LIMIT",
-  side: "BUY",
-  stopPrice: "0.00000000",
-  icebergQty: "0.00000000",
-  time: 1557521676982,
-  updateTime: 1557521676982,
-  isWorking: true
+  limits: { amount: [Object], price: [Object], cost: [Object] },
+  precision: { amount: 4, price: 8 },
+  tierBased: false,
+  percentage: true,
+  taker: 0.001,
+  maker: 0.001,
+  id: "SNC-BTC",
+  symbol: "SNC/BTC",
+  baseId: "SNC",
+  quoteId: "BTC",
+  base: "SNC",
+  quote: "BTC",
+  active: true,
+  info: {
+    symbol: "SNC-BTC",
+    quoteMaxSize: "99999999",
+    enableTrading: true,
+    priceIncrement: "0.00000001",
+    feeCurrency: "BTC",
+    baseMaxSize: "10000000000",
+    baseCurrency: "SNC",
+    quoteCurrency: "BTC",
+    market: "BTC",
+    quoteIncrement: "0.00000001",
+    baseMinSize: "1",
+    quoteMinSize: "0.00001",
+    name: "SNC-BTC",
+    baseIncrement: "0.0001"
+  }
 };
 
 console.log(new json_mysql("account_orders", resp).query);

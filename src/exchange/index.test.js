@@ -30,3 +30,10 @@ test("Candlestick check default length", async () => {
 
   expect(result.length).toBe(100);
 });
+
+// Get Marketdata
+test("Marketdata check", async () => {
+  let result = await exchangeAPI.get_marketdata("kucoin");
+
+  expect(result).toBeTruthy();
+});
