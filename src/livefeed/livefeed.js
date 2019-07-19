@@ -1,6 +1,5 @@
 "use strict";
 
-const util = require("../utils");
 const logger = require("../logger");
 const pool = require("../database");
 
@@ -13,24 +12,12 @@ class LivefeedAPI {
 
   async start() {
     try {
-      await this.update_exchangeinfo();
-
-      await this.update_symbols();
       await this.load_symbols();
-
-      await this.update_prices_loop();
-      await this.livefeed_update_loop();
 
       /* TODO be sure that it can re-open on error */
       await this.open_websocket_candlestick();
 
-      setInterval(async () => {
-        this.update_prices_loop();
-      }, 3000);
-
-      setInterval(async () => {
-        this.livefeed_update_loop();
-      }, 3600 * 1000);
+      await this.livefeed_update_loop();
 
       logger.info("Livefeed API started");
     } catch (e) {
@@ -38,63 +25,22 @@ class LivefeedAPI {
     }
   }
 
-  async update_exchangeinfo() {
-    try {
-      let exchange_info_result = await ExchangeAPI.promise_get_exchangeInfo();
-
-      let exchange_info = exchange_info_result.symbols.map(elem => {
-        let step_size = 0.001;
-        elem.filters.map(elem2 => {
-          if (elem2.filterType == "LOT_SIZE") {
-            step_size = elem2.stepSize;
-          }
-        });
-
-        return [elem.symbol, step_size];
-      });
-
-      await pool.query(
-        "REPLACE INTO `livefeed_tradeinfo` (`symbol`, `stepsize`) VALUES ?;",
-        [exchange_info]
-      );
-    } catch (e) {
-      logger.error("Update tradeinfo ", e);
-    }
-  }
-
-  async update_prices_loop() {
-    try {
-      let prices = await ExchangeAPI.promise_get_latest_price_all_symbol();
-
-      let time = Date.now();
-      // Create Array for MySQL query
-      let price_datas = Object.keys(prices).map(key => {
-        return [key, prices[key], time];
-      });
-
-      await pool.query(
-        "REPLACE INTO `livefeed_prices` (`symbol`, `price`, `time`) VALUES ?;",
-        [price_datas]
-      );
-    } catch (e) {
-      logger.error("Update prices ", e);
-    }
-  }
-
   async livefeed_update_loop() {
     try {
       let cleantime =
         Date.now() - process.env.livefeed_history_size * 3600 * 1000;
-
-      await this.update_symbols();
-      await this.load_symbols();
+      // Remove old livefeed records
       await this.clean_livefeed(cleantime);
     } catch (e) {
       logger.error("Livefeed_update_loop ", e);
+    } finally {
+      setTimeout(async () => {
+        this.livefeed_update_loop();
+      }, 3600 * 1000);
     }
   }
 
-  async load_symbols() {
+  async load_symbols(exchange) {
     try {
       let [rows] = await pool.query(
         "SELECT * FROM `livefeed_binance_symbols`;"
@@ -105,24 +51,6 @@ class LivefeedAPI {
       }
     } catch (e) {
       logger.error("SQL error", e);
-    }
-  }
-
-  async update_symbols() {
-    try {
-      let symbols_object = await ExchangeAPI.promise_get_prevday_all_symbol();
-
-      // Convert data for MySQL insert
-      let insert_data = [];
-      for (let i = 0; i < symbols_object.length; i++) {
-        insert_data.push(Object.values(symbols_object[i]));
-      }
-
-      await this.save_livefeed_symbols(insert_data);
-
-      return;
-    } catch (e) {
-      logger.error("Update symbols ", e);
     }
   }
 

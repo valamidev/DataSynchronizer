@@ -5,6 +5,7 @@ const SentimentAPI = require("./sentiment/sentiment");
 const LivefeedAPI = require("./livefeed/livefeed");
 const MarketDataAPI = require("./marketdata");
 const PriceTickersAPI = require("./pricetickers");
+const WardenClass = require("./warden");
 
 const {
   Tradepairs,
@@ -12,8 +13,15 @@ const {
   Sentiment,
   Livefeed,
   PriceTicker,
-  exchange_list
+  Warden,
+  exchange_list,
+  quotes,
+  quote_limits
 } = process.env;
+
+const exchanges = exchange_list.split(",");
+const warden_quotes = quotes.split(",");
+const warden_quote_limits = quote_limits.split(",");
 
 async function main() {
   try {
@@ -22,13 +30,16 @@ async function main() {
     // CandleStick OHLV fetcher
     if (Tradepairs == 1) await TradePairsAPI.start();
     // Available Symbols and Precision informations from exchanges
-    if (MarketData == 1) await MarketDataAPI.start(exchange_list.split(","));
+    if (MarketData == 1) await MarketDataAPI.start(exchanges);
     // Current prices and other Symbol datas like daily change, daily volume
-    if (PriceTicker == 1) await PriceTickersAPI.start(exchange_list.split(","));
+    if (PriceTicker == 1) await PriceTickersAPI.start(exchanges);
     // Twitter/Reddit API
     if (Sentiment == 1) await SentimentAPI.start();
     // Websocket support only for Binance /* TODO: use CCWS */
     if (Livefeed == 1) await LivefeedAPI.start();
+    // Warden Auto init tradepairs for data collection based on Volume desc
+    if (Warden == 1)
+      await WardenClass.start(exchanges, warden_quotes, warden_quote_limits);
 
     logger.info("Startup finished");
   } catch (e) {

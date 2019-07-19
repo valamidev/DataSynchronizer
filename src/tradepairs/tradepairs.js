@@ -94,7 +94,13 @@ class Tradepairs {
 
   async select_tradepairs_all() {
     try {
-      let [rows] = await pool.query("SELECT * FROM `tradepairs`;");
+      // Warden timeout limit 10 minutes
+      let time = Date.now() - 600 * 1000;
+
+      let [rows] = await pool.query(
+        "SELECT * FROM `tradepairs` WHERE is_warden = 0 OR (is_warden = 1 AND time > ?);",
+        [time]
+      );
 
       return rows;
     } catch (e) {
@@ -102,15 +108,23 @@ class Tradepairs {
     }
   }
 
-  async add_tradepair(exchange, symbol, interval) {
+  async add_tradepair(
+    exchange,
+    symbol,
+    interval,
+    asset,
+    quote,
+    is_warden = 0,
+    time = 0
+  ) {
     try {
       // Check existing before insert!
-      if (!(await this.select_tradepair_single(exchange, symbol, interval))) {
-        await pool.query(
-          "INSERT INTO `tradepairs` (`exchange`, `symbol`, `interval_sec`) VALUES (?,?,?);",
-          [exchange, symbol, interval]
-        );
-      }
+
+      await pool.query(
+        "INSERT INTO `tradepairs` (`exchange`, `symbol`, `interval_sec`, `asset`,`quote`,`is_warden`,`time`) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE time=VALUES(time);",
+        [exchange, symbol, interval, asset, quote, is_warden, time]
+      );
+
       return;
     } catch (e) {
       logger.error("SQL error", e);

@@ -1,5 +1,6 @@
 "use strict";
 
+const _ = require("lodash");
 const logger = require("../../logger");
 const pool = require("../../database");
 
@@ -65,13 +66,14 @@ class DB_LAYER {
 
   async candlestick_replace(ticks) {
     try {
-      await pool.query(
-        "REPLACE INTO `" +
-          this.table_name +
-          "` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;",
-        [ticks]
-      );
-
+      if (ticks.length > 0) {
+        await pool.query(
+          "REPLACE INTO `" +
+            this.table_name +
+            "` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;",
+          [ticks]
+        );
+      }
       return;
     } catch (e) {
       logger.error("Error", e);

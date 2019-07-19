@@ -1,5 +1,6 @@
 "use strict";
 
+const _ = require("lodash");
 const logger = require("../logger");
 const pool = require("../database");
 const CCXT_API = require("../exchange");
@@ -50,17 +51,19 @@ class MarketData {
 
       let new_market_data = await CCXT_API.get_marketdata(exchange);
 
-      // Add exchange into MarketDatas
-      new_market_data = Object.values(new_market_data).map(elem => {
-        elem.exchange = exchange;
+      if (_.isObject(new_market_data)) {
+        // Add exchange into MarketDatas
+        new_market_data = Object.values(new_market_data).map(elem => {
+          elem.exchange = exchange;
 
-        return elem;
-      });
+          return elem;
+        });
 
-      // TODO: Better matching of stored and new market datas: new pairs etc.
-      if (new_market_data.length != market_data.length) {
-        await this.market_data_replace(new_market_data);
-        logger.verbose(`New market data for ${exchange}`);
+        // TODO: Better matching of stored and new market datas: new pairs etc.
+        if (new_market_data.length != market_data.length) {
+          await this.market_data_replace(new_market_data);
+          logger.verbose(`New market data for ${exchange}`);
+        }
       }
 
       return;

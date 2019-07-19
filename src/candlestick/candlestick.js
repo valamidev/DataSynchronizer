@@ -115,7 +115,7 @@ class Candlestick {
       if (startTime != 0) {
         let ticks = await this.get_ticks(startTime);
 
-        if (ticks.length > 0) {
+        if (Array.isArray(ticks)) {
           await this.DB_LAYER.candlestick_replace(ticks);
         }
 
@@ -133,9 +133,7 @@ class Candlestick {
 
   async get_ticks(startTime) {
     try {
-      let ticks = [];
-
-      ticks = await CCXT_API.get_candlestick(
+      let ticks = await CCXT_API.get_candlestick(
         this.symbol,
         this.exchange,
         this.interval_string,
@@ -145,13 +143,14 @@ class Candlestick {
 
       // https://github.com/ccxt/ccxt/issues/2937
       // Last Candle can be unfinished
-      if (ticks.length > 0) {
+      if (Array.isArray(ticks)) {
         if (_.last(ticks)[0] + this.interval * 1000 > _.now()) {
           ticks.pop();
         }
+        return ticks;
+      } else {
+        return [];
       }
-
-      return ticks;
     } catch (e) {
       logger.error("", e);
     }

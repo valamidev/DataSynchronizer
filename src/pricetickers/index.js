@@ -38,7 +38,7 @@ class PriceTickers {
       logger.error("Marketdata Update ", e);
     } finally {
       setTimeout(() => {
-        this.market_data_update_loop();
+        this.update_loop();
       }, this.update_frequency);
     }
   }
@@ -52,10 +52,15 @@ class PriceTickers {
 
       let time = Date.now();
 
-      // Add exchange / time into PriceTickers
+      // Add exchange,time,quotevolume into PriceTickers
       price_tickers = Object.values(price_tickers).map(elem => {
         elem.exchange = exchange;
         elem.timestamp = time;
+
+        // Calculate quoteVolume where it is missing
+        if (elem.quoteVolume == undefined && elem.baseVolume > 0) {
+          elem.quoteVolume = elem.baseVolume * ((elem.high + elem.low) / 2);
+        }
 
         return elem;
       });

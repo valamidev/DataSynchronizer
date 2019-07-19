@@ -25,6 +25,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "eslint": "^6.0.1",
     "jest": "^24.8.0"
   }
 }

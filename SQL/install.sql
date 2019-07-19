@@ -187,6 +187,8 @@ CREATE TABLE `tradepairs` (
   `interval_sec` int(10) NOT NULL DEFAULT '300'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+ALTER TABLE `tradepairs` ADD `is_warden` BOOLEAN NOT NULL AFTER `interval_sec`, ADD `time` BIGINT(20) NOT NULL DEFAULT '0' AFTER `is_warden`;
+ALTER TABLE `tradepairs` CHANGE `is_warden` `is_warden` TINYINT(1) NOT NULL DEFAULT '0';
 
 
 CREATE TABLE `trade_advice` (
