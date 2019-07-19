@@ -2,18 +2,31 @@
 #
 #
 
-#Functions
+# Functions
 #
 # On/Off (1 = On, 0 = Off)
-Tradepairs = 0
-MarketData = 0
-Sentiment = 0
+Tradepairs = 1
+MarketData = 1
+Sentiment = 1
 Livefeed = 0
+PriceTicker = 1
+Warden = 1
 
-#Exchanges
+# Exchanges
 #
 # List of supportable exchanges with "," separated, read CCTX for supported exhcange list 
-exchange_list = kucoin
+# Only Binance is recommended yet!
+exchange_list = binance
+
+# Warden settings
+#
+# Auto init tradepairs for data collection based on Volume desc, Quote and Quote limits should be match
+# Example:
+# quotes = BTC,ETH,USDT,BNB
+# quote_limits = 40,10,10,10
+#
+quotes = BTC,ETH,USDT,BNB
+quote_limits = 40,10,10,10
 
 #Binance
 #
@@ -66,9 +79,13 @@ twitter_update_timeout = 450
 # 
 #
 
-# Max Exchange Candlestick history timeframe in day (Recommend: 180 day)
+# Max Exchange Candlestick history timeframe in tick (Recommended: 3000)
 #
-history_timeframe = 180
+history_limit = 1000
+
+# CCXT Candlestick limit (Recommended: 250)
+
+ccxt_candlelimit = 500
 
 # Max Exchange livefeed storage in hours (Recommend: 24h)
 #
