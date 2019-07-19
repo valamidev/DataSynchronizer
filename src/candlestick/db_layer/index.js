@@ -1,8 +1,9 @@
 "use strict";
 
-const _ = require("lodash");
 const logger = require("../../logger");
-const pool = require("../../database");
+const { candle_db } = require("../../database");
+
+const { MYSQL_DB_EXCHANGE } = process.env;
 
 class DB_LAYER {
   constructor(table_name) {
@@ -11,13 +12,13 @@ class DB_LAYER {
 
   async candlestick_table_check() {
     try {
-      let [rows] = await pool.query(
+      let [rows] = await candle_db.query(
         "SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;",
-        [process.env.MYSQL_DB, this.table_name]
+        [MYSQL_DB_EXCHANGE, this.table_name]
       );
 
       if (rows.length != 1) {
-        let [rows] = await pool.query(
+        let [rows] = await candle_db.query(
           "CREATE TABLE `" + this.table_name + "` LIKE `def_def_def`;"
         );
         return rows;
@@ -29,7 +30,7 @@ class DB_LAYER {
 
   async candlestick_endTime() {
     try {
-      let [rows] = await pool.query(
+      let [rows] = await candle_db.query(
         "SELECT time FROM `" +
           this.table_name +
           "` ORDER BY `time` ASC limit 1;"
@@ -47,7 +48,7 @@ class DB_LAYER {
 
   async candlestick_startTime() {
     try {
-      let [rows] = await pool.query(
+      let [rows] = await candle_db.query(
         "SELECT time FROM `" +
           this.table_name +
           "` ORDER BY `time` DESC limit 1;"
@@ -67,7 +68,7 @@ class DB_LAYER {
   async candlestick_replace(ticks) {
     try {
       if (ticks.length > 0) {
-        await pool.query(
+        await candle_db.query(
           "REPLACE INTO `" +
             this.table_name +
             "` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;",
@@ -82,7 +83,7 @@ class DB_LAYER {
 
   async candlestick_select_all() {
     try {
-      let [rows] = await pool.query(
+      let [rows] = await candle_db.query(
         "SELECT * FROM `" + this.table_name + "` ORDER BY `time` ASC;"
       );
 
@@ -94,7 +95,7 @@ class DB_LAYER {
 
   async candlestick_history_size() {
     try {
-      let [rows] = await pool.query(
+      let [rows] = await candle_db.query(
         "SELECT count(*) as count FROM `" + this.table_name + "`;"
       );
 

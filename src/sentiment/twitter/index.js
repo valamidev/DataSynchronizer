@@ -2,7 +2,7 @@
 
 const sentiment_util = require("../sentiment_util");
 const logger = require("../../logger");
-const pool = require("../../database");
+const { pool } = require("../../database");
 const twitter = require("./twitter_api");
 
 class SentimentTwitter {
@@ -17,7 +17,6 @@ class SentimentTwitter {
       this.twitter = db_twitters.map(row => row.name);
 
       let update_promises = [];
-      let time_now = Date.now();
 
       this.twitter.forEach(twitter => {
         update_promises.push(this.update_twitter(twitter));

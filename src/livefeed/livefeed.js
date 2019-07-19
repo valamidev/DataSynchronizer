@@ -1,7 +1,7 @@
 "use strict";
 
 const logger = require("../logger");
-const pool = require("../database");
+const { pool } = require("../database");
 
 const ExchangeAPI = require("../exchange/Binance");
 
@@ -40,7 +40,7 @@ class LivefeedAPI {
     }
   }
 
-  async load_symbols(exchange) {
+  async load_symbols() {
     try {
       let [rows] = await pool.query(
         "SELECT * FROM `livefeed_binance_symbols`;"
@@ -134,20 +134,6 @@ class LivefeedAPI {
         "REPLACE INTO `livefeed_binance_symbols` (`symbol`, `priceChange`, `priceChangePercent`, `weightedAvgPrice`, `prevClosePrice`, `lastPrice`, `lastQty`, `bidPrice`, `bidQty`, `askPrice`, `askQty`, `openPrice`, `highPrice`, `lowPrice`, `volume`, `quoteVolume`, `openTime`, `closeTime`, `firstId`, `lastId`, `count`) VALUES ?",
         [symbols]
       );
-    } catch (e) {
-      logger.error("SQL error", e);
-    }
-  }
-
-  async load_symbols() {
-    try {
-      let [rows] = await pool.query(
-        "SELECT * FROM `livefeed_binance_symbols` ORDER BY `livefeed_binance_symbols`.`count` DESC;"
-      );
-
-      if (rows) {
-        this.live_symbols = rows;
-      }
     } catch (e) {
       logger.error("SQL error", e);
     }

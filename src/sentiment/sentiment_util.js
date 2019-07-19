@@ -1,7 +1,7 @@
 "use strict";
 
 const logger = require("../logger");
-const pool = require("../database");
+const { pool } = require("../database");
 
 const util = {
   load_sentiments: async (type = "none") => {

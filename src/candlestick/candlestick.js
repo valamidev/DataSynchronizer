@@ -83,7 +83,7 @@ class Candlestick {
       // Clean DB
       if (startTime == 0) {
         // Get genesis history time in ms
-        startTime = Date.now() - history_limit * this.interval * 1000;
+        startTime = Date.now() - parseInt(history_limit * this.interval * 1000);
       }
 
       let ticks = await this.get_ticks(startTime);
@@ -91,12 +91,12 @@ class Candlestick {
       // Check history limit
       let check_size = await this.DB_LAYER.candlestick_history_size();
 
-      if (check_size > history_limit) {
+      if (check_size > parseInt(history_limit)) {
         return;
       }
 
       // Only store full responses and history time limit!
-      if (ticks.length == ccxt_candlelimit) {
+      if (ticks.length > 1) {
         await this.DB_LAYER.candlestick_replace(ticks);
         await this.init_build_history();
       } else {

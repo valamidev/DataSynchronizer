@@ -2,7 +2,7 @@
 
 const sentiment_util = require("../sentiment_util");
 const logger = require("../../logger");
-const pool = require("../../database");
+const { pool } = require("../../database");
 const RedditAPI = require("./reddit_api");
 
 class SentimentReddit {

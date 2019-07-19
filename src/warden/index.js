@@ -2,7 +2,7 @@
 
 const _ = require("lodash");
 const logger = require("../logger");
-const pool = require("../database");
+const { pool } = require("../database");
 
 const TradepairsAPI = require("../tradepairs/tradepairs");
 
