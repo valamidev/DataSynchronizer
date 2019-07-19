@@ -58,7 +58,6 @@ class Warden {
       results = _.flatten(results);
 
       // Update Tradepairs
-
       let time = Date.now();
 
       // TODO remove 60s hardcoded interval
@@ -77,8 +76,8 @@ class Warden {
       logger.error("Warden update loop ", e);
     } finally {
       setTimeout(async () => {
-        this.livefeed_update_loop();
-      }, 3600 * 1000);
+        this.update_loop();
+      }, 60 * 1000);
     }
   }
 

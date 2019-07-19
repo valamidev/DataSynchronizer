@@ -1,12 +1,13 @@
 "use strict";
 
+const _ = require("lodash");
 const logger = require("../logger");
 const pool = require("../database");
 const Candlestick = require("../candlestick/candlestick");
 
 class Tradepairs {
   constructor() {
-    this.tradepairs = {};
+    this.tradepairs = [];
   }
 
   async start() {
@@ -79,11 +80,24 @@ class Tradepairs {
     try {
       let tradepairs = await this.select_tradepairs_all();
 
-      if (tradepairs.length != this.tradepairs.length) {
+      let new_symbols = tradepairs.map(elem => elem.symbol);
+      let old_symbols = this.tradepairs.map(elem => elem.symbol);
+
+      if (_.isEqual(new_symbols, old_symbols) == false) {
         this.tradepairs = tradepairs;
-        logger.info("Load candlestick");
+        logger.info(`Load candlestick ${tradepairs.length}`);
         await this.load_candlestick();
       }
+
+      if (tradepairs.length == 0) {
+        // Avoid stuck if tradepairs table is empty at start
+        logger.info(`Load candlestick table empty!`);
+
+        setTimeout(() => {
+          this.update_tradepairs();
+        }, 30000);
+      }
+
       return;
     } catch (e) {
       logger.error("Update_tradepairs", e);
@@ -98,7 +112,7 @@ class Tradepairs {
       let time = Date.now() - 600 * 1000;
 
       let [rows] = await pool.query(
-        "SELECT * FROM `tradepairs` WHERE is_warden = 0 OR (is_warden = 1 AND time > ?);",
+        "SELECT * FROM `tradepairs` WHERE is_warden = 0 OR (is_warden = 1 AND time > ?) ORDER BY `asset` ASC;",
         [time]
       );
 

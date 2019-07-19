@@ -94,6 +94,7 @@ CREATE TABLE `def_def_def` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+
 CREATE TABLE `livefeed_binance_5m` (
   `time` bigint(20) NOT NULL DEFAULT '0',
   `symbol` varchar(50) NOT NULL DEFAULT '',
