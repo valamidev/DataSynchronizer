@@ -65,6 +65,9 @@ class PriceTickers {
         return elem;
       });
 
+      /* TODO remove tickers with undefinied values */
+      price_tickers = price_tickers.filter(elem => elem.high != undefined);
+
       if (price_tickers.length > 0) {
         await this.replace_db(price_tickers);
       }
