@@ -25,6 +25,7 @@ exchange_list = binance
 # quotes = BTC,ETH,USDT,BNB
 # quote_limits = 40,10,10,10
 #
+warden_exchanges_list = kucoin,bitfinex
 quotes = BTC,ETH,USDT,BNB
 quote_limits = 40,10,10,10
 
