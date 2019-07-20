@@ -77,21 +77,18 @@ CREATE TABLE `account_trades` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 CREATE TABLE `def_def_def` (
   `time` bigint(20) NOT NULL DEFAULT '0',
   `open` float NOT NULL DEFAULT '0',
   `high` float NOT NULL DEFAULT '0',
   `low` float NOT NULL DEFAULT '0',
   `close` float NOT NULL DEFAULT '0',
-  `volume` float NOT NULL DEFAULT '0',
-  `closeTime` bigint(20) NOT NULL DEFAULT '0',
-  `assetVolume` float NOT NULL DEFAULT '0',
-  `trades` int(10) NOT NULL DEFAULT '0',
-  `buyBaseVolume` float NOT NULL DEFAULT '0',
-  `buyAssetVolume` float NOT NULL DEFAULT '0',
-  `ignored` int(10) NOT NULL DEFAULT '0'
+  `volume` float NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `def_def_def`
+  ADD UNIQUE KEY `time` (`time`);
+COMMIT;
 
 
 
@@ -315,9 +312,6 @@ ALTER TABLE `account_trades`
   ADD KEY `instance_id` (`instance_id`),
   ADD KEY `type` (`type`);
 
-
-ALTER TABLE `def_def_def`
-  ADD UNIQUE KEY `time` (`time`);
 
 --
 -- A tábla indexei `livefeed_binance_5m`
