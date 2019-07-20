@@ -7,7 +7,7 @@ const CCXT_API = require("../exchange");
 class PriceTickers {
   constructor() {
     this.exchanges = [];
-    this.update_frequency = 5 * 1000; // in ms
+    this.update_frequency = 30 * 1000; // in ms
   }
 
   async start(exchanges) {
