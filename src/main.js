@@ -15,13 +15,13 @@ const {
   PriceTicker,
   Warden,
   exchange_list,
-  warden_exchanges,
+  warden_exchanges_list,
   quotes,
   quote_limits
 } = process.env;
 
 const exchanges = exchange_list.split(",");
-const warden_exchanges_list = warden_exchanges.split(",");
+const warden_exchanges = warden_exchanges_list.split(",");
 const warden_quotes = quotes.split(",");
 const warden_quote_limits = quote_limits.split(",");
 
@@ -42,7 +42,7 @@ async function main() {
     // Warden Auto init tradepairs for data collection based on Volume desc
     if (Warden == 1)
       await WardenClass.start(
-        warden_exchanges_list,
+        warden_exchanges,
         warden_quotes,
         warden_quote_limits
       );
