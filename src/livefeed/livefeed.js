@@ -3,8 +3,6 @@
 const logger = require("../logger");
 const { pool } = require("../database");
 
-const ExchangeAPI = require("../exchange/Binance");
-
 class LivefeedAPI {
   constructor() {
     this.live_symbols = [];

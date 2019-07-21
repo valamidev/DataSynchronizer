@@ -3,7 +3,7 @@
 const _ = require("lodash");
 const logger = require("../logger");
 const { pool } = require("../database");
-const CCXT_API = require("../exchange");
+const CCXT_API = require("../exchange/ccxt_controller");
 
 class MarketData {
   constructor() {

@@ -1,7 +1,7 @@
 // Load Exchanges
 "use strict";
 // Load Exchange APIs
-const CCXT_API = require("../exchange/");
+const CCXT_API = require("../exchange/ccxt_controller");
 const logger = require("../logger");
 const util = require("../utils");
 const DB_LAYER = require("./db_layer");
