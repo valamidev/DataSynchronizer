@@ -1,5 +1,50 @@
 const util = {
   // Intervals: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
+  interval_toNumber: string => {
+    let number = 0;
+    switch (string) {
+      case "1m":
+        number = 60;
+        break;
+      case "3m":
+        number = 180;
+        break;
+      case "5m":
+        number = 300;
+        break;
+      case "15m":
+        number = 900;
+        break;
+      case "30m":
+        number = 1800;
+        break;
+      case "1h":
+        number = 3600;
+        break;
+      case "2h":
+        number = 7200;
+        break;
+      case "4h":
+        number = 14400;
+        break;
+      case "8h":
+        number = 28800;
+        break;
+      case "12h":
+        number = 43200;
+        break;
+      case "24h":
+        number = 86400;
+        break;
+      default:
+        number = 60;
+        break;
+    }
+
+    return number;
+  },
+
+  // Intervals: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
   interval_toString: number => {
     let string = "";
     switch (number) {
@@ -56,7 +101,22 @@ const util = {
   candlestick_name: (exchange, symbol, interval) => {
     symbol = symbol.replace("/", "");
 
-    let name = exchange + "_" + symbol + "_" + util.interval_toString(interval);
+    if (Number.isInteger(interval)) {
+      interval = util.interval_toString(interval);
+    }
+
+    let name = `${exchange}_${symbol}_${interval}`;
+
+    //Lowercase only
+    return name.toLowerCase();
+  },
+
+  livefeed_name: (exchange, interval) => {
+    if (Number.isInteger(interval)) {
+      interval = util.interval_toString(interval);
+    }
+
+    let name = `livefeed_${exchange}_${interval}`;
 
     //Lowercase only
     return name.toLowerCase();

@@ -57,12 +57,12 @@ class ExchangeAPI {
 
   load_exchange_api(exchange) {
     try {
-      // Check if CCXT API already loaded
-      let exchange_data = this.exchanges.filter(
-        elem => elem.exchange == exchange
-      );
+      exchange = exchange.toLowerCase();
 
-      // CCTX API load from buffer add to the buffer
+      // Check if CCXT API already loaded
+      let exchange_data = this.exchanges.filter(e => e.exchange == exchange);
+
+      // CCTX API load from buffer or add to the buffer
       if (exchange_data.length == 0) {
         exchange_data = this.init_new_exchanges(exchange);
       } else {
@@ -82,11 +82,9 @@ class ExchangeAPI {
     if (_.isObject(ccxt[exchange])) {
       let api = new ccxt[exchange]();
 
-      let new_exchanges = { exchange, api };
+      this.exchanges.push({ exchange, api });
 
-      this.exchanges.push(new_exchanges);
-
-      return new_exchanges;
+      return { exchange, api };
     } else {
       throw `Invalid Exchange ${exchange}`;
     }

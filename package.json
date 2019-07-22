@@ -12,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "binance-api-node": "^0.9.2",
     "ccxt": "^1.18.939",
+    "ccxws": "^0.25.0",
     "chai": "^4.2.0",
     "dotenv": "^7.0.0",
     "json-mysql": "^1.0.3",
