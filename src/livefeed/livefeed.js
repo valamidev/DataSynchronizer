@@ -66,6 +66,7 @@ class LivefeedAPI {
       }
     }
 
+    /* TODO multi exchange support! */
     this.binance_websocket = open_socket(websocket_symbol_ids);
   }
 
