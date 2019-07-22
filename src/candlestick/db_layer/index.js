@@ -18,6 +18,8 @@ const DB_LAYER = {
           "CREATE TABLE `" + table_name + "` LIKE `def_def_def`;"
         );
         return rows;
+      } else {
+        return;
       }
     } catch (e) {
       logger.error("Error", e);

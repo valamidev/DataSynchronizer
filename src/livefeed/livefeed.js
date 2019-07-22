@@ -1,5 +1,6 @@
 "use strict";
 
+const _ = require("lodash");
 const logger = require("../logger");
 const { pool } = require("../database");
 
@@ -11,18 +12,46 @@ class LivefeedAPI {
   constructor() {
     this.tradepairs = [];
 
-    this.binance_websocket;
+    /* TODO multi exchange support! */
+    this.binance_websocket = () => {};
+
+    this.watcher_timeout = 5 * 60 * 1000; // 5 min
   }
 
   async start() {
     try {
-      this.tradepairs = await this.select_tradepairs_all();
-
-      this.open_websocket_candlestick("binance");
+      await this.tradepairs_watcher();
 
       logger.info("Livefeed API started");
     } catch (e) {
       logger.error("Livefeed start ", e);
+    }
+  }
+
+  async tradepairs_watcher() {
+    // Looking after new tradepairs!
+    try {
+      let tradepairs = await this.select_tradepairs_all();
+
+      let new_symbols = tradepairs.map(elem => elem.symbol);
+      let old_symbols = this.tradepairs.map(elem => elem.symbol);
+
+      if (_.isEqual(new_symbols, old_symbols) == false) {
+        this.tradepairs = tradepairs;
+        logger.info(`Load new websocket ${tradepairs.length}`);
+
+        /* TODO multi exchange support! */
+        this.binance_websocket();
+        this.open_websocket_candlestick("binance");
+      }
+
+      return;
+    } catch (e) {
+      logger.error("Livefeed Tradepairs watcher error ", e);
+    } finally {
+      setTimeout(() => {
+        this.tradepairs_watcher();
+      }, this.watcher_timeout);
     }
   }
 

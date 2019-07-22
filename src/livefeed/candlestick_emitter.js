@@ -43,7 +43,9 @@ class Candlestick_emitter {
 
   async update_ws(table_name, candle) {
     try {
-      // Get most fresh data
+      // Check if table exist
+      await Candle_DB_LAYER.candlestick_table_check(table_name);
+
       let ohlc = [
         candle.startTime,
         candle.open,
