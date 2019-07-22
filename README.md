@@ -5,12 +5,22 @@ This package allow you to fetch Candlestick datas from exchanges and other data 
 **Supported exchanges(Candlestick/OHLC):**
 - Full CCXT support (Kucoin,Binance,Poloniex,Bitfinex...)
 
-**Supported exchanges (Livefeed):**
+**Supported websocket performance exchanges (Livefeed):**
 - Binance
 
 **Supported Sentiment sources:**
 - Twitter
 - Reddit
+
+**Features:**
+
+- Tradepairs: Base module for Candlestick databases at boot.
+- MarketData: Collect information about available tradepairs and their informations.
+- Sentiment: Twitter/Reddit API fetcher.
+- Livefeed: Websocket manager for real-time datasources.
+- PriceTicker: All symbol price information from exchanges.
+- Warden: Automated manager looking after newly added symbols and trending symbols.
+
 
 
 Install:
