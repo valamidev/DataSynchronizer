@@ -49,7 +49,7 @@ class Tradepairs {
     } finally {
       setTimeout(() => {
         this.candlestick_update_loop();
-      }, 100);
+      }, 10000);
     }
   }
 
