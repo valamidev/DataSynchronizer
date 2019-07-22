@@ -21,6 +21,12 @@ This package allow you to fetch Candlestick datas from exchanges and other data 
 - PriceTicker: All symbol price information from exchanges.
 - Warden: Automated manager looking after newly added symbols and trending symbols.
 
+**TODO:**
+
+- Add more Websocket supported exhcanges.
+- Add MarketDepth history storage.
+- Add Docker friendly deployment solution.
+- Add PostgreSQL database for Exchange datas Candlestick,MarketDepth...
 
 
 Install:
