@@ -60,7 +60,7 @@ reddit_password =
 
 # Reddit api loop timeout, avoid rate limit! (in sec) (Recommend: 450)
 #
-reddit_update_timeout = 450
+reddit_update_timeout = 900
 
 # Twitter API
 #
