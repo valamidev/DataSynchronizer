@@ -1,5 +1,5 @@
-"use strict";
+"use strict"
 // Init .env variables
-require("dotenv").config();
+require("dotenv").config()
 
-require("./src/main.js");
+require("./src/main.js")
