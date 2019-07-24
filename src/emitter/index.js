@@ -1,7 +1,7 @@
-"use strict";
+"use strict"
 
-const EventEmitter = require("events");
+const EventEmitter = require("eventemitter3")
 // Keep memory leak as a possible outcome!
-const Emitter = new EventEmitter().setMaxListeners(10000);
+const Emitter = new EventEmitter()
 
-module.exports = Emitter;
+module.exports = Emitter
