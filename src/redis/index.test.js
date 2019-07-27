@@ -2,7 +2,7 @@
 "use strict"
 require("dotenv").config()
 
-const { redis, redis_pub } = require("./redis")
+const { redis, redis_pub } = require("./index")
 
 test("Redis Connection test", async () => {
   redis.set("foo_bar_test", "bar")
