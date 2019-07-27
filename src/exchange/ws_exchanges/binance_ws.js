@@ -1,8 +1,7 @@
 "use strict"
 
 const util = require("../../utils")
-const Emitter = require("../../emitter")
-const Redis = require("../../redis")
+const Emitter = require("../../emitter/emitter")
 
 // Binance things
 const exchange_name = "binance"
@@ -19,6 +18,7 @@ function open_socket(symbol, interval = default_interval) {
     Emitter.emit("CandleUpdate", exchange_name, interval, candle)
   })
 
+  // Needed to close connection
   return result
 }
 

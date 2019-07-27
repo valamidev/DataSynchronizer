@@ -2,24 +2,24 @@
 "use strict"
 require("dotenv").config()
 
-const { redis, redis_pub } = require("./index")
+const { Redis, Redis_pub } = require("./redis")
 
 test("Redis Connection test", async () => {
-  redis.set("foo_bar_test", "bar")
-  let result = await redis.get("foo_bar_test")
-  redis.del("foo_bar_test")
+  Redis.set("foo_bar_test", "bar")
+  let result = await Redis.get("foo_bar_test")
+  Redis.del("foo_bar_test")
 
   expect(result).toBe("bar")
 })
 
 test("Redis publish disabled test", async () => {
   expect(() => {
-    redis.publish("news", "Hello world!")
+    Redis.publish("news", "Hello world!")
   }).toThrow()
 })
 
 test("Redis subscribe disabled test", async () => {
   expect(() => {
-    redis_pub.subscribe()
+    Redis_pub.subscribe()
   }).toThrow()
 })
