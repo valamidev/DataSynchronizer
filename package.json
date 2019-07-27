@@ -17,6 +17,7 @@
     "chai": "^4.2.0",
     "dotenv": "^7.0.0",
     "eventemitter3": "^4.0.0",
+    "ioredis": "^4.11.2",
     "json-mysql": "^1.2.21",
     "lodash": "^4.17.11",
     "mocha": "^6.1.4",
