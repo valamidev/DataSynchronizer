@@ -1,20 +1,23 @@
 # DataSynchronizer
 
-This package allow you to fetch Candlestick datas from exchanges and other data sources into a MySQL databases.
+DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment data aggregator tool. 
 
-**Supported exchanges(Candlestick/OHLC):**
-- Full CCXT support (Kucoin,Binance,Poloniex,Bitfinex...)
+**Capabilities**
+- Fetch up to 100 Symbol(Kucoin API limitation) Candlestic, Trades, Orderbooks from Binance & Kucoin.
+- Semi-automated seeking after new symbols or trending symbols.
+- Moderated fault tolerance, only auto-reconnecting Websockets are used. 
 
-**Supported websocket performance exchanges (Livefeed):**
-- Binance
+
+**Supported exchanges:**
+- **Binance:** Candlestick, Trades
+- **Kucoin:** Trades (Candlesticks can be calculated)
+- Full CCXT support for PriceTickers and MarketDatas
 
 **Supported Sentiment sources:**
 - Twitter
 - Reddit
 
-**Features:**
-
-- Tradepairs: Base module for Candlestick databases at boot.
+**Modules:**
 - MarketData: Collect information about available tradepairs and their informations.
 - Sentiment: Twitter/Reddit API fetcher.
 - Livefeed: Websocket manager for real-time datasources.
@@ -22,14 +25,12 @@ This package allow you to fetch Candlestick datas from exchanges and other data 
 - Warden: Automated manager looking after newly added symbols and trending symbols.
 
 **TODO:**
-
-- Add more Websocket supported exhcanges.
 - Add MarketDepth history storage.
 - Add Docker friendly deployment solution.
 - Add PostgreSQL database for Exchange datas Candlestick,MarketDepth...
 
 
-Install:
+**Install:**
 
 1. Run NPM install:
 ```
@@ -45,9 +46,3 @@ Rename .sample_env to .env
 Configure the API keys for Binance,Twitter and Reddit
 ```
 
-How to add Candlestick/OHLC tradepairs:
-
-```
--- Add new Tradepairs which could be automaticaly initialized from DB
-INSERT INTO `tradepairs` (`exchange`, `symbol`, `asset`, `quote`, `interval_sec`) VALUES ('binance', 'MATIC/BTC', 'MATIC', 'BTC', '300');
-```

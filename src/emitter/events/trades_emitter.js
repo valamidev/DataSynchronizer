@@ -33,9 +33,3 @@ class Trades_emitter {
 }
 
 module.exports = new Trades_emitter()
-
-/*
-
-INSERT INTO `livefeed_kucoin_trades` (`sequence`, `symbol`, `side`, `size`, `price`, `takerOrderId`, `time`, `type`, `makerOrderId`, `tradeId`) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
-*/

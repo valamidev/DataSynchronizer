@@ -17,7 +17,7 @@ class LivefeedAPI {
     this.exchanges = []
     this.websocket_api = {}
 
-    this.watcher_timeout = 30 * 1000 // 5 min
+    this.watcher_timeout = 60 * 1000 // 1 minute
   }
 
   async start(exchanges) {
@@ -58,7 +58,7 @@ class LivefeedAPI {
         // Open Websockets
         await this.open_websocket_candlestick(exchange)
 
-        logger.info(`Load new websocket ${tradepairs.length} for ${exchange}`)
+        logger.info(`Load new websocket for ${exchange}`)
       }
     } catch (e) {
       logger.error("Livefeed Tradepairs watcher error ", e)
