@@ -19,6 +19,7 @@
     "eventemitter3": "^4.0.0",
     "ioredis": "^4.11.2",
     "json-mysql": "^1.2.21",
+    "kucoin-websocket-api": "^0.1.2",
     "lodash": "^4.17.11",
     "mocha": "^6.1.4",
     "mysql2": "^1.6.5",

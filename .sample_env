@@ -25,7 +25,6 @@ REDIS_DB_ID = 0
 # Functions
 #
 # On/Off (1 = On, 0 = Off)
-Tradepairs = 1
 MarketData = 1
 Sentiment = 1
 Livefeed = 1
@@ -97,9 +96,6 @@ twitter_update_timeout = 450
 #
 history_limit = 1000
 
-# CCXT Candlestick limit (Recommended: 250)
-
-ccxt_candlelimit = 250
 
 # Max Exchange livefeed storage in hours (Recommend: 24h)
 #

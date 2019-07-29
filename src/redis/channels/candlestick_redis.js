@@ -4,9 +4,10 @@ const Emitter = require("../../emitter/emitter")
 
 const { Redis_pub } = require("../redis")
 
-Emitter.on("CandleUpdate", (exchange, interval, candle) => {
+// Broadcast final candle updates
+Emitter.on("CandleUpdateFinal", (exchange, interval, candle) => {
   setImmediate(() => {
-    Redis_pub.publish("CandleUpdate", JSON.stringify({ exchange, interval, candle }))
+    Redis_pub.publish("CandleUpdateFinal", JSON.stringify({ exchange, interval, candle }))
   })
 })
 

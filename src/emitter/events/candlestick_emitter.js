@@ -4,12 +4,12 @@ const util = require("../../utils")
 const logger = require("../../logger")
 const Emitter = require("../emitter")
 
-const DB_LAYER = require("../../candlestick/db_layer")
+const DB_LAYER = require("../../database/queries")
 
 class Candlestick_emitter {
   constructor() {
     // Event listeners
-    logger.info("Candlestick Emitter started!")
+    logger.verbose("Candlestick Emitter started!")
 
     Emitter.on("CandleUpdate", (exchange, interval, candle) => {
       setImmediate(() => {
@@ -29,9 +29,9 @@ class Candlestick_emitter {
         this.update_ws(table_name, candle)
       }
 
-      // Every Candle saved into Livefeed table
       let livefeed_table_name = util.livefeed_name(exchange, interval)
-      await DB_LAYER.websocket_update(livefeed_table_name, candle)
+      // Every Candle saved into Livefeed table
+      await DB_LAYER.candlestick_livefeed_insert(livefeed_table_name, candle)
     } catch (e) {
       logger.error("Candlestick Websocket update error ", e)
     }

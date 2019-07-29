@@ -2,7 +2,6 @@
 
 const logger = require("./logger")
 require("./emitter") // Eventemitter class
-const TradePairsAPI = new (require("./tradepairs/tradepairs"))()
 const SentimentAPI = require("./sentiment/sentiment")
 const LivefeedAPI = require("./livefeed/livefeed")
 const MarketDataAPI = require("./marketdata")
@@ -10,7 +9,7 @@ const PriceTickersAPI = require("./pricetickers")
 const WardenClass = require("./warden")
 
 // Load Dotenv variables
-const { Tradepairs, MarketData, Sentiment, Livefeed, Redis, PriceTicker, Warden, exchange_list, warden_exchanges_list, quotes, quote_limits } = process.env
+const { MarketData, Sentiment, Livefeed, Redis, PriceTicker, Warden, exchange_list, warden_exchanges_list, quotes, quote_limits } = process.env
 
 const exchanges = exchange_list.split(",")
 const warden_exchanges = warden_exchanges_list.split(",")
@@ -22,8 +21,6 @@ async function main() {
   try {
     logger.info("StockML Synchronizer started")
 
-    // CandleStick OHLV fetcher
-    if (Tradepairs == 1) await TradePairsAPI.start()
     // Available Symbols and Precision informations from exchanges
     if (MarketData == 1) await MarketDataAPI.start(exchanges)
     // Current prices and other Symbol datas like daily change, daily volume

@@ -11,11 +11,28 @@ const Binance = require("binance-api-node").default
 const client = new Binance()
 // Binance things
 
-function open_socket(symbol, interval = default_interval) {
+const open_socket = async (symbol, interval = default_interval) => {
   interval = util.interval_toString(interval)
 
   let result = client.ws.candles(symbol, interval, (candle) => {
     Emitter.emit("CandleUpdate", exchange_name, interval, candle)
+
+    if (candle.isFinal == true) {
+      Emitter.emit("CandleUpdateFinal", exchange_name, interval, candle)
+    }
+  })
+
+  let result2 = client.ws.aggTrades(symbol, (trade) => {
+    trade = {
+      time: trade.eventTime,
+      symbol: trade.symbol,
+      side: trade.maker == true ? "buy" : "sell",
+      quantity: trade.quantity,
+      price: trade.price,
+      tradeId: trade.tradeId
+    }
+
+    Emitter.emit("Trades", exchange_name, trade)
   })
 
   // Needed to close connection
