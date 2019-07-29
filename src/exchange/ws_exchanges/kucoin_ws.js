@@ -11,7 +11,7 @@ const client = new Kucoin_API()
 // Kucoin things
 
 const open_socket = async (symbol) => {
-  let result = await client.MarketMatches(symbol, (trade) => {
+  let socket_trades = await client.MarketMatches(symbol, (trade) => {
     // Kucoin use ns for timestamp
 
     trade = {
@@ -27,7 +27,9 @@ const open_socket = async (symbol) => {
   })
 
   // Needed to close connection
-  return result
+  return () => {
+    socket_trades()
+  }
 }
 
 module.exports = open_socket

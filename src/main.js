@@ -27,9 +27,9 @@ async function main() {
     if (PriceTicker == 1) await PriceTickersAPI.start(exchanges)
     // Twitter/Reddit API
     if (Sentiment == 1) await SentimentAPI.start()
-    // Websocket support only for Binance /* TODO: use CCWS */
+    // Websocket support check exchanges/ws_exchanges for support!
     if (Livefeed == 1) {
-      await LivefeedAPI.start()
+      await LivefeedAPI.start(exchanges)
     }
     if (Redis == 1) {
       // Redis Pub/Sub

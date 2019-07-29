@@ -15,12 +15,13 @@ const queries = {
           side: 'buy'/'sell'
           quantity: '0.00171400'
           price:'9469.48000000'
+          tradeId: 30 long string
         }
       */
 
-      let data = [res.time, res.symbol, res.side, res.quantity, res.price]
+      let data = [res.time, res.symbol, res.side, res.quantity, res.price, res.tradeId]
 
-      await candle_db.query("INSERT INTO `" + table_name + "` (`time`, `symbol`, `side`, `quantity`, `price`) VALUES ?;", [[data]])
+      await candle_db.query("INSERT INTO `" + table_name + "` (`time`, `symbol`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [[data]])
     } catch (e) {
       logger.error("SQL error", e)
     }

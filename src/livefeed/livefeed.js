@@ -6,22 +6,24 @@ const { pool } = require("../database")
 
 const open_socket = {}
 
+// Exchange Websockets
 open_socket["binance"] = require("../exchange/ws_exchanges/binance_ws")
 open_socket["kucoin"] = require("../exchange/ws_exchanges/kucoin_ws")
+// Exchange Websockets
 
 class LivefeedAPI {
   constructor() {
     this.tradepairs = []
-
-    /* TODO multi exchange support! */
-
+    this.exchanges = []
     this.websocket_api = {}
 
-    this.watcher_timeout = 5 * 60 * 1000 // 5 min
+    this.watcher_timeout = 30 * 1000 // 5 min
   }
 
-  async start() {
+  async start(exchanges) {
     try {
+      this.exchanges = exchanges
+
       await this.tradepairs_watcher()
 
       logger.info("Livefeed API started")
@@ -33,27 +35,31 @@ class LivefeedAPI {
   async tradepairs_watcher() {
     // Looking after new tradepairs!
     try {
-      /* TODO multi exchange support! */
-      let exchange = "binance"
-
       let tradepairs = await this.select_tradepairs_all()
 
       let new_symbols = tradepairs.map((elem) => elem.symbol)
+
       let old_symbols = this.tradepairs.map((elem) => elem.symbol)
 
-      if (_.isEqual(new_symbols, old_symbols) == false) {
+      // There is no new tradepairs
+      if (_.isEqual(new_symbols, old_symbols) == true) {
+        return
+      } else {
         this.tradepairs = tradepairs
-        logger.info(`Load new websocket ${tradepairs.length}`)
-
-        if (typeof this.websocket_api[exchange] != "undefined") {
-          this.websocket_api[exchange]()
-        }
-
-        this.open_websocket_candlestick(exchange)
-        this.open_websocket_candlestick("kucoin")
       }
 
-      return
+      for (let i = 0; i < this.exchanges.length; i++) {
+        const exchange = this.exchanges[i]
+
+        if (typeof this.websocket_api[exchange] != "undefined") {
+          logger.info(`Close old websocket ${exchange}`)
+          this.websocket_api[exchange]()
+        }
+        // Open Websockets
+        await this.open_websocket_candlestick(exchange)
+
+        logger.info(`Load new websocket ${tradepairs.length} for ${exchange}`)
+      }
     } catch (e) {
       logger.error("Livefeed Tradepairs watcher error ", e)
     } finally {
@@ -63,7 +69,7 @@ class LivefeedAPI {
     }
   }
 
-  open_websocket_candlestick(exchange) {
+  async open_websocket_candlestick(exchange) {
     let websocket_symbol_ids = []
 
     for (let i = 0; i < this.tradepairs.length; i++) {
@@ -74,9 +80,7 @@ class LivefeedAPI {
       }
     }
 
-    /* TODO multi exchange support! */
-
-    this.websocket_api[exchange] = open_socket[exchange](websocket_symbol_ids)
+    this.websocket_api[exchange] = await open_socket[exchange](websocket_symbol_ids)
   }
 
   async select_tradepairs_all() {

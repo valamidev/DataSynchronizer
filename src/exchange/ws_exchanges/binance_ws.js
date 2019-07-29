@@ -14,7 +14,7 @@ const client = new Binance()
 const open_socket = async (symbol, interval = default_interval) => {
   interval = util.interval_toString(interval)
 
-  let result = client.ws.candles(symbol, interval, (candle) => {
+  let socket_candle = await client.ws.candles(symbol, interval, (candle) => {
     Emitter.emit("CandleUpdate", exchange_name, interval, candle)
 
     if (candle.isFinal == true) {
@@ -22,7 +22,7 @@ const open_socket = async (symbol, interval = default_interval) => {
     }
   })
 
-  let result2 = client.ws.aggTrades(symbol, (trade) => {
+  let socket_trades = await client.ws.aggTrades(symbol, (trade) => {
     trade = {
       time: trade.eventTime,
       symbol: trade.symbol,
@@ -36,7 +36,10 @@ const open_socket = async (symbol, interval = default_interval) => {
   })
 
   // Needed to close connection
-  return result
+  return () => {
+    socket_candle()
+    socket_trades()
+  }
 }
 
 module.exports = open_socket

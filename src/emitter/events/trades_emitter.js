@@ -22,6 +22,7 @@ class Trades_emitter {
           side: 'buy'/'sell'
           quantity: '0.00171400'
           price:'9469.48000000'
+          tradeId: 30 long string
         }
         */
 
