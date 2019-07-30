@@ -16,7 +16,7 @@ const queries = {
 
       return
     } catch (e) {
-      logger.error("Error", e)
+      logger.error(`Error ${table_name} `, e)
     }
   },
 
