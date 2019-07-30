@@ -4,7 +4,7 @@ const util = require("../../utils")
 const logger = require("../../logger")
 const Emitter = require("../emitter")
 
-const OrderbookStore = require("orderbook-synchronizer")
+const { OrderBookStore } = require("orderbook-synchronizer")
 const memory_limit = 1024
 const Orderbooks = {}
 
@@ -17,33 +17,45 @@ class Orderbook_emitter {
     logger.verbose("Orderbook Emitter started!")
 
     Emitter.on("Orderbook", (exchange, depth) => {
-      if (typeof Orderbooks[exchange.toLowerCase()] == "undefined") {
-        Orderbooks[exchange.toLowerCase()] = new OrderbookStore(memory_limit)
+      exchange = exchange.toLowerCase()
+
+      if (typeof Orderbooks[exchange] == "undefined") {
+        Orderbooks[exchange] = new OrderBookStore(memory_limit)
       }
 
       let { symbol, asks, bids } = depth
 
-      Orderbooks[exchange.toLowerCase()].updateOrderBook(symbol, asks, bids)
+      if (Orderbooks[exchange]._symbols.indexOf(symbol) == -1) {
+        setImmediate(async () => {
+          let table_name = util.orderbook_name(exchange, symbol)
+          let orderbook_snapshot = await Redis.get(table_name)
+          if (orderbook_snapshot != null) {
+            orderbook_snapshot = JSON.parse(orderbook_snapshot)
+            if (Array.isArray(orderbook_snapshot.ask) && Array.isArray(orderbook_snapshot.bid)) {
+              Orderbooks[exchange.toLowerCase()].updateOrderBook(symbol, orderbook_snapshot.ask, orderbook_snapshot.bid)
+            }
+          }
+        })
+      }
+
+      Orderbooks[exchange].updateOrderBook(symbol, asks, bids)
     })
 
     Emitter.on("OrderbookSnapshot", (snapshot_time) => {
-      /* TODO make it less ugly */
-      Object.entries(Orderbooks).map((Orderbook) => {
-        //[ [ 'kucoin', OrderBookStore { _data: { ]
-        let exchange = Orderbook[0]
+      Object.keys(Orderbooks).map((exchange) => {
+        let symbols = Orderbooks[exchange]._symbols
 
-        Object.entries(Orderbook[1]._data).map((elem) => {
-          // kucoin 1564487760000 [ 'CAG-BTC', { ask: [], bid: [] } ]
-          // exchange, snapshot_time, elem[0], elem[1])
-
+        symbols.forEach((symbol) => {
           setImmediate(async () => {
-            let table_name = util.orderbook_name(exchange, elem[0])
+            let orderbook = Orderbooks[exchange].getOrderBook(symbol)
+
+            let table_name = util.orderbook_name(exchange, symbol)
 
             await DB_LAYER.orderbook_table_check(table_name)
-            await DB_LAYER.orderbook_replace(table_name, { time: snapshot_time, orderbook: elem[1] })
+            await DB_LAYER.orderbook_replace(table_name, { time: snapshot_time, orderbook })
 
             // Store snapshot in redis for 600 sec
-            Redis.set(table_name, elem[1], "EX", 600)
+            Redis.set(table_name, JSON.stringify(orderbook), "EX", 600)
           })
         })
       })
