@@ -80,7 +80,7 @@ const queries = {
 
       await candle_db.query("INSERT INTO `" + table_name + "` (`time`, `symbol`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [[data]])
     } catch (e) {
-      logger.error("SQL error", e)
+      logger.error(`SQL error ${table_name}`, e)
     }
   },
 

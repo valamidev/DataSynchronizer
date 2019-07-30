@@ -26,7 +26,7 @@ const open_socket = async (symbol, interval = default_interval) => {
     trade = {
       time: trade.eventTime,
       symbol: trade.symbol,
-      side: trade.maker == true ? "buy" : "sell",
+      side: trade.maker == true ? "sell" : "buy",
       quantity: trade.quantity,
       price: trade.price,
       tradeId: trade.tradeId
