@@ -27,13 +27,17 @@ class Orderbook_emitter {
 
       if (Orderbooks[exchange]._symbols.indexOf(symbol) == -1) {
         setImmediate(async () => {
-          let table_name = util.orderbook_name(exchange, symbol)
-          let orderbook_snapshot = await Redis.get(table_name)
-          if (orderbook_snapshot != null) {
-            orderbook_snapshot = JSON.parse(orderbook_snapshot)
-            if (Array.isArray(orderbook_snapshot.ask) && Array.isArray(orderbook_snapshot.bid)) {
-              Orderbooks[exchange.toLowerCase()].updateOrderBook(symbol, orderbook_snapshot.ask, orderbook_snapshot.bid)
+          try {
+            let table_name = util.orderbook_name(exchange, symbol)
+            let orderbook_snapshot = await Redis.get(table_name)
+            if (orderbook_snapshot != null) {
+              orderbook_snapshot = JSON.parse(orderbook_snapshot)
+              if (Array.isArray(orderbook_snapshot.ask) && Array.isArray(orderbook_snapshot.bid)) {
+                Orderbooks[exchange.toLowerCase()].updateOrderBook(symbol, orderbook_snapshot.ask, orderbook_snapshot.bid)
+              }
             }
+          } catch (e) {
+            logger.error("Orderbook snapshot error", e)
           }
         })
       }
