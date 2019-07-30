@@ -98,8 +98,21 @@ const util = {
     return time
   },
 
+  orderbook_name: (exchange, symbol) => {
+    symbol = symbol.replace("/", "")
+    symbol = symbol.replace("-", "")
+    symbol = symbol.replace("_", "")
+
+    let name = `orderbook_${exchange}_${symbol}`
+
+    //Lowercase only
+    return name.toLowerCase()
+  },
+
   candlestick_name: (exchange, symbol, interval) => {
     symbol = symbol.replace("/", "")
+    symbol = symbol.replace("-", "")
+    symbol = symbol.replace("_", "")
 
     if (Number.isInteger(interval)) {
       interval = util.interval_toString(interval)

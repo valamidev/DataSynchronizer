@@ -6,6 +6,63 @@ const { candle_db } = require("../../database")
 const { MYSQL_DB_EXCHANGE } = process.env
 
 const queries = {
+  /* Orderbooks */
+
+  orderbook_replace: async (table_name, res) => {
+    try {
+      let data = [res.time, JSON.stringify(res.orderbook)]
+
+      await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `orderbook`) VALUES ?;", [[data]])
+
+      return
+    } catch (e) {
+      logger.error("Error", e)
+    }
+  },
+
+  orderbook_table_check: async (table_name) => {
+    try {
+      let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
+
+      if (rows.length != 1) {
+        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `orderbook_def`;")
+        return rows
+      } else {
+        return
+      }
+    } catch (e) {
+      logger.error("Error", e)
+    }
+  },
+
+  /* Trades */
+
+  trades_table_check: async (table_name) => {
+    try {
+      let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
+
+      if (rows.length != 1) {
+        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `trades_def`;")
+        return rows
+      } else {
+        return
+      }
+    } catch (e) {
+      logger.error("Error", e)
+    }
+  },
+
+  trades_replace: async (table_name, ticks) => {
+    try {
+      if (ticks.length > 0) {
+        await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `symbol`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [ticks])
+      }
+      return
+    } catch (e) {
+      logger.error("Error", e)
+    }
+  },
+
   trades_livefeed_insert: async (table_name, res) => {
     try {
       /*
@@ -34,7 +91,7 @@ const queries = {
       let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
 
       if (rows.length != 1) {
-        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `def_def_def`;")
+        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `candlestick_def`;")
         return rows
       } else {
         return

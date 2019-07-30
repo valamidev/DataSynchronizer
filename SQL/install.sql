@@ -77,7 +77,30 @@ CREATE TABLE `account_trades` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `def_def_def` (
+CREATE TABLE `orderbook_def` (
+  `time` bigint(20) NOT NULL,
+  `orderbook` text COLLATE utf8_bin
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+ALTER TABLE `orderbook_def`
+  ADD PRIMARY KEY (`time`);
+COMMIT;
+
+
+CREATE TABLE `trades_def` (
+  `time` bigint(20) NOT NULL DEFAULT '0',
+  `side` varchar(5) DEFAULT NULL,
+  `quantity` double DEFAULT NULL,
+  `price` double DEFAULT NULL,
+  `tradeId` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `trades_def`
+  ADD UNIQUE KEY `tradeId` (`tradeId`);
+COMMIT;
+
+CREATE TABLE `candlestick_def` (
   `time` bigint(20) NOT NULL DEFAULT '0',
   `open` float NOT NULL DEFAULT '0',
   `high` float NOT NULL DEFAULT '0',
@@ -86,7 +109,7 @@ CREATE TABLE `def_def_def` (
   `volume` float NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `def_def_def`
+ALTER TABLE `candlestick_def`
   ADD UNIQUE KEY `time` (`time`);
 COMMIT;
 

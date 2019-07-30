@@ -9,6 +9,7 @@ const memory_limit = 1024
 const Orderbooks = {}
 
 const DB_LAYER = require("../../database/queries")
+const { Redis } = require("../../redis/redis")
 
 class Orderbook_emitter {
   constructor() {
@@ -23,16 +24,29 @@ class Orderbook_emitter {
       let { symbol, asks, bids } = depth
 
       Orderbooks[exchange.toLowerCase()].updateOrderBook(symbol, asks, bids)
-
-      // console.log(exchange.toLowerCase(), symbol, Orderbooks[exchange.toLowerCase()].getOrderBook(symbol))
     })
 
     Emitter.on("OrderbookSnapshot", (snapshot_time) => {
-      Object.entries(Orderbooks).map((exchanges) => {
-        //  console.log(exchanges, snapshot_time)
-      })
+      /* TODO make it less ugly */
+      Object.entries(Orderbooks).map((Orderbook) => {
+        //[ [ 'kucoin', OrderBookStore { _data: { ]
+        let exchange = Orderbook[0]
 
-      // console.log(exchange.toLowerCase(), symbol, Orderbooks[exchange.toLowerCase()].getOrderBook(symbol))
+        Object.entries(Orderbook[1]._data).map((elem) => {
+          // kucoin 1564487760000 [ 'CAG-BTC', { ask: [], bid: [] } ]
+          // exchange, snapshot_time, elem[0], elem[1])
+
+          setImmediate(async () => {
+            let table_name = util.orderbook_name(exchange, elem[0])
+
+            await DB_LAYER.orderbook_table_check(table_name)
+            await DB_LAYER.orderbook_replace(table_name, { time: snapshot_time, orderbook: elem[1] })
+
+            // Store snapshot in redis for 600 sec
+            Redis.set(table_name, elem[1], "EX", 600)
+          })
+        })
+      })
     })
   }
 }
