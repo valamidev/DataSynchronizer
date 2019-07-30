@@ -1,5 +1,5 @@
 {
-  "name": "StockML",
+  "name": "cryptocurrency-exchange-data-synchronizer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -37,9 +37,11 @@ class Trades_emitter {
       })
     })
 
-    Emitter.on("TradesCandlestickSnapshot", (snapshot_time) => {
-      /* TODO create 1m Candles from trades */
+    /* TODO create 1m Candles from trades */
+    /*
+    Emitter.on("TradesCandlestickSnapshot", (snapshot_time) => {   
     })
+    */
   }
 }
 
