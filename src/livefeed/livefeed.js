@@ -17,7 +17,7 @@ class LivefeedAPI {
     this.exchanges = []
     this.websocket_api = {}
 
-    this.watcher_timeout = 60 * 1000 // 1 minute
+    this.watcher_timeout = 5 * 60 * 1000 // 5 minute
   }
 
   async start(exchanges) {

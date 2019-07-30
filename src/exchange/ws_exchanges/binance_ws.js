@@ -35,10 +35,41 @@ const open_socket = async (symbol, interval = default_interval) => {
     Emitter.emit("Trades", exchange_name, trade)
   })
 
+  let socket_orderbook = await client.ws.depth(symbol, (depth) => {
+    /*
+      {
+        eventType: 'depthUpdate',
+        eventTime: 1564411435348,
+        symbol: 'BTCUSDT',
+        firstUpdateId: 905213181,
+        finalUpdateId: 905213198,
+        bidDepth: [
+          { price: '9558.02000000', quantity: '0.11576700' },
+          { price: '9552.36000000', quantity: '0.00000000' }
+        ],
+        askDepth: [
+          { price: '9558.98000000', quantity: '0.00100800' },
+          { price: '9566.05000000', quantity: '0.00000000' },
+        ]
+      }
+    */
+    let asks = depth.askDepth.map((e) => {
+      return { price: e.price, size: e.quantity }
+    })
+    let bids = depth.bidDepth.map((e) => {
+      return { price: e.price, size: e.quantity }
+    })
+
+    depth = { symbol, asks, bids }
+
+    Emitter.emit("Orderbook", exchange_name, depth)
+  })
+
   // Needed to close connection
   return () => {
     socket_candle()
     socket_trades()
+    socket_orderbook()
   }
 }
 

@@ -6,7 +6,11 @@ const redis_conf = {
   host: process.env.REDIS_HOST, // Redis host
   family: 4, // 4 (IPv4) or 6 (IPv6)
   password: process.env.REDIS_AUTH,
-  db: process.env.REDIS_DB_ID
+  db: process.env.REDIS_DB_ID,
+  retryStrategy: function(times) {
+    var delay = Math.min(times * 50, 2000)
+    return delay
+  }
 }
 
 //
