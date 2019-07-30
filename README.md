@@ -7,11 +7,10 @@ DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment
 - Semi-automated seeking after new symbols or trending symbols.
 - Moderated fault tolerance, only auto-reconnecting Websockets are used. 
 
-
 **Supported exchanges:**
-- **Binance:** Candlestick, Trades
-- **Kucoin:** Trades (Candlesticks can be calculated)
-- Full CCXT support for PriceTickers and MarketDatas
+- **Binance:** Candlestick, Trades, Orderbook Snapshots
+- **Kucoin:** Trades, Orderbook Snapshots (Candlesticks can be calculated)
+- **Other exchanges:** CCXT support for PriceTickers and MarketDatas
 
 **Supported Sentiment sources:**
 - Twitter
@@ -25,12 +24,18 @@ DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment
 - Warden: Automated manager looking after newly added symbols and trending symbols.
 
 **TODO:**
-- Add MarketDepth history storage.
 - Add Docker friendly deployment solution.
 - Add PostgreSQL database for Exchange datas Candlestick,MarketDepth...
 
 
 **Install:**
+
+**Requirements:**
+- Reddis 5.0+ (https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04)
+- MySQL (5.7+) or MariaDB (10.1.34+)
+- NodeJS 10+
+- ~ 1Gb storage / day @ 150 Symbols
+
 
 1. Run NPM install:
 ```
