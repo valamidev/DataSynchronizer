@@ -1,68 +1,72 @@
-# MySQL Database Config 
 #
+################## Appliaction Database
+#
+# low performance database
 #
 MYSQL_HOST=
 MYSQL_USER=
 MYSQL_PASS=
 MYSQL_DB=
+
 #
-# Exchange Database
-# Storage of the Candlesticks 
+################## Exchange Database
+# Storage of exhcange datas / high performance database
 #
 MYSQL_HOST_EXCHANGE=
 MYSQL_USER_EXCHANGE=
 MYSQL_PASS_EXCHANGE=
 MYSQL_DB_EXCHANGE=
+
+
 #
-# Redis Database
-# Redis can be used to increase reliability and reduce latency between services (Recommended but optional!)
+################## Redis Database
+# Redis can be used to increase reliability and reduce latency between services
 #
 REDIS_HOST = 
 REDIS_PORT = 6379
 REDIS_AUTH = 
 REDIS_DB_ID = 0
 
-# Functions
+#
+################## Snapshot Heartbeat
+#
+# Time (ms), between snapshot Candlestick,Orderbook
+# Recommended: 60000 (1 minute)
+snapshot_heartbeat = 60000
+
+#
+################## Functions
 #
 # On/Off (1 = On, 0 = Off)
+Tradepairs = 1
 MarketData = 1
 Sentiment = 1
 Livefeed = 1
+Redis = 1
 PriceTicker = 1
 Warden = 1
 
-# Exchanges
+#
+################## Exchanges
 #
 # List of supportable exchanges with "," separated, read CCTX for supported exhcange list 
-exchange_list = binance,kucoin,bitfinex
+exchange_list = binance,kucoin
 
-# Warden settings
+#
+################# Warden settings
 #
 # Auto init tradepairs for data collection based on Volume desc, Quote and Quote limits should be match
 # Example:
 # quotes = BTC,ETH,USDT,BNB
 # quote_limits = 40,10,10,10
 #
-warden_exchanges_list = 
+warden_exchanges_list = binance,kucoin
 quotes = BTC,ETH,USDT,BNB
-quote_limits = 1,1,1,1
+quote_limits = 40,10,10,10
 
 
-# Binance
 #
-#
-BINANCE_APIKEY= 
-BINANCE_APISECRET= 
-
-# API delay, safety delay for update loop in millisec (Default: 12000)
-#
-api_delay = 12000
-
-
-
-#Sentiment
-
-# Reddit API
+################# Reddit API
 #
 #
 reddit_clientId = 
@@ -74,7 +78,8 @@ reddit_password =
 #
 reddit_update_timeout = 900
 
-# Twitter API
+#
+################# Twitter API
 #
 #
 consumerKey = 
@@ -87,16 +92,3 @@ callBackUrl =
 #
 twitter_update_timeout = 450
 
-
-# Application settings
-# 
-#
-
-# Max Exchange Candlestick history timeframe in tick (Recommended: 3000)
-#
-history_limit = 1000
-
-
-# Max Exchange livefeed storage in hours (Recommend: 24h)
-#
-livefeed_history_size = 48
