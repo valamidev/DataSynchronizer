@@ -42,9 +42,9 @@ const open_socket = async (symbol) => {
       return { price: e[0], size: e[1] }
     })
 
-    depth = { symbol, asks, bids }
+    let update_depth = { symbol: depth.symbol, asks, bids }
 
-    Emitter.emit("Orderbook", exchange_name, depth)
+    Emitter.emit("Orderbook", exchange_name, update_depth)
   })
 
   // Needed to close connection
