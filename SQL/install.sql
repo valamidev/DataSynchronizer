@@ -97,8 +97,9 @@ CREATE TABLE `trades_def` (
 
 
 ALTER TABLE `trades_def`
-  ADD UNIQUE KEY `tradeId` (`tradeId`);
-COMMIT;
+  ADD UNIQUE( `time`, `tradeId`);
+
+
 
 CREATE TABLE `candlestick_def` (
   `time` bigint(20) NOT NULL DEFAULT '0',

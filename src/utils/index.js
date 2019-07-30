@@ -98,12 +98,23 @@ const util = {
     return time
   },
 
+  trades_name: (exchange, symbol) => {
+    symbol = symbol.replace("/", "")
+    symbol = symbol.replace("-", "")
+    symbol = symbol.replace("_", "")
+
+    let name = `${exchange}_${symbol}_trades`
+
+    //Lowercase only
+    return name.toLowerCase()
+  },
+
   orderbook_name: (exchange, symbol) => {
     symbol = symbol.replace("/", "")
     symbol = symbol.replace("-", "")
     symbol = symbol.replace("_", "")
 
-    let name = `orderbook_${exchange}_${symbol}`
+    let name = `${exchange}_${symbol}_orderbook`
 
     //Lowercase only
     return name.toLowerCase()

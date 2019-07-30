@@ -13,6 +13,7 @@ setInterval(() => {
     // Calculate round time for snapshot match with Candle timers
     last_snapshot = time - (time % snapshot_heartbeat)
     Emitter.emit("OrderbookSnapshot", last_snapshot)
+    Emitter.emit("TradesCandlestickSnapshot", last_snapshot)
   }
 }, 100)
 

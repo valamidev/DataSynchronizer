@@ -16,8 +16,6 @@ class Candlestick_emitter {
         this.candlestick_update_emitter(exchange, interval, candle)
       })
     })
-
-    this.last_clean = {}
   }
 
   async candlestick_update_emitter(exchange, interval, candle) {
@@ -28,10 +26,6 @@ class Candlestick_emitter {
 
         this.update_ws(table_name, candle)
       }
-
-      let livefeed_table_name = util.livefeed_name(exchange, interval)
-      // Every Candle saved into Livefeed table
-      await DB_LAYER.candlestick_livefeed_insert(livefeed_table_name, candle)
     } catch (e) {
       logger.error("Candlestick Websocket update error ", e)
     }

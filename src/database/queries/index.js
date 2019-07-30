@@ -52,11 +52,22 @@ const queries = {
     }
   },
 
-  trades_replace: async (table_name, ticks) => {
+  trades_replace: async (table_name, res) => {
     try {
-      if (ticks.length > 0) {
-        await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `symbol`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [ticks])
+      /*
+      {
+        time: 1564393265876 // in ms
+        symbol: 'BTC-USDT' // DO not need here! 
+        side: 'buy'/'sell'
+        quantity: '0.00171400'
+        price:'9469.48000000'
+        tradeId: 30 long string
       }
+      */
+      let data = [res.time, res.side, res.quantity, res.price, res.tradeId]
+
+      await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [[data]])
+
       return
     } catch (e) {
       logger.error("Error", e)
