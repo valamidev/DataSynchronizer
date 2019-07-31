@@ -98,6 +98,33 @@ const util = {
     return time
   },
 
+  removeFalsy: (obj) => {
+    let newObj = {}
+    Object.keys(obj).forEach((prop) => {
+      if (obj[prop]) {
+        newObj[prop] = obj[prop]
+      }
+    })
+    return newObj
+  },
+
+  candlestick_data_integrity: (data, invertval) => {
+    let interval_msec = parseInt(invertval * 1000) //millisec
+    if (data.length == 0) return false
+
+    let outages = []
+
+    for (let i = 0; i < data.length - 1; i++) {
+      if (data[i + 1]["time"] - data[i]["time"] > interval_msec * 10) {
+        outages.push(data[i]["time"])
+      }
+    }
+
+    return outages
+  },
+
+  /*  StockML generic naming  */
+
   trades_name: (exchange, symbol) => {
     symbol = symbol.replace("/", "")
     symbol = symbol.replace("-", "")
@@ -151,31 +178,6 @@ const util = {
 
     //Lowercase only
     return name.toLowerCase()
-  },
-
-  removeFalsy: (obj) => {
-    let newObj = {}
-    Object.keys(obj).forEach((prop) => {
-      if (obj[prop]) {
-        newObj[prop] = obj[prop]
-      }
-    })
-    return newObj
-  },
-
-  candlestick_data_integrity: (data, invertval) => {
-    let interval_msec = parseInt(invertval * 1000) //millisec
-    if (data.length == 0) return false
-
-    let outages = []
-
-    for (let i = 0; i < data.length - 1; i++) {
-      if (data[i + 1]["time"] - data[i]["time"] > interval_msec * 10) {
-        outages.push(data[i]["time"])
-      }
-    }
-
-    return outages
   }
 }
 
