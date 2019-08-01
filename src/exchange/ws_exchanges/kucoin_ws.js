@@ -15,7 +15,7 @@ const open_socket = async (symbol) => {
     // Kucoin use ns for timestamp
 
     trade = {
-      time: parseInt(trade.time / 10e6),
+      time: parseInt(trade.time / 10e5),
       symbol: trade.symbol,
       side: trade.side,
       quantity: trade.size,
