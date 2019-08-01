@@ -42,7 +42,6 @@ Tradepairs = 1
 MarketData = 1
 Sentiment = 1
 Livefeed = 1
-Redis = 1
 PriceTicker = 1
 Warden = 1
 
