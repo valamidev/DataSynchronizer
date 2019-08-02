@@ -32,14 +32,17 @@ parentPort.on("message", (snapshot_time) => {
 
           let trades = await ExchangeDB.trades_select(table_trades, last_time)
 
-          // Convert candles
-          let candlesticks = candle_convert.trade_to_candle(trades, base_candletime)
+          // Avoid some trades error
+          if (Array.isArray(trades)) {
+            // Convert candles
+            let candlesticks = candle_convert.trade_to_candle(trades, base_candletime)
 
-          let candlestick_array = candlesticks.map((e) => {
-            return [e.time, e.open, e.high, e.low, e.close, e.volume]
-          })
+            let candlestick_array = candlesticks.map((e) => {
+              return [e.time, e.open, e.high, e.low, e.close, e.volume]
+            })
 
-          await ExchangeDB.candlestick_replace(table_candle, candlestick_array)
+            await ExchangeDB.candlestick_replace(table_candle, candlestick_array)
+          }
         } catch (e) {
           logger.error("Worker thread error", e)
         }
