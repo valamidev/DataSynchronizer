@@ -34,7 +34,6 @@ const open_socket = async (symbol) => {
       changes: { asks: [], bids: [ [ '0.00003232', '5240.6325', '1556426078793' ] ] }, 
       sequenceEnd: 1556425985882
     */
-    // console.log(order_book_update.changes)
     let asks = depth.changes.asks.map((e) => {
       return { price: e[0], size: e[1] }
     })

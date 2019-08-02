@@ -36,12 +36,6 @@ class Trades_emitter {
         DB_LAYER.trades_replace(table_name, trade)
       })
     })
-
-    /* TODO create 1m Candles from trades */
-    /*
-    Emitter.on("TradesCandlestickSnapshot", (snapshot_time) => {   
-    })
-    */
   }
 }
 

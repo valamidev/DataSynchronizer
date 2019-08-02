@@ -37,6 +37,18 @@ const queries = {
 
   /* Trades */
 
+  trades_select: async (table_name, time = 0) => {
+    try {
+      let rows = []
+
+      ;[rows] = await candle_db.query("SELECT * FROM `" + table_name + "` WHERE time > ? ORDER BY `time` ASC;", [time])
+
+      return rows
+    } catch (e) {
+      logger.error("SQL error", e)
+    }
+  },
+
   trades_table_check: async (table_name) => {
     try {
       let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
@@ -112,7 +124,7 @@ const queries = {
     }
   },
 
-  candlestick_endTime: async (table_name) => {
+  candlestick_firstTime: async (table_name) => {
     try {
       let [rows] = await candle_db.query("SELECT time FROM `" + table_name + "` ORDER BY `time` ASC limit 1;")
 
@@ -126,7 +138,7 @@ const queries = {
     }
   },
 
-  candlestick_startTime: async (table_name) => {
+  candlestick_lastTime: async (table_name) => {
     try {
       let [rows] = await candle_db.query("SELECT time FROM `" + table_name + "` ORDER BY `time` DESC limit 1;")
 

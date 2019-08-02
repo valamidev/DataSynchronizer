@@ -31,9 +31,13 @@ async function main() {
     // Websocket support check exchanges/ws_exchanges for support!
     if (Livefeed == 1) {
       await LivefeedAPI.start(exchanges)
+
+      require("./workers/index")
     }
     // Warden Auto init tradepairs for data collection based on Volume desc
-    if (Warden == 1) await WardenClass.start(warden_exchanges, warden_quotes, warden_quote_limits)
+    if (Warden == 1) {
+      await WardenClass.start(warden_exchanges, warden_quotes, warden_quote_limits)
+    }
 
     logger.info("Startup finished")
   } catch (e) {

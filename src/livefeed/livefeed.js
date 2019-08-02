@@ -2,7 +2,8 @@
 
 const _ = require("lodash")
 const logger = require("../logger")
-const { pool } = require("../database")
+
+const TradepairsDB = require("../tradepairs/tradepairs")
 
 const open_socket = {}
 
@@ -35,7 +36,7 @@ class LivefeedAPI {
   async tradepairs_watcher() {
     // Looking after new tradepairs!
     try {
-      let tradepairs = await this.select_tradepairs_all()
+      let tradepairs = await TradepairsDB.select_tradepairs_all()
 
       let new_symbols = tradepairs.map((elem) => elem.symbol)
 
@@ -81,22 +82,6 @@ class LivefeedAPI {
     }
 
     this.websocket_api[exchange] = await open_socket[exchange](websocket_symbol_ids)
-  }
-
-  async select_tradepairs_all() {
-    try {
-      // Warden timeout limit 10 minutes
-      let time = Date.now() - 600 * 1000
-
-      let [rows] = await pool.query(
-        "SELECT m.exchange,m.id,m.symbol,m.baseId,m.quoteId,t.interval_sec FROM `tradepairs` as t JOIN `market_datas` as m ON t.symbol = m.symbol AND t.exchange = m.exchange  WHERE t.is_warden = 0 OR (t.is_warden = 1 AND t.time > ?) ORDER BY t.`asset` ASC;",
-        [time]
-      )
-
-      return rows
-    } catch (e) {
-      logger.error("SQL error", e)
-    }
   }
 }
 

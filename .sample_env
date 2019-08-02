@@ -38,7 +38,6 @@ snapshot_heartbeat = 60000
 ################## Functions
 #
 # On/Off (1 = On, 0 = Off)
-Tradepairs = 1
 MarketData = 1
 Sentiment = 1
 Livefeed = 1
