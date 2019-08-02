@@ -5,7 +5,7 @@ const logger = require("../../logger")
 const Emitter = require("../emitter")
 
 const { OrderBookStore } = require("orderbook-synchronizer")
-const memory_limit = 1024
+const memory_limit = 512
 const Orderbooks = {}
 
 const TradepairDB = require("../../tradepairs/tradepairs")
