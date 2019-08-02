@@ -8,6 +8,7 @@ const { OrderBookStore } = require("orderbook-synchronizer")
 const memory_limit = 1024
 const Orderbooks = {}
 
+const TradepairDB = require("../../tradepairs/tradepairs")
 const DB_LAYER = require("../../database/queries")
 const { Redis } = require("../../redis/redis")
 
@@ -52,8 +53,10 @@ class Orderbook_emitter {
         symbols.forEach((symbol) => {
           setImmediate(async () => {
             let orderbook = Orderbooks[exchange].getOrderBook(symbol)
+            // Get CCXT standard symbol
+            let ccxt_symbol = await TradepairDB.id_to_symbol(exchange, symbol)
 
-            let table_name = util.orderbook_name(exchange, symbol)
+            let table_name = util.orderbook_name(exchange, ccxt_symbol)
 
             await DB_LAYER.orderbook_table_check(table_name)
             await DB_LAYER.orderbook_replace(table_name, { time: snapshot_time, orderbook })

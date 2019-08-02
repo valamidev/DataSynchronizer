@@ -10,19 +10,6 @@ class ExchangeAPI {
     this.exchanges = []
   }
 
-  async get_candlestick(symbol, exchange, interval, since = undefined, limit = 100) {
-    try {
-      let API = this.load_exchange_api(exchange)
-
-      /* [[time,open,high,close,volume]] */
-      let candledata = await API.fetchOHLCV(symbol, interval, since, limit)
-
-      return candledata
-    } catch (e) {
-      logger.error("CCXT candlestick error ", e)
-    }
-  }
-
   async get_marketdata(exchange) {
     try {
       let API = this.load_exchange_api(exchange)

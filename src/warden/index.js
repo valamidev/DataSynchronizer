@@ -59,9 +59,8 @@ class Warden {
       // Update Tradepairs
       let time = Date.now()
 
-      // TODO remove 60s hardcoded interval
       results.map(async (elem) => {
-        await TradepairsDB.add_tradepair(elem.exchange, elem.symbol, 60, elem.baseId, elem.quoteId, 1, time)
+        await TradepairsDB.add_tradepair(elem.exchange, elem.symbol, elem.id, elem.baseId, elem.quoteId, 1, time)
       })
     } catch (e) {
       logger.error("Warden update loop ", e)
@@ -78,7 +77,7 @@ class Warden {
   async select_symbols(exchange, quote, limit) {
     try {
       let [rows] = await pool.query(
-        "SELECT m.exchange, m.symbol,m.baseId,m.quoteId FROM `market_datas` as m JOIN `price_tickers` as p ON m.exchange = p.exchange AND m.symbol = p.symbol WHERE m.active = 1 and m.exchange = ? and m.quoteId = ?  order by p.quoteVolume desc;",
+        "SELECT m.exchange, m.symbol, m.id ,m.baseId,m.quoteId FROM `market_datas` as m JOIN `price_tickers` as p ON m.exchange = p.exchange AND m.symbol = p.symbol WHERE m.active = 1 and m.exchange = ? and m.quoteId = ?  order by p.quoteVolume desc;",
         [exchange, quote]
       )
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 "use strict"
 require("dotenv").config()
 
@@ -22,13 +23,6 @@ test("Load first exchange", async () => {
   let exchange = exchangeAPI.load_exchange_api("kucoin")
 
   expect(exchange.tokenBucket).toBeDefined()
-})
-
-// Get Candlestick
-test("Candlestick check default length", async () => {
-  let result = await exchangeAPI.get_candlestick("BTC/USDT", "binance", "1m")
-
-  expect(result.length).toBe(100)
 })
 
 // Get Marketdata

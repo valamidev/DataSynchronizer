@@ -199,18 +199,21 @@ CREATE TABLE `sentiment_twitter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-
 CREATE TABLE `tradepairs` (
-  `guid` int(10) NOT NULL,
-  `exchange` varchar(20) NOT NULL DEFAULT 'binance',
-  `symbol` varchar(20) NOT NULL DEFAULT 'BTCUSDT',
+  `exchange` varchar(20) NOT NULL DEFAULT 'Binance',
+  `symbol` varchar(20) NOT NULL DEFAULT 'BTCTUSD',
+  `id` varchar(50) DEFAULT NULL,
   `asset` varchar(20) NOT NULL DEFAULT 'BTC',
-  `quote` varchar(20) NOT NULL DEFAULT 'USDT',
-  `interval_sec` int(10) NOT NULL DEFAULT '300'
+  `quote` varchar(20) NOT NULL DEFAULT 'TUSD',
+  `is_warden` tinyint(1) NOT NULL DEFAULT '0',
+  `time` bigint(20) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-ALTER TABLE `tradepairs` ADD `is_warden` BOOLEAN NOT NULL AFTER `interval_sec`, ADD `time` BIGINT(20) NOT NULL DEFAULT '0' AFTER `is_warden`;
-ALTER TABLE `tradepairs` CHANGE `is_warden` `is_warden` TINYINT(1) NOT NULL DEFAULT '0';
+
+ALTER TABLE `tradepairs`
+  ADD UNIQUE KEY `exchange` (`exchange`,`symbol`);
+COMMIT;
+
 
 
 CREATE TABLE `trade_advice` (

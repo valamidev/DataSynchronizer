@@ -5,7 +5,7 @@ const candle_convert = require("candlestick-convert")
 
 const logger = require("../logger")
 const util = require("../utils")
-const TradepairsDB = require("../tradepairs/tradepairs")
+const TradepairDB = require("../tradepairs/tradepairs")
 const ExchangeDB = require("../database/queries")
 
 const base_candletime = 60
@@ -15,7 +15,7 @@ parentPort.on("message", (snapshot_time) => {
   setImmediate(async () => {
     try {
       // Select all tradepairs
-      let tradepairs = await TradepairsDB.select_tradepairs_all()
+      let tradepairs = await TradepairDB.select_tradepairs_all()
 
       tradepairs.forEach(async (e) => {
         try {
