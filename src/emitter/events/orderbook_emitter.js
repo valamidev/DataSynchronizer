@@ -10,7 +10,7 @@ const Orderbooks = {}
 
 const TradepairDB = require("../../tradepairs/tradepairs")
 const DB_LAYER = require("../../database/queries")
-const { Redis } = require("../../redis/redis")
+const { Redis, Redis_pub } = require("../../redis/redis")
 
 class Orderbook_emitter {
   constructor() {
@@ -34,16 +34,23 @@ class Orderbook_emitter {
             if (orderbook_snapshot != null) {
               orderbook_snapshot = JSON.parse(orderbook_snapshot)
               if (Array.isArray(orderbook_snapshot.ask) && Array.isArray(orderbook_snapshot.bid)) {
-                Orderbooks[exchange.toLowerCase()].updateOrderBook(symbol, orderbook_snapshot.ask, orderbook_snapshot.bid)
+                Orderbooks[exchange].updateOrderBook(symbol, orderbook_snapshot.ask, orderbook_snapshot.bid)
               }
             }
+            Orderbooks[exchange].updateOrderBook(symbol, asks, bids)
           } catch (e) {
             logger.error("Orderbook snapshot error", e)
           }
         })
-      }
+      } else {
+        Orderbooks[exchange].updateOrderBook(symbol, asks, bids)
 
-      Orderbooks[exchange].updateOrderBook(symbol, asks, bids)
+        if (typeof Orderbooks[exchange]._data[symbol] != "undefined") {
+          let data = Orderbooks[exchange]._data[symbol]
+
+          Redis_pub.publish("OrderBookUpdate", JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }))
+        }
+      }
     })
 
     Emitter.on("OrderbookSnapshot", (snapshot_time) => {
