@@ -2,7 +2,9 @@
 
 DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment data aggregator tool. 
 
+<div align="center">
 ![Alt text](https://raw.githubusercontent.com/stockmlbot/DataSynchronizer/master/Readme/Readmepic.png "Diagram")
+</div>
 
 **Capabilities**
 - Fetch up to 100 Symbol(Kucoin API limitation) Candlestic, Trades, Orderbooks from Binance & Kucoin.
