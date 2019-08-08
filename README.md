@@ -3,7 +3,7 @@
 DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment data aggregator tool. 
 
 <p align="center">
-![Alt text](https://raw.githubusercontent.com/stockmlbot/DataSynchronizer/master/Readme/Readmepic.png "Diagram")
+<img  src="https://raw.githubusercontent.com/stockmlbot/DataSynchronizer/master/Readme/Readmepic.png">
 </p>
 
 **Capabilities**
