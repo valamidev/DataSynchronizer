@@ -2,6 +2,9 @@
 
 DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment data aggregator tool. 
 
+**Discord Chat:**
+- Join our chat: https://discord.gg/GsAdRP8
+
 <p align="center">
 <img  src="https://raw.githubusercontent.com/stockmlbot/DataSynchronizer/master/Readme/Readmepic.png">
 </p>
@@ -11,7 +14,6 @@ DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment
 - Semi-automated seeking after new symbols or trending symbols.
 - Auto convert MarketLvl2 datas (trades) into Candlesticks 1m
 - Moderated fault tolerance, only auto-reconnecting Websockets are used. 
-
 
 **Supported exchanges:**
 - **Binance:** Candlestick, Trades, Orderbook Snapshots
