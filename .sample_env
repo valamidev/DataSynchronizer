@@ -90,3 +90,6 @@ callBackUrl =
 #
 twitter_update_timeout = 450
 
+#HTTP API
+Http_api = 1
+Http_port = 3003

@@ -1,10 +1,10 @@
-"use strict";
-require("dotenv").config();
+"use strict"
+require("dotenv").config()
 
-const PriceTickers = require("./index");
+const PriceTickers = require("./index")
 
 test("PriceTicker save", async () => {
-  let result = await PriceTickers.update("kucoin");
+  let result = await PriceTickers.update("binance")
 
-  expect(result).toBeUndefined();
-});
+  expect(result).toBeUndefined()
+})

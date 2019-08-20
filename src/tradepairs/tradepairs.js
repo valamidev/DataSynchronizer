@@ -10,12 +10,10 @@ const queries = {
 
   id_to_symbol: async (exchange, id) => {
     try {
-      let result = id_to_symbol_cache.filter((e) => e.exchange == exchange && e.id == id)
+      let result = id_to_symbol_cache.find((e) => e.exchange == exchange && e.id == id)
 
-      if (result.length == 1) {
-        let symbol = result[0].symbol
-
-        return symbol
+      if (typeof result != "undefined") {
+        return result.symbol
       } else {
         let [rows] = await pool.query("SELECT id,symbol from `market_datas` WHERE exchange = ? AND id = ? LIMIT 1", [exchange, id])
 

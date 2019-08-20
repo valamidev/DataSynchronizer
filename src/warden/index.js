@@ -29,7 +29,7 @@ class Warden {
 
       await this.update_loop()
 
-      logger.info("Warden System started")
+      logger.verbose("Warden System started")
 
       return
     } catch (e) {

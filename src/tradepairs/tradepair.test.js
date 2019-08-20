@@ -10,7 +10,7 @@ test("Get BCHABC-ETH symbol", async () => {
 
   let symbol_cache = ""
 
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 10; i++) {
     symbol_cache = await TradepairDB.id_to_symbol("kucoin", "BCHABC-ETH")
   }
 

@@ -34,6 +34,27 @@ class ExchangeAPI {
     }
   }
 
+  async get_candlestick(symbol, exchange, interval, since = undefined, limit = 100) {
+    try {
+      let API = this.load_exchange_api(exchange)
+
+      let candledata = await API.fetchOHLCV(symbol, interval, since, limit)
+
+      return candledata
+
+      /*
+      1504541580000, // UTC timestamp in milliseconds, integer
+        4235.4,        // (O)pen price, float
+        4240.6,        // (H)ighest price, float
+        4230.0,        // (L)owest price, float
+        4230.7,        // (C)losing price, float
+        37.72941911    // (V)olume (in terms of the base currency), float 
+      */
+    } catch (e) {
+      logger.error("CCXT candlestick error ", e)
+    }
+  }
+
   /* CCXT API STUFF */
 
   load_exchange_api(exchange) {
@@ -41,13 +62,11 @@ class ExchangeAPI {
       exchange = exchange.toLowerCase()
 
       // Check if CCXT API already loaded
-      let exchange_data = this.exchanges.filter((e) => e.exchange == exchange)
+      let exchange_data = this.exchanges.find((e) => e.exchange == exchange)
 
       // CCTX API load from buffer or add to the buffer
-      if (exchange_data.length == 0) {
+      if (!exchange_data) {
         exchange_data = this.init_new_exchanges(exchange)
-      } else {
-        exchange_data = exchange_data[0]
       }
 
       return exchange_data.api

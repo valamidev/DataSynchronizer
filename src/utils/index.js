@@ -115,7 +115,7 @@ const util = {
     let outages = []
 
     for (let i = 0; i < data.length - 1; i++) {
-      if (data[i + 1]["time"] - data[i]["time"] > interval_msec * 10) {
+      if (data[i + 1]["time"] - data[i]["time"] != interval_msec) {
         outages.push(data[i]["time"])
       }
     }

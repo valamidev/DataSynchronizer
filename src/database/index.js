@@ -1,6 +1,6 @@
-"use strict";
+"use strict"
 
-const mysql = require("mysql2/promise");
+const mysql = require("mysql2/promise")
 
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST,
@@ -12,7 +12,7 @@ const pool = mysql.createPool({
   multipleStatements: true,
   connectionLimit: 10,
   queueLimit: 0
-});
+})
 
 const candle_db = mysql.createPool({
   host: process.env.MYSQL_HOST_EXCHANGE,
@@ -24,6 +24,6 @@ const candle_db = mysql.createPool({
   multipleStatements: true,
   connectionLimit: 10,
   queueLimit: 0
-});
+})
 
-module.exports = { pool, candle_db };
+module.exports = { pool, candle_db }
