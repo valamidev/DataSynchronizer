@@ -21,7 +21,6 @@ class Candlestick {
     this.interval = base_interval
     this.interval_string = util.interval_toString(this.interval)
     this.table_name = util.candlestick_name(exchange, symbol, this.interval)
-    this.startTime = 0
 
     this.history_data = []
     // Check Table and Data integrity
@@ -53,7 +52,7 @@ class Candlestick {
 
   async init_build_history(startTime = 0) {
     try {
-      // Check first timestamp and go forward!
+      // Check first timestamp and go forward
       if (startTime == 0) {
         startTime = Date.now() - this.history_limit * this.interval * 1000
       }
@@ -67,16 +66,21 @@ class Candlestick {
         return
       }
 
-      // Only store full responses and history time limit!
-      if (ticks.length == ccxt_candlelimit[this.exchange]) {
+      if (Array.isArray(ticks)) {
+        if (ticks.length == 1) {
+          return
+        }
+
         await DB_LAYER.candlestick_replace(this.table_name, ticks)
-
         startTime = ticks[ticks.length - 1][0]
-
-        await this.init_build_history(startTime)
+        logger.verbose(`Tick length: ${ticks.length}`)
       } else {
-        return
+        startTime = startTime + ccxt_candlelimit[this.exchange] * this.interval * 1000
       }
+
+      logger.verbose(`Time: ${startTime}`)
+
+      await this.init_build_history(startTime)
     } catch (e) {
       logger.error("Error", e)
     }
