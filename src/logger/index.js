@@ -1,14 +1,16 @@
-"use strict";
-const winston = require("winston");
+"use strict"
+const winston = require("winston")
 
-const logsDir = "./logs/";
+const logsDir = "./logs/"
+
+const logger_level = process.env.log_level || "info"
 
 const logger = winston.createLogger({
-  level: "info",
+  level: logger_level,
   format: winston.format.json(),
   transports: [
     new winston.transports.Console({
-      level: "info",
+      level: logger_level,
       format: winston.format.simple()
     }),
     new winston.transports.File({
@@ -16,6 +18,6 @@ const logger = winston.createLogger({
       level: "error"
     })
   ]
-});
+})
 
-module.exports = logger;
+module.exports = logger

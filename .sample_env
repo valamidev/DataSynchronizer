@@ -34,6 +34,9 @@ REDIS_DB_ID = 0
 # Recommended: 60000 (1 minute)
 snapshot_heartbeat = 60000
 
+# Loglevel verbose,info
+log_level = info
+
 #
 ################## Functions
 #
