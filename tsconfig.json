@@ -1,11 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es6",
     "module": "commonjs",
-    "declaration": true,
-    "outDir": "./lib",
-    "strict": true,
-    "sourceMap": true
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "target": "es2017",
+    "newLine": "lf",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "allowJs": true,       
+    "strict": true,   
+    "pretty": true,
+    "removeComments": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]

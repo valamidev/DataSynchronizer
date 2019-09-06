@@ -1,14 +1,20 @@
 "use strict"
 
-const _ = require("lodash")
-const logger = require("../logger")
-const { pool } = require("../database")
+import {logger} from '../logger';
+import * as _ from "lodash"
+import {pool} from "../database"
+import TradepairsDB from "../tradepairs/tradepairs"
 
-const TradepairsDB = require("../tradepairs/tradepairs")
 
-/* Warden intelligent Symbol following system it help to follow new coins or unfollow inactive ones */
+
+/* Warden intelligent Symbol following system it help to follow new coins or unfollow in-active ones */
 
 class Warden {
+  warden_symbols: string[];
+  exchanges: string[];
+  quotes: string[];
+  quote_limits: number[];
+
   constructor() {
     this.warden_symbols = []
     this.exchanges = []
@@ -16,7 +22,7 @@ class Warden {
     this.quote_limits = []
   }
 
-  async start(exchanges, quotes, quote_limits) {
+  async start(exchanges: string[], quotes: string[], quote_limits: number[]) {
     try {
       this.exchanges = exchanges
 
@@ -52,7 +58,7 @@ class Warden {
         }
       }
 
-      let results = await Promise.all(update_promises)
+      let results: any[] = await Promise.all(update_promises)
 
       results = _.flatten(results)
 
@@ -74,7 +80,7 @@ class Warden {
   /* Add Warden results into the Tradepairs */
 
   /* Database queries */
-  async select_symbols(exchange, quote, limit) {
+  async select_symbols(exchange: string, quote: string, limit: number) {
     try {
       let [rows] = await pool.query(
         "SELECT m.exchange, m.symbol, m.id ,m.baseId,m.quoteId FROM `market_datas` as m JOIN `price_tickers` as p ON m.exchange = p.exchange AND m.symbol = p.symbol WHERE m.active = 1 and m.exchange = ? and m.quoteId = ?  order by p.quoteVolume desc;",
