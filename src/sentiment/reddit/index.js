@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-const sentiment_util = require("../sentiment_util");
-const logger = require("../../logger");
-const { pool } = require("../../database");
-const RedditAPI = require("./reddit_api");
+const sentiment_util = require('../sentiment_util');
+const logger = require('../../logger');
+const { BaseDB } = require('../../database');
+const RedditAPI = require('./reddit_api');
 
 class SentimentReddit {
   constructor() {
@@ -12,7 +12,7 @@ class SentimentReddit {
 
   async update_reddit_loop() {
     try {
-      let db_reddits = await sentiment_util.load_sentiments("reddit");
+      let db_reddits = await sentiment_util.load_sentiments('reddit');
 
       this.reddit = db_reddits.map(row => row.name);
 
@@ -26,7 +26,7 @@ class SentimentReddit {
       //logger.info(`Sentiment Reddit Update, ${time_now}`);
       await Promise.all(update_promises);
     } catch (e) {
-      logger.error("Sentiment Reddit Update ", e);
+      logger.error('Sentiment Reddit Update ', e);
     }
   }
 
@@ -46,25 +46,16 @@ class SentimentReddit {
       sum_comments += post.num_comments;
     });
 
-    await this.save_reddit_result([
-      time,
-      subreddit,
-      sum_ups,
-      sum_comments,
-      titles.join()
-    ]);
+    await this.save_reddit_result([time, subreddit, sum_ups, sum_comments, titles.join()]);
   }
 
   /* DATABASE QUERIES */
 
   async save_reddit_result(data) {
     try {
-      await pool.query(
-        "INSERT INTO `sentiment_reddit` (`time`, `subreddit`, `sum_ups`, `sum_comments`, `titles`) VALUES ?;",
-        [[data]]
-      );
+      await BaseDB.query('INSERT INTO `sentiment_reddit` (`time`, `subreddit`, `sum_ups`, `sum_comments`, `titles`) VALUES ?;', [[data]]);
     } catch (e) {
-      logger.error("SQL error", e);
+      logger.error('SQL error', e);
     }
   }
 }

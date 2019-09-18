@@ -3,6 +3,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
     "target": "es2017",
     "newLine": "lf",
@@ -17,5 +18,5 @@
     "removeComments": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "exclude": ["node_modules", "src/__test__"]
 }

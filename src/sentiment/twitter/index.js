@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-const sentiment_util = require("../sentiment_util");
-const logger = require("../../logger");
-const { pool } = require("../../database");
-const twitter = require("./twitter_api");
+const sentiment_util = require('../sentiment_util');
+const logger = require('../../logger');
+const { BaseDB } = require('../../database');
+const twitter = require('./twitter_api');
 
 class SentimentTwitter {
   constructor() {
@@ -12,7 +12,7 @@ class SentimentTwitter {
 
   async update_twitter_loop() {
     try {
-      let db_twitters = await sentiment_util.load_sentiments("twitter");
+      let db_twitters = await sentiment_util.load_sentiments('twitter');
 
       this.twitter = db_twitters.map(row => row.name);
 
@@ -25,7 +25,7 @@ class SentimentTwitter {
       //logger.info(`Sentiment Twitter Update, ${time_now}`);
       await Promise.all(update_promises);
     } catch (e) {
-      logger.error("Update twitter_loop error", e);
+      logger.error('Update twitter_loop error', e);
     }
   }
 
@@ -45,7 +45,7 @@ class SentimentTwitter {
       // Save result
       if (res && res.length > 0) await this.save_twitter_result(res);
     } catch (e) {
-      logger.error("Update twitter error", e);
+      logger.error('Update twitter error', e);
     }
   }
 
@@ -53,25 +53,19 @@ class SentimentTwitter {
 
   async save_twitter_result(data) {
     try {
-      await pool.query(
-        "REPLACE INTO `sentiment_twitter` (`time`, `created_at`, `asset`, `text`, `id`, `user`, `followers`, `listed`) VALUES ?;",
-        [data]
-      );
+      await BaseDB.query('REPLACE INTO `sentiment_twitter` (`time`, `created_at`, `asset`, `text`, `id`, `user`, `followers`, `listed`) VALUES ?;', [data]);
     } catch (e) {
-      logger.error("SQL error", e);
+      logger.error('SQL error', e);
     }
   }
 
   async get_last_tweet(asset) {
     try {
-      let [rows] = await pool.query(
-        "SELECT id FROM `sentiment_twitter` WHERE asset = ?  ORDER BY `id` DESC limit 1;",
-        [asset]
-      );
+      let [rows] = await BaseDB.query('SELECT id FROM `sentiment_twitter` WHERE asset = ?  ORDER BY `id` DESC limit 1;', [asset]);
 
       return rows[0];
     } catch (e) {
-      logger.error("SQL error", e);
+      logger.error('SQL error', e);
     }
   }
 

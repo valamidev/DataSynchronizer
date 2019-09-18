@@ -1,14 +1,12 @@
 'use strict';
 
 import {logger} from '../logger';
-import { exchanges } from 'ccxt';
+import {CCXT_API} from '../exchange/ccxt_controller';
+import * as _ from 'lodash';
+import {BaseDB} from '../database';
 
-const _ = require('lodash');
 
-const { pool } = require('../database');
-const CCXT_API = require('../exchange/ccxt_controller');
-
-class MarketData {
+class MarketDataClass {
   exchanges:  any[];
   update_frequency: number;
   constructor() {
@@ -28,7 +26,7 @@ class MarketData {
 
   async market_data_update_loop() {
     try {
-      let update_promises = [];
+      let update_promises: any[] = [];
 
       for (let i = 0; i < this.exchanges.length; i++) {
         let exchange = this.exchanges[i];
@@ -79,7 +77,7 @@ class MarketData {
 
   async market_data_select(exchange: string) {
     try {
-      let [rows] = await pool.query('SELECT * FROM `market_datas` WHERE exchange = ?;', [exchange]);
+      let [rows] = await BaseDB.query('SELECT * FROM `market_datas` WHERE exchange = ?;', [exchange]);
 
       return rows;
     } catch (e) {
@@ -111,7 +109,7 @@ class MarketData {
         ];
       });
 
-      await pool.query(
+      await BaseDB.query(
         'REPLACE INTO `market_datas` (`exchange`, `limits`, `precision_data`, `tierBased`, `percentage`, `taker`, `maker`, `id`, `symbol`, `baseId`, `quoteId`, `base`, `quote`, `active`, `info`) VALUES ?',
         [market_data],
       );
@@ -123,4 +121,4 @@ class MarketData {
   }
 }
 
-module.exports = new MarketData();
+export const MarketData = new MarketDataClass();
