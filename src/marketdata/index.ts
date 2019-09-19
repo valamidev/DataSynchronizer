@@ -121,4 +121,4 @@ class MarketDataClass {
   }
 }
 
-export const MarketData = new MarketDataClass();
+export const MarketDataAPI = new MarketDataClass();

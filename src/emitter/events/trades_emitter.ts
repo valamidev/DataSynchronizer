@@ -1,20 +1,21 @@
 "use strict"
 
-const util = require("../../utils")
-const logger = require("../../logger")
-const Emitter = require("../emitter")
+import {util} from '../../utils'
+import {logger} from '../../logger'
+import {Emitter} from '../emitter'
+
 
 const TradepairDB = require("../../tradepairs/tradepairs")
 const DB_LAYER = require("../../database/queries")
 
-let table_name_cache = []
+let table_name_cache: any[] = []
 
 class Trades_emitter {
   constructor() {
     // Event listeners
     logger.verbose("Trade Emitter started!")
 
-    Emitter.on("Trades", (exchange, trade) => {
+    Emitter.on("Trades", (exchange:string, trade:any) => {
       setImmediate(async () => {
         // Get CCXT standard symbol
         let ccxt_symbol = await TradepairDB.id_to_symbol(exchange, trade.symbol)

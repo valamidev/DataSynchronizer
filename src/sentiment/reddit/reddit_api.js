@@ -1,30 +1,30 @@
-"use strict"
+'use strict';
 
-const logger = require("../../logger")
-const snoowrap = require("snoowrap")
+const { logger } = require('../../logger');
+const snoowrap = require('snoowrap');
 
 const reddit_api = new snoowrap({
-  userAgent: "SentimentBoT",
+  userAgent: 'SentimentBoT',
   clientId: process.env.reddit_clientId,
   clientSecret: process.env.reddit_clientSecret,
   username: process.env.reddit_username,
-  password: process.env.reddit_password
-})
+  password: process.env.reddit_password,
+});
 
 class RedditAPI {
   constructor() {}
 
   async get_subreddit_top(subreddit) {
     try {
-      reddit_api.config({ requestDelay: 1000, warnings: false })
+      reddit_api.config({ requestDelay: 1000, warnings: false });
 
-      let posts = await reddit_api.getSubreddit(subreddit).getTop({ time: "day" })
+      let posts = await reddit_api.getSubreddit(subreddit).getTop({ time: 'day' });
 
-      return posts
+      return posts;
     } catch (e) {
-      logger.error("Reddit API ", e)
+      logger.error('Reddit API ', e);
     }
   }
 }
 
-module.exports = new RedditAPI()
+module.exports = new RedditAPI();

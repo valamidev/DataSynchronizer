@@ -1,6 +1,6 @@
 'use strict';
 
-const logger = require('../../logger');
+const { logger } = require('../../logger');
 const { CandleDB } = require('../../database');
 
 const { MYSQL_DB_EXCHANGE } = process.env;

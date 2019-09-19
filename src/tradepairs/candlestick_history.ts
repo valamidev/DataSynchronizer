@@ -5,7 +5,7 @@ import {CCXT_API} from "../exchange/ccxt_controller"
 import {logger} from "../logger"
 import * as _ from "lodash"
 
-const util = require("../utils")
+const {util} = require("../utils")
 const DB_LAYER = require("../database/queries")
 
 

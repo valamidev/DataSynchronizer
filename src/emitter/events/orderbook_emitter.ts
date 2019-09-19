@@ -1,8 +1,9 @@
 "use strict"
 
-const util = require("../../utils")
-const logger = require("../../logger")
-const Emitter = require("../emitter")
+import {util} from '../../utils'
+import {logger} from '../../logger'
+import {Emitter} from '../emitter'
+
 
 const { OrderBookStore } = require("orderbook-synchronizer")
 const memory_limit = 512
@@ -17,7 +18,7 @@ class Orderbook_emitter {
     // Event listeners
     logger.verbose("Orderbook Emitter started!")
 
-    Emitter.on("Orderbook", (exchange, depth) => {
+    Emitter.on("Orderbook", (exchange:string, depth:any) => {
       exchange = exchange.toLowerCase()
 
       if (typeof Orderbooks[exchange] == "undefined") {
@@ -53,11 +54,11 @@ class Orderbook_emitter {
       }
     })
 
-    Emitter.on("OrderbookSnapshot", (snapshot_time) => {
+    Emitter.on("OrderbookSnapshot", (snapshot_time:number) => {
       Object.keys(Orderbooks).map((exchange) => {
         let symbols = Orderbooks[exchange]._symbols
 
-        symbols.forEach((symbol) => {
+        symbols.forEach((symbol:any) => {
           setImmediate(async () => {
             let orderbook = Orderbooks[exchange].getOrderBook(symbol)
             // Get CCXT standard symbol
