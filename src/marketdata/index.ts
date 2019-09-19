@@ -1,29 +1,32 @@
-"use strict";
+'use strict';
 
-const _ = require("lodash");
-const logger = require("../logger");
-const { pool } = require("../database");
-const CCXT_API = require("../exchange/ccxt_controller");
+import {logger} from '../logger';
+import {CCXT_API} from '../exchange/ccxt_controller';
+import * as _ from 'lodash';
+import {BaseDB} from '../database';
 
-class MarketData {
+
+class MarketDataClass {
+  exchanges:  any[];
+  update_frequency: number;
   constructor() {
     this.exchanges = [];
     this.update_frequency = 3600 * 1000; // in ms
   }
 
-  async start(exchanges) {
+  async start(exchanges: any[]) {
     try {
       this.exchanges = exchanges;
 
       await this.market_data_update_loop();
     } catch (e) {
-      logger.error("MarketDatas start ", e);
+      logger.error('MarketDatas start ', e);
     }
   }
 
   async market_data_update_loop() {
     try {
-      let update_promises = [];
+      let update_promises: any[] = [];
 
       for (let i = 0; i < this.exchanges.length; i++) {
         let exchange = this.exchanges[i];
@@ -36,7 +39,7 @@ class MarketData {
         await Promise.all(update_promises);
       }
     } catch (e) {
-      logger.error("Marketdata Update ", e);
+      logger.error('Marketdata Update ', e);
     } finally {
       setTimeout(() => {
         this.market_data_update_loop();
@@ -44,12 +47,12 @@ class MarketData {
     }
   }
 
-  async update_market_data(exchange) {
+  async update_market_data(exchange: string) {
     // Looking after new tradepairs!
     try {
       let market_data = await this.market_data_select(exchange);
 
-      let new_market_data = await CCXT_API.get_marketdata(exchange);
+      let new_market_data: any[] = await CCXT_API.get_marketdata(exchange);
 
       if (_.isObject(new_market_data)) {
         // Add exchange into MarketDatas
@@ -68,24 +71,21 @@ class MarketData {
 
       return;
     } catch (e) {
-      logger.error("Update_tradepairs", e);
+      logger.error('Update_tradepairs', e);
     }
   }
 
-  async market_data_select(exchange) {
+  async market_data_select(exchange: string) {
     try {
-      let [rows] = await pool.query(
-        "SELECT * FROM `market_datas` WHERE exchange = ?;",
-        [exchange]
-      );
+      let [rows] = await BaseDB.query('SELECT * FROM `market_datas` WHERE exchange = ?;', [exchange]);
 
       return rows;
     } catch (e) {
-      logger.error("Error", e);
+      logger.error('Error', e);
     }
   }
 
-  async market_data_replace(market_data) {
+  async market_data_replace(market_data: any[]) {
     try {
       // Stringify JSONs for database storage
       market_data = market_data.map(e => {
@@ -105,20 +105,20 @@ class MarketData {
           e.base,
           e.quote,
           e.active,
-          JSON.stringify(e.info)
+          JSON.stringify(e.info),
         ];
       });
 
-      await pool.query(
-        "REPLACE INTO `market_datas` (`exchange`, `limits`, `precision_data`, `tierBased`, `percentage`, `taker`, `maker`, `id`, `symbol`, `baseId`, `quoteId`, `base`, `quote`, `active`, `info`) VALUES ?",
-        [market_data]
+      await BaseDB.query(
+        'REPLACE INTO `market_datas` (`exchange`, `limits`, `precision_data`, `tierBased`, `percentage`, `taker`, `maker`, `id`, `symbol`, `baseId`, `quoteId`, `base`, `quote`, `active`, `info`) VALUES ?',
+        [market_data],
       );
 
       return;
     } catch (e) {
-      logger.error("Error", e);
+      logger.error('Error', e);
     }
   }
 }
 
-module.exports = new MarketData();
+export const MarketDataAPI = new MarketDataClass();

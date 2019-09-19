@@ -1,16 +1,15 @@
-"use strict"
 
-const logger = require("../logger")
-const _ = require("lodash")
-// CCXT
-const ccxt = require("ccxt")
+import {logger} from "../logger"
+import * as _ from "lodash"
+import * as ccxt from "ccxt"
 
 class ExchangeAPI {
+  exchanges:any[]
   constructor() {
     this.exchanges = []
   }
 
-  async get_marketdata(exchange) {
+  async get_marketdata(exchange:string) {
     try {
       let API = this.load_exchange_api(exchange)
 
@@ -22,7 +21,7 @@ class ExchangeAPI {
     }
   }
 
-  async get_pricetickers(exchange) {
+  async get_pricetickers(exchange:string) {
     try {
       let API = this.load_exchange_api(exchange)
 
@@ -34,7 +33,7 @@ class ExchangeAPI {
     }
   }
 
-  async get_candlestick(symbol, exchange, interval, since = undefined, limit = 100) {
+  async get_candlestick(symbol:string, exchange:string, interval:string, since:any = undefined, limit:number = 100) {
     try {
       let API = this.load_exchange_api(exchange)
 
@@ -57,7 +56,7 @@ class ExchangeAPI {
 
   /* CCXT API STUFF */
 
-  load_exchange_api(exchange) {
+  load_exchange_api(exchange:string) {
     try {
       exchange = exchange.toLowerCase()
 
@@ -75,11 +74,12 @@ class ExchangeAPI {
     }
   }
 
-  init_new_exchanges(exchange) {
+  init_new_exchanges(exchange:string) {
     exchange = exchange.toLowerCase()
 
-    // Check exchange is valid
+    // @ts-ignore
     if (_.isObject(ccxt[exchange])) {
+      // @ts-ignore
       let api = new ccxt[exchange]()
 
       this.exchanges.push({ exchange, api })
@@ -93,4 +93,4 @@ class ExchangeAPI {
   /* CCXT API STUFF */
 }
 
-module.exports = new ExchangeAPI()
+export const CCXT_API = new ExchangeAPI()

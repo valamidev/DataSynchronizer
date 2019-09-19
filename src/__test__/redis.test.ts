@@ -1,8 +1,7 @@
 /* eslint-disable no-undef */
-"use strict"
 require("dotenv").config()
 
-const { Redis, Redis_pub } = require("./redis")
+import {Redis,Redis_pub} from "../redis/redis"
 
 test("Redis Connection test", async () => {
   Redis.set("foo_bar_test", "bar")

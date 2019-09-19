@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "forceConsistentCasingInFileNames": true,
+    "target": "es2017",
+    "newLine": "lf",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "allowJs": true,       
+    "strict": true,   
+    "pretty": true,
+    "removeComments": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "src/__test__"]
+}

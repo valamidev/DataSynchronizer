@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-const logger = require("../logger");
+const { logger } = require('../logger');
 
-const reddit = require("./reddit/");
-const twitter = require("./twitter");
+const reddit = require('./reddit/');
+const twitter = require('./twitter');
 
 class SentimentAPI {
   constructor() {}
@@ -21,10 +21,10 @@ class SentimentAPI {
         twitter.update_twitter_loop();
       }, process.env.twitter_update_timeout * 1000);
 
-      logger.info("Sentiment API stated");
+      logger.info('Sentiment API stated');
       return;
     } catch (e) {
-      logger.error("Sentiment start ", e);
+      logger.error('Sentiment start ', e);
     }
   }
 }

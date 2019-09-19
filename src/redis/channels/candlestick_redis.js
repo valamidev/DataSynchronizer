@@ -1,15 +1,15 @@
-"use strict"
+'use strict';
 
-const Emitter = require("../../emitter/emitter")
+const { Emitter } = require('../../emitter/emitter');
 
-const { Redis_pub } = require("../redis")
+const { Redis_pub } = require('../redis');
 
 // Broadcast final candle updates
-Emitter.on("CandleUpdateFinal", (exchange, interval, candle) => {
+Emitter.on('CandleUpdateFinal', (exchange, interval, candle) => {
   setImmediate(() => {
-    Redis_pub.publish("CandleUpdateFinal", JSON.stringify({ exchange, interval, candle }))
-  })
-})
+    Redis_pub.publish('CandleUpdateFinal', JSON.stringify({ exchange, interval, candle }));
+  });
+});
 
 /* Receive code */
 /*

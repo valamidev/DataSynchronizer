@@ -1,41 +1,29 @@
-"use strict"
+'use strict';
 
-const util = require("../../utils")
-const Emitter = require("../../emitter/emitter")
+const { Emitter } = require('../../emitter/emitter');
 
 // Binance things
-const exchange_name = "binance"
-const default_interval = 60
+const exchange_name = 'binance';
 
-const Binance = require("binance-api-node").default
-const client = new Binance()
+const Binance = require('binance-api-node').default;
+const client = new Binance();
 // Binance things
 
-const open_socket = async (symbol, interval = default_interval) => {
-  interval = util.interval_toString(interval)
-
-  let socket_candle = await client.ws.candles(symbol, interval, (candle) => {
-    Emitter.emit("CandleUpdate", exchange_name, interval, candle)
-
-    if (candle.isFinal == true) {
-      Emitter.emit("CandleUpdateFinal", exchange_name, interval, candle)
-    }
-  })
-
-  let socket_trades = await client.ws.aggTrades(symbol, (trade) => {
+const open_socket = async symbol => {
+  let socket_trades = await client.ws.aggTrades(symbol, trade => {
     trade = {
       time: trade.eventTime,
       symbol: trade.symbol,
-      side: trade.maker == true ? "sell" : "buy",
+      side: trade.maker == true ? 'sell' : 'buy',
       quantity: trade.quantity,
       price: trade.price,
-      tradeId: trade.tradeId
-    }
+      tradeId: trade.tradeId,
+    };
 
-    Emitter.emit("Trades", exchange_name, trade)
-  })
+    Emitter.emit('Trades', exchange_name, trade);
+  });
 
-  let socket_orderbook = await client.ws.depth(symbol, (depth) => {
+  let socket_orderbook = await client.ws.depth(symbol, depth => {
     /*
       {
         eventType: 'depthUpdate',
@@ -53,24 +41,23 @@ const open_socket = async (symbol, interval = default_interval) => {
         ]
       }
     */
-    let asks = depth.askDepth.map((e) => {
-      return { price: e.price, size: e.quantity }
-    })
-    let bids = depth.bidDepth.map((e) => {
-      return { price: e.price, size: e.quantity }
-    })
+    let asks = depth.askDepth.map(e => {
+      return { price: e.price, size: e.quantity };
+    });
+    let bids = depth.bidDepth.map(e => {
+      return { price: e.price, size: e.quantity };
+    });
 
-    let update_depth = { symbol: depth.symbol, asks, bids }
+    let update_depth = { symbol: depth.symbol, asks, bids };
 
-    Emitter.emit("Orderbook", exchange_name, update_depth)
-  })
+    Emitter.emit('Orderbook', exchange_name, update_depth);
+  });
 
   // Needed to close connection
   return () => {
-    socket_candle()
-    socket_trades()
-    socket_orderbook()
-  }
-}
+    socket_trades();
+    socket_orderbook();
+  };
+};
 
-module.exports = open_socket
+module.exports = open_socket;
