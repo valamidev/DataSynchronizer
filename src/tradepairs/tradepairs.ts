@@ -7,7 +7,7 @@ interface SymbolCache {
   symbol: string
 }
 
-let id_to_symbol_cache: SymbolCache[]
+let id_to_symbol_cache: SymbolCache[] = []
 
 export const TradepairQueries = {
   /* Database queries */

@@ -2,6 +2,8 @@
 "use strict"
 require("dotenv").config()
 
+process.env.log_level = "info"
+
 jest.setTimeout(300000)
 
 const Candle_History_Builder = require("../tradepairs/candlestick_history")
