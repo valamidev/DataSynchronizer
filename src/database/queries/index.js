@@ -1,37 +1,37 @@
-"use strict"
+'use strict';
 
-const logger = require("../../logger")
-const { candle_db } = require("../../database")
+const { logger } = require('../../logger');
+const { CandleDB } = require('../../database');
 
-const { MYSQL_DB_EXCHANGE } = process.env
+const { MYSQL_DB_EXCHANGE } = process.env;
 
 const queries = {
   /* Orderbooks */
 
   orderbook_replace: async (table_name, res) => {
     try {
-      let data = [res.time, JSON.stringify(res.orderbook)]
+      let data = [res.time, JSON.stringify(res.orderbook)];
 
-      await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `orderbook`) VALUES ?;", [[data]])
+      await CandleDB.query('REPLACE INTO `' + table_name + '` (`time`, `orderbook`) VALUES ?;', [[data]]);
 
-      return
+      return;
     } catch (e) {
-      logger.error(`Error ${table_name} `, e)
+      logger.error(`Error ${table_name} `, e);
     }
   },
 
-  orderbook_table_check: async (table_name) => {
+  orderbook_table_check: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
+      let [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;', [MYSQL_DB_EXCHANGE, table_name]);
 
       if (rows.length != 1) {
-        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `orderbook_def`;")
-        return rows
+        let [rows] = await CandleDB.query('CREATE TABLE `' + table_name + '` LIKE `orderbook_def`;');
+        return rows;
       } else {
-        return
+        return;
       }
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
@@ -39,28 +39,28 @@ const queries = {
 
   trades_select: async (table_name, time = 0) => {
     try {
-      let rows = []
+      let rows = [];
 
-      ;[rows] = await candle_db.query("SELECT * FROM `" + table_name + "` WHERE time > ? ORDER BY `time` ASC;", [time])
+      [rows] = await CandleDB.query('SELECT * FROM `' + table_name + '` WHERE time > ? ORDER BY `time` ASC;', [time]);
 
-      return rows
+      return rows;
     } catch (e) {
-      logger.error("SQL error", e)
+      logger.error('SQL error', e);
     }
   },
 
-  trades_table_check: async (table_name) => {
+  trades_table_check: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
+      let [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;', [MYSQL_DB_EXCHANGE, table_name]);
 
       if (rows.length != 1) {
-        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `trades_def`;")
-        return rows
+        let [rows] = await CandleDB.query('CREATE TABLE `' + table_name + '` LIKE `trades_def`;');
+        return rows;
       } else {
-        return
+        return;
       }
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
@@ -76,13 +76,13 @@ const queries = {
         tradeId: 30 long string
       }
       */
-      let data = [res.time, res.side, res.quantity, res.price, res.tradeId]
+      let data = [res.time, res.side, res.quantity, res.price, res.tradeId];
 
-      await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [[data]])
+      await CandleDB.query('REPLACE INTO `' + table_name + '` (`time`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;', [[data]]);
 
-      return
+      return;
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
@@ -99,92 +99,92 @@ const queries = {
         }
       */
 
-      let data = [res.time, res.symbol, res.side, res.quantity, res.price, res.tradeId]
+      let data = [res.time, res.symbol, res.side, res.quantity, res.price, res.tradeId];
 
-      await candle_db.query("INSERT INTO `" + table_name + "` (`time`, `symbol`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;", [[data]])
+      await CandleDB.query('INSERT INTO `' + table_name + '` (`time`, `symbol`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;', [[data]]);
     } catch (e) {
-      logger.error(`SQL error ${table_name}`, e)
+      logger.error(`SQL error ${table_name}`, e);
     }
   },
 
   /* Candlesticks */
 
-  candlestick_table_check: async (table_name) => {
+  candlestick_table_check: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;", [MYSQL_DB_EXCHANGE, table_name])
+      let [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND table_name = ? LIMIT 1;', [MYSQL_DB_EXCHANGE, table_name]);
 
       if (rows.length != 1) {
-        let [rows] = await candle_db.query("CREATE TABLE `" + table_name + "` LIKE `candlestick_def`;")
-        return rows
+        let [rows] = await CandleDB.query('CREATE TABLE `' + table_name + '` LIKE `candlestick_def`;');
+        return rows;
       } else {
-        return
+        return;
       }
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
-  candlestick_firstTime: async (table_name) => {
+  candlestick_firstTime: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT time FROM `" + table_name + "` ORDER BY `time` ASC limit 1;")
+      let [rows] = await CandleDB.query('SELECT time FROM `' + table_name + '` ORDER BY `time` ASC limit 1;');
 
       if (rows[0]) {
-        return rows[0].time
+        return rows[0].time;
       }
 
-      return 0
+      return 0;
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
-  candlestick_lastTime: async (table_name) => {
+  candlestick_lastTime: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT time FROM `" + table_name + "` ORDER BY `time` DESC limit 1;")
+      let [rows] = await CandleDB.query('SELECT time FROM `' + table_name + '` ORDER BY `time` DESC limit 1;');
 
       if (rows[0]) {
-        return rows[0].time
+        return rows[0].time;
       }
 
-      return 0
+      return 0;
       // Throw error no entry in the Database
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
   candlestick_replace: async (table_name, ticks) => {
     try {
       if (ticks.length > 0) {
-        await candle_db.query("REPLACE INTO `" + table_name + "` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;", [ticks])
+        await CandleDB.query('REPLACE INTO `' + table_name + '` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;', [ticks]);
       }
-      return
+      return;
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
-  candlestick_select_all: async (table_name) => {
+  candlestick_select_all: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT * FROM `" + table_name + "` ORDER BY `time` ASC;")
+      let [rows] = await CandleDB.query('SELECT * FROM `' + table_name + '` ORDER BY `time` ASC;');
 
-      return rows
+      return rows;
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
-  candlestick_history_size: async (table_name) => {
+  candlestick_history_size: async table_name => {
     try {
-      let [rows] = await candle_db.query("SELECT count(*) as count FROM `" + table_name + "`;")
+      let [rows] = await CandleDB.query('SELECT count(*) as count FROM `' + table_name + '`;');
 
       if (rows.length > 0) {
-        return rows[0].count
+        return rows[0].count;
       } else {
-        return 0
+        return 0;
       }
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   },
 
@@ -209,23 +209,23 @@ const queries = {
             buyVolume: '10.63625400',
             quoteBuyVolume: '112271.08317540' 
           } */
-      let time = Date.now()
+      let time = Date.now();
 
-      let data = [time, result.symbol, result.startTime, result.open, result.high, result.low, result.close, result.volume, result.trades, result.isFinal]
+      let data = [time, result.symbol, result.startTime, result.open, result.high, result.low, result.close, result.volume, result.trades, result.isFinal];
 
-      await candle_db.query("INSERT INTO `" + table_name + "` (`time`, `symbol`, `startTime`, `open`, `high`, `low`, `close`, `volume`, `trades`, `final`) VALUES ?;", [[data]])
+      await CandleDB.query('INSERT INTO `' + table_name + '` (`time`, `symbol`, `startTime`, `open`, `high`, `low`, `close`, `volume`, `trades`, `final`) VALUES ?;', [[data]]);
     } catch (e) {
-      logger.error("SQL error", e)
+      logger.error('SQL error', e);
     }
   },
 
   clean_livefeed: async (table_name, time) => {
     try {
-      await candle_db.query("DELETE FROM `" + table_name + "` WHERE time < ?;", [time])
+      await CandleDB.query('DELETE FROM `' + table_name + '` WHERE time < ?;', [time]);
     } catch (e) {
-      logger.error("SQL error", e)
+      logger.error('SQL error', e);
     }
-  }
-}
+  },
+};
 
-module.exports = queries
+module.exports = queries;

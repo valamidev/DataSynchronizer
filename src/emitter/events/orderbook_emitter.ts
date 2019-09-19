@@ -1,14 +1,15 @@
 "use strict"
 
-const util = require("../../utils")
-const logger = require("../../logger")
-const Emitter = require("../emitter")
+import {util} from '../../utils'
+import {logger} from '../../logger'
+import {Emitter} from '../emitter'
+
 
 const { OrderBookStore } = require("orderbook-synchronizer")
 const memory_limit = 512
 const Orderbooks = {}
 
-const TradepairDB = require("../../tradepairs/tradepairs")
+const {TradepairQueries} = require("../../tradepairs/tradepairs")
 const DB_LAYER = require("../../database/queries")
 const { Redis, Redis_pub } = require("../../redis/redis")
 
@@ -17,7 +18,7 @@ class Orderbook_emitter {
     // Event listeners
     logger.verbose("Orderbook Emitter started!")
 
-    Emitter.on("Orderbook", (exchange, depth) => {
+    Emitter.on("Orderbook", (exchange:string, depth:any) => {
       exchange = exchange.toLowerCase()
 
       if (typeof Orderbooks[exchange] == "undefined") {
@@ -53,15 +54,15 @@ class Orderbook_emitter {
       }
     })
 
-    Emitter.on("OrderbookSnapshot", (snapshot_time) => {
+    Emitter.on("OrderbookSnapshot", (snapshot_time:number) => {
       Object.keys(Orderbooks).map((exchange) => {
         let symbols = Orderbooks[exchange]._symbols
 
-        symbols.forEach((symbol) => {
+        symbols.forEach((symbol:any) => {
           setImmediate(async () => {
             let orderbook = Orderbooks[exchange].getOrderBook(symbol)
             // Get CCXT standard symbol
-            let ccxt_symbol = await TradepairDB.id_to_symbol(exchange, symbol)
+            let ccxt_symbol = await TradepairQueries.id_to_symbol(exchange, symbol)
 
             let table_name = util.orderbook_name(exchange, ccxt_symbol)
 

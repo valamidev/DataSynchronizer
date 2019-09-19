@@ -1,6 +1,6 @@
 "use strict"
 
-const Emitter = require("../emitter")
+import {Emitter} from '../emitter'
 
 class TimedEvents_Emitter {
   constructor() {

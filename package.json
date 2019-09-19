@@ -1,17 +1,28 @@
 {
   "name": "cryptocurrency-exchange-data-synchronizer",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./build/index.js",
   "scripts": {
-    "start": "node --experimental-worker .",
-    "test": "jest"
+    "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
+    "start:watch": "nodemon",
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@koa/cors": "^3.0.0",
+    "@types/lodash": "^4.14.138",
+    "@types/node": "^12.7.4",
     "binance-api-node": "^0.9.2",
     "candlestick-convert": "^3.1.0",
     "ccxt": "^1.18.939",
@@ -26,13 +37,22 @@
     "lodash": "^4.17.11",
     "mysql2": "^1.6.5",
     "node-binance-api": "^0.9.0",
-    "orderbook-synchronizer": "^2.1.2",
+    "orderbook-synchronizer": "^3.0.2",
     "snoowrap": "^1.15.2",
     "twitter": "^1.7.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "eslint": "^6.0.1",
-    "jest": "^24.8.0"
-  }
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.19.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.6.2"
+  },
+  "files": [
+    "lib/**/*"
+  ]
 }

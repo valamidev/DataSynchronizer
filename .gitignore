@@ -61,3 +61,4 @@ typings/
 .next
 table_creator.js
 ccxt_config.json
+build
