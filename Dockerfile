@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:12
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -19,4 +19,4 @@ RUN npm install \
 COPY . /usr/src/app
 
 
-CMD [ "node", "index.js" ]
+CMD [ "npm", "run" , "start:watch" ]

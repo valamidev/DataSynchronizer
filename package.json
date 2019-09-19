@@ -1,10 +1,11 @@
 {
   "name": "cryptocurrency-exchange-data-synchronizer",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./build/index.js",
   "scripts": {
     "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
+    "start:watch": "nodemon",
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
