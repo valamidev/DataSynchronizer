@@ -40,7 +40,7 @@ DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment
 
 **Requirements:**
 - Reddis 5.0+ (https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04)
-- MySQL (5.7+) or MariaDB (10.3 +) Native JSON type support needed/recommended!
+- MySQL (5.7+) or MariaDB (10.1.34+)
 - NodeJS 10+ with --experimental-worker enabled!
 - ~ 1Gb storage / day @ 150 Symbols
 
