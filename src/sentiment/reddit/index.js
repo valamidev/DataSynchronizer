@@ -1,7 +1,7 @@
 'use strict';
 
 const sentiment_util = require('../sentiment_util');
-const logger = require('../../logger');
+const { logger } = require('../../logger');
 const { BaseDB } = require('../../database');
 const RedditAPI = require('./reddit_api');
 
