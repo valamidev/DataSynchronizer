@@ -1,12 +1,12 @@
 "use strict"
 
-import {util} from '../../utils'
 import {logger} from '../../logger'
+import {util} from '../../utils'
 import {Emitter} from '../emitter'
 
 
 const { OrderBookStore } = require("orderbook-synchronizer")
-const memory_limit = 512
+const memoryLimit = 512
 const Orderbooks = {}
 
 const {TradepairQueries} = require("../../tradepairs/tradepairs")
@@ -22,7 +22,7 @@ class Orderbook_emitter {
       exchange = exchange.toLowerCase()
 
       if (typeof Orderbooks[exchange] == "undefined") {
-        Orderbooks[exchange] = new OrderBookStore(memory_limit)
+        Orderbooks[exchange] = new OrderBookStore(memoryLimit)
       }
 
       let { symbol, asks, bids } = depth
@@ -54,9 +54,11 @@ class Orderbook_emitter {
       }
     })
 
-    Emitter.on("OrderbookSnapshot", (snapshot_time:number) => {
-      Object.keys(Orderbooks).map((exchange) => {
-        let symbols = Orderbooks[exchange]._symbols
+    Emitter.on("OrderbookSnapshot", (snapshotTime:number) => {
+
+      
+      Object.keys(Orderbooks).forEach((exchange) => {
+        const symbols = Orderbooks[exchange]._symbols
 
         symbols.forEach((symbol:any) => {
           setImmediate(async () => {
@@ -67,7 +69,7 @@ class Orderbook_emitter {
             let table_name = util.orderbook_name(exchange, ccxt_symbol)
 
             await DB_LAYER.orderbook_table_check(table_name)
-            await DB_LAYER.orderbook_replace(table_name, { time: snapshot_time, orderbook })
+            await DB_LAYER.orderbook_replace(table_name, { time: snapshotTime, orderbook })
 
             // Store snapshot in redis for 600 sec
             Redis.set(table_name, JSON.stringify(orderbook), "EX", 600)

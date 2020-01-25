@@ -1,4 +1,5 @@
 
+// tslint:disable-next-line: no-var-requires
 require('dotenv').config();
 
 import { BaseDB, CandleDB } from '../database/index'
@@ -9,15 +10,11 @@ const dropTableQuery = "DROP TABLE `test`"
 
 test('Database Create/Drop test', async () => {
 
-  try {
-    let [rows] = await BaseDB.query(createTableQuery);
+    await BaseDB.query(createTableQuery);
 
-    console.log(rows)
-  } catch (e) {
-    
-  }
+    await BaseDB.query(dropTableQuery);
 
-
+  
 
   expect(BaseDB._eventsCount).toBe(2);
   expect(CandleDB._eventsCount).toBe(2);

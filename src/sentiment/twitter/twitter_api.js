@@ -35,8 +35,7 @@ class TwitterAPI {
         q: search,
         count: 100,
         since_id: id,
-        exclude: 'replies',
-        exclude: 'retweets',
+        exclude: ['replies', 'retweets'],
       });
 
       let tweets = searct_result.statuses;
