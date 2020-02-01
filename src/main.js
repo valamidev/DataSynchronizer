@@ -10,7 +10,7 @@ const PriceTickersAPI = require('./pricetickers');
 const WardenClass = require('./warden');
 
 // Load Dotenv variables
-const { MarketData, Sentiment, Livefeed, PriceTicker, Warden, Http_api, Http_port, exchange_list, warden_exchanges_list, quotes, quote_limits } = process.env;
+const { MarketData, Sentiment, Livefeed, PriceTicker, Warden, exchange_list, warden_exchanges_list, quotes, quote_limits } = process.env;
 
 const exchanges = exchange_list.split(',');
 const warden_exchanges = warden_exchanges_list.split(',');
@@ -37,12 +37,6 @@ async function main() {
     // Warden Auto init tradepairs for data collection based on Volume desc
     if (Warden == 1) {
       await WardenClass.start(warden_exchanges, warden_quotes, warden_quote_limits);
-    }
-    if (Http_api == 1) {
-      const HTTP_API = new (require('./httpAPI'))(Http_port);
-      const history_builder = require('./tradepairs/candlestick_history');
-
-      HTTP_API.add_candle_history('candle_history', history_builder);
     }
 
     logger.info('Startup finished');

@@ -14,15 +14,15 @@ export const TradepairQueries = {
 
   id_to_symbol: async (exchange: string, id: string) => {
     try {
-      let result = id_to_symbol_cache.find((e) => e.exchange == exchange && e.id == id)
+      const result = id_to_symbol_cache.find((e) => e.exchange == exchange && e.id == id)
 
       if (typeof result != "undefined") {
         return result.symbol
       } else {
-        let [rows] = await BaseDB.query("SELECT id,symbol from `market_datas` WHERE exchange = ? AND id = ? LIMIT 1", [exchange, id])
+        const [rows] = await BaseDB.query("SELECT id,symbol from `market_datas` WHERE exchange = ? AND id = ? LIMIT 1", [exchange, id])
 
-        if (rows.length == 1) {
-          let symbol = rows[0].symbol
+        if ((rows as any[]).length === 1) {
+          const symbol = rows[0].symbol
 
           id_to_symbol_cache.push({ exchange, id, symbol })
 

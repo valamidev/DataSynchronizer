@@ -15,7 +15,11 @@
     "allowJs": true,       
     "strict": true,   
     "pretty": true,
-    "removeComments": true
+    "removeComments": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types",
+    ],
   },
   "include": ["src"],
   "exclude": ["node_modules", "src/__test__"]

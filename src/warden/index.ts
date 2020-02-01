@@ -82,16 +82,16 @@ class Warden {
   /* Database queries */
   async select_symbols(exchange: string, quote: string, limit: number) {
     try {
-      let [rows] = await BaseDB.query(
+      const [rows] = await BaseDB.query(
         "SELECT m.exchange, m.symbol, m.id ,m.baseId,m.quoteId FROM `market_datas` as m JOIN `price_tickers` as p ON m.exchange = p.exchange AND m.symbol = p.symbol WHERE m.active = 1 and m.exchange = ? and m.quoteId = ?  order by p.quoteVolume desc;",
         [exchange, quote]
       )
 
-      if (rows.length > 0) {
-        return _.take(rows, limit)
+      if ((rows as any[]).length > 0) {
+        return _.take((rows as any[]), limit)
       }
 
-      return []
+      return [];
     } catch (e) {
       logger.error("Warden SQL error", e)
     }

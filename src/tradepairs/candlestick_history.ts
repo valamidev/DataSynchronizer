@@ -1,12 +1,12 @@
 // Load Exchanges
 "use strict"
 // Load Exchange APIs
+import * as _ from "lodash"
 import {CCXT_API} from "../exchange/ccxt_controller"
 import {logger} from "../logger"
-import * as _ from "lodash"
 
 const {util} = require("../utils")
-const DB_LAYER = require("../database/queries")
+import DB_LAYER from "../database/queries"
 
 
 const ccxt_candlelimit = {
@@ -102,7 +102,7 @@ class Candlestick {
       ticks = await CCXT_API.get_candlestick(this.symbol, this.exchange, this.intervalString, startTime, ccxt_candlelimit[this.exchange])
 
       // https://github.com/ccxt/ccxt/issues/2937
-      // Last Candle can be unfinished always
+      // Last Candles can be incomplete
       if (ticks.length > 0) {
         if (Number(_.last(ticks)[0]) + this.interval * 1000 > _.now()) {
           ticks.pop()

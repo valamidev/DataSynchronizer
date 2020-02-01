@@ -4,6 +4,8 @@ import {logger} from '../logger';
 import {CCXT_API} from '../exchange/ccxt_controller';
 import * as _ from 'lodash';
 import {BaseDB} from '../database';
+import { RowDataPacket } from 'mysql2';
+import { isArray } from 'util';
 
 
 class MarketDataClass {
@@ -50,23 +52,28 @@ class MarketDataClass {
   async update_market_data(exchange: string) {
     // Looking after new tradepairs!
     try {
-      let market_data = await this.market_data_select(exchange);
-
-      let new_market_data: any[] = await CCXT_API.get_marketdata(exchange);
+      const market_data = await this.market_data_select(exchange);
+      const new_market_data = await CCXT_API.get_marketdata(exchange);
 
       if (_.isObject(new_market_data)) {
         // Add exchange into MarketDatas
-        new_market_data = Object.values(new_market_data).map(elem => {
+       const converted_new_market_data = Object.values(new_market_data).map(elem => {
           elem.exchange = exchange;
 
           return elem;
         });
 
         // TODO: Better matching of stored and new market datas: new pairs etc.
-        if (new_market_data.length != market_data.length) {
-          await this.market_data_replace(new_market_data);
+        if(!market_data){
+          await this.market_data_replace(converted_new_market_data);
           logger.verbose(`New market data for ${exchange}`);
         }
+
+        if (converted_new_market_data.length !== (market_data as any[]).length) {
+          await this.market_data_replace(converted_new_market_data);
+          logger.verbose(`New market data for ${exchange}`);
+        }
+
       }
 
       return;
@@ -75,11 +82,16 @@ class MarketDataClass {
     }
   }
 
-  async market_data_select(exchange: string) {
+  async market_data_select(exchange: string): Promise<any[] | undefined> {
     try {
-      let [rows] = await BaseDB.query('SELECT * FROM `market_datas` WHERE exchange = ?;', [exchange]);
+      const [rows] = await BaseDB.query('SELECT * FROM `market_datas` WHERE exchange = ?;', [exchange]);
 
+      if(!isArray(rows)){
+       throw new Error('Market data query failed, reason: not array')
+      }
+      
       return rows;
+
     } catch (e) {
       logger.error('Error', e);
     }

@@ -1,12 +1,10 @@
 'use strict';
 
-import {util} from '../../utils'
 import {logger} from '../../logger'
+import {util} from '../../utils'
 import {Emitter} from '../emitter'
 
-
-
-const DB_LAYER = require('../../database/queries');
+import DB_LAYER from '../../database/queries';
 
 class Candlestick_emitter {
   constructor() {
