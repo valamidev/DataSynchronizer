@@ -4,7 +4,6 @@ import {logger} from '../logger';
 import {CCXT_API} from '../exchange/ccxt_controller';
 import * as _ from 'lodash';
 import {BaseDB} from '../database';
-import { RowDataPacket } from 'mysql2';
 import { isArray } from 'util';
 
 
@@ -67,11 +66,13 @@ class MarketDataClass {
         if(!market_data){
           await this.market_data_replace(converted_new_market_data);
           logger.verbose(`New market data for ${exchange}`);
+          return;
         }
 
         if (converted_new_market_data.length !== (market_data as any[]).length) {
           await this.market_data_replace(converted_new_market_data);
           logger.verbose(`New market data for ${exchange}`);
+          return;
         }
 
       }
