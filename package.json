@@ -4,7 +4,8 @@
   "description": "",
   "main": "./build/index.js",
   "scripts": {
-    "start": "node --experimental-worker --inspect=5858 -r ts-node/register ./src/index.ts",
+    "start": "node --experimental-worker -r ts-node/register ./src/index.ts",
+    "debug": "node --experimental-worker --inspect=5858 -r ts-node/register ./src/index.ts", 
     "start:watch": "nodemon",
     "test": "jest --config jestconfig.json",
     "build": "tsc",
