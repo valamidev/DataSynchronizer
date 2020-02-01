@@ -4,6 +4,7 @@ const mysql = require('mysql2/promise')
 
 export const BaseDB = mysql.createPool({
   host: process.env.MYSQL_HOST,
+  port: process.env.MYSQL_PORT,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASS,
   database: process.env.MYSQL_DB,
@@ -16,6 +17,7 @@ export const BaseDB = mysql.createPool({
 
 export const CandleDB = mysql.createPool({
   host: process.env.MYSQL_HOST_EXCHANGE,
+  port: process.env.MYSQL_PORT_EXCHANGE,
   user: process.env.MYSQL_USER_EXCHANGE,
   password: process.env.MYSQL_PASS_EXCHANGE,
   database: process.env.MYSQL_DB_EXCHANGE,

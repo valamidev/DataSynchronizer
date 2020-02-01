@@ -4,6 +4,7 @@
 # low performance database
 #
 MYSQL_HOST=
+MYSQL_PORT=3306
 MYSQL_USER=
 MYSQL_PASS=
 MYSQL_DB=
@@ -13,6 +14,7 @@ MYSQL_DB=
 # Storage of exhcange datas / high performance database
 #
 MYSQL_HOST_EXCHANGE=
+MYSQL_PORT_EXCHANGE=3306
 MYSQL_USER_EXCHANGE=
 MYSQL_PASS_EXCHANGE=
 MYSQL_DB_EXCHANGE=
