@@ -1,16 +1,17 @@
-'use strict';
 
-const { Emitter } = require('../../emitter/emitter');
+
+import  { Emitter } from  '../../emitter/emitter';
 
 // Binance things
-const exchange_name = 'binance';
+const exchangeName = 'binance';
 
-const Binance = require('binance-api-node').default;
-const client = new Binance();
+import * as Binance from 'binance-api-node'
+
+const client: any =  Binance;
 // Binance things
 
-const open_socket = async symbol => {
-  let socket_trades = await client.ws.aggTrades(symbol, trade => {
+export const openSocket = (symbol: any) => {
+  const socket_trades = client.ws.aggTrades(symbol, (trade: any) => {
     trade = {
       time: trade.eventTime,
       symbol: trade.symbol,
@@ -20,10 +21,10 @@ const open_socket = async symbol => {
       tradeId: trade.tradeId,
     };
 
-    Emitter.emit('Trades', exchange_name, trade);
+    Emitter.emit('Trades', exchangeName, trade);
   });
 
-  let socket_orderbook = await client.ws.depth(symbol, depth => {
+  const socket_orderbook =  client.ws.depth(symbol, (depth:any) => {
     /*
       {
         eventType: 'depthUpdate',
@@ -41,16 +42,16 @@ const open_socket = async symbol => {
         ]
       }
     */
-    let asks = depth.askDepth.map(e => {
+    const asks = depth.askDepth.map((e:any) => {
       return { price: e.price, size: e.quantity };
     });
-    let bids = depth.bidDepth.map(e => {
+    const bids = depth.bidDepth.map((e:any) => {
       return { price: e.price, size: e.quantity };
     });
 
-    let update_depth = { symbol: depth.symbol, asks, bids };
+    const updateDepth = { symbol: depth.symbol, asks, bids };
 
-    Emitter.emit('Orderbook', exchange_name, update_depth);
+    Emitter.emit('Orderbook', exchangeName, updateDepth);
   });
 
   // Needed to close connection
@@ -60,4 +61,4 @@ const open_socket = async symbol => {
   };
 };
 
-module.exports = open_socket;
+

@@ -3,18 +3,19 @@
 const { Emitter } = require('../../emitter/emitter');
 
 // Kucoin things
-const exchange_name = 'kucoin';
+const exchangeName = 'kucoin';
 
-const Kucoin_API = require('kucoin-websocket-api');
-const client = new Kucoin_API();
+const KucoinAPI = require('kucoin-websocket-api');
+
+const client = new KucoinAPI();
 // Kucoin things
 
-const open_socket = async symbol => {
-  let socket_trades = await client.MarketMatches(symbol, trade => {
+export const openSocket = (symbol: any) => {
+  const socket_trades = client.MarketMatches(symbol, (trade: any) => {
     // Kucoin use ns for timestamp
 
     trade = {
-      time: parseInt(trade.time / 10e5),
+      time: Math.floor(trade.time / 10e5),
       symbol: trade.symbol,
       side: trade.side,
       quantity: trade.size,
@@ -22,10 +23,10 @@ const open_socket = async symbol => {
       tradeId: trade.tradeId,
     };
 
-    Emitter.emit('Trades', exchange_name, trade);
+    Emitter.emit('Trades', exchangeName, trade);
   });
 
-  let socket_orderbook = await client.MarketLevel2(symbol, depth => {
+  const socket_orderbook = client.MarketLevel2(symbol, (depth: any) => {
     // Kucoin use ns for timestamp
     /*
       sequenceStart: 1556425985882,
@@ -33,16 +34,16 @@ const open_socket = async symbol => {
       changes: { asks: [], bids: [ [ '0.00003232', '5240.6325', '1556426078793' ] ] }, 
       sequenceEnd: 1556425985882
     */
-    let asks = depth.changes.asks.map(e => {
+    const asks = depth.changes.asks.map((e: any) => {
       return { price: e[0], size: e[1] };
     });
-    let bids = depth.changes.bids.map(e => {
+    const bids = depth.changes.bids.map((e: any) => {
       return { price: e[0], size: e[1] };
     });
 
-    let update_depth = { symbol: depth.symbol, asks, bids };
+    const updateDepth = { symbol: depth.symbol, asks, bids };
 
-    Emitter.emit('Orderbook', exchange_name, update_depth);
+    Emitter.emit('Orderbook', exchangeName, updateDepth);
   });
 
   // Needed to close connection
@@ -51,5 +52,3 @@ const open_socket = async symbol => {
     socket_orderbook();
   };
 };
-
-module.exports = open_socket;
