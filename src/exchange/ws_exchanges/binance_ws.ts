@@ -1,13 +1,11 @@
-
-
-import  { Emitter } from  '../../emitter/emitter';
+import { Emitter } from '../../emitter/emitter';
 
 // Binance things
 const exchangeName = 'binance';
 
-import * as Binance from 'binance-api-node'
+const Binance = require('binance-api-node').default;
 
-const client: any =  Binance;
+const client = new Binance();
 // Binance things
 
 export const openSocket = (symbol: any) => {
@@ -24,7 +22,7 @@ export const openSocket = (symbol: any) => {
     Emitter.emit('Trades', exchangeName, trade);
   });
 
-  const socket_orderbook =  client.ws.depth(symbol, (depth:any) => {
+  const socket_orderbook = client.ws.depth(symbol, (depth: any) => {
     /*
       {
         eventType: 'depthUpdate',
@@ -42,10 +40,10 @@ export const openSocket = (symbol: any) => {
         ]
       }
     */
-    const asks = depth.askDepth.map((e:any) => {
+    const asks = depth.askDepth.map((e: any) => {
       return { price: e.price, size: e.quantity };
     });
-    const bids = depth.bidDepth.map((e:any) => {
+    const bids = depth.bidDepth.map((e: any) => {
       return { price: e.price, size: e.quantity };
     });
 
@@ -60,5 +58,3 @@ export const openSocket = (symbol: any) => {
     socket_orderbook();
   };
 };
-
-

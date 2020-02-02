@@ -1,6 +1,4 @@
-'use strict';
-
-const { Emitter } = require('../../emitter/emitter');
+import { Emitter } from '../../emitter/emitter';
 
 // Kucoin things
 const exchangeName = 'kucoin';
