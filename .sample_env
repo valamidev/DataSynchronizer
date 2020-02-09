@@ -38,6 +38,7 @@ snapshot_heartbeat = 60000
 
 # Loglevel verbose,info
 log_level = info
+DEBUG_WORKER=false
 
 #
 ################## Functions

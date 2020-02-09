@@ -5,7 +5,7 @@
   "main": "./build/index.js",
   "scripts": {
     "start": "node --experimental-worker ./build/index.js",
-    "debug": "node --experimental-worker --inspect=5858 -r ts-node/register ./src/index.ts",
+    "debug": "tsc && node --experimental-worker --inspect=5858 -r ts-node/register ./src/index.ts",
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
