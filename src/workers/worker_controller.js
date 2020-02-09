@@ -6,8 +6,10 @@ const { Emitter } = require('../emitter/emitter');
 
 const { Worker, isMainThread } = require('worker_threads');
 
-// Experiment worker
-const worker_class = __dirname + '/worker.js';
+// We need to use the .js worker file in any case
+const relativePath = process.env.CORE_ENV === 'test' ? '/../../build/workers' : '';
+
+const worker_class = __dirname + `${relativePath}/worker.js`,;
 const worker_config = { workerData: '' };
 
 if (isMainThread) {

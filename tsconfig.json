@@ -12,14 +12,11 @@
     "sourceMap": true,
     "outDir": "build",
     "baseUrl": ".",
-    "allowJs": true,       
-    "strict": true,   
+    "allowJs": true,
+    "strict": true,
     "pretty": true,
     "removeComments": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types",
-    ],
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "src/__test__"]
