@@ -12,6 +12,7 @@
     "sourceMap": true,
     "outDir": "build",
     "baseUrl": ".",
+    "skipLibCheck": true,
     "allowJs": true,
     "strict": true,
     "pretty": true,
