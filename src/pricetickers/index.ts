@@ -1,8 +1,8 @@
 
 import * as _ from 'lodash'
-import {logger} from '../logger'
 import { BaseDB } from '../database'
 import {CCXT_API} from '../exchange/ccxt_controller'
+import {logger} from '../logger'
 
 
 class PriceTickers {

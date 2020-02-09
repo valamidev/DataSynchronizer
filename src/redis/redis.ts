@@ -1,30 +1,27 @@
+import IORedis, { RedisOptions } from 'ioredis';
 
-const IORedis = require("ioredis")
-
-const redis_conf = {
-  port: process.env.REDIS_PORT, // Redis port
+const redis_conf: RedisOptions = {
   host: process.env.REDIS_HOST, // Redis host
+  port: process.env.REDIS_PORT === undefined ? 6379 : parseInt(process.env.REDIS_PORT, 10), // Redis port
   family: 4, // 4 (IPv4) or 6 (IPv6)
   password: process.env.REDIS_AUTH,
-  db: process.env.REDIS_DB_ID,
-  retryStrategy: function(times:number) {
-    var delay = Math.min(times * 50, 2000)
-    return delay
-  }
-}
+  db: process.env.REDIS_DB_ID === undefined ? 0 : parseInt(process.env.REDIS_DB_ID, 10),
+  retryStrategy: (times: number) => {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  },
+};
 
 //
-//https://github.com/luin/ioredis#pubsub
+// https://github.com/luin/ioredis#pubsub
 //
 // Subscription connection it cannot be used for Publish!
-export const Redis = new IORedis(redis_conf)
+export const Redis = new IORedis(redis_conf);
 Redis.publish = () => {
-  throw new Error("Subscription connection cannot be used for publish!")
-}
+  throw new Error('Subscription connection cannot be used for publish!');
+};
 // Publish connection it can be used only for Publish!
-export const Redis_pub = new IORedis(redis_conf)
+export const Redis_pub = new IORedis(redis_conf);
 Redis_pub.subscribe = () => {
-  throw new Error("Publisher connection cannot be used for subscribe!")
-}
-
-
+  throw new Error('Publisher connection cannot be used for subscribe!');
+};
