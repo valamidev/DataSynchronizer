@@ -1,6 +1,6 @@
 {
   "name": "cryptocurrency-exchange-data-synchronizer",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -10,7 +10,6 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
-    "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
@@ -21,8 +20,8 @@
   "license": "ISC",
   "dependencies": {
     "binance-api-node": "^0.9.15",
-    "candlestick-convert": "^3.1.0",
-    "ccxt": "^1.22.27",
+    "candlestick-convert": "^5.0.0",
+    "ccxt": "^1.22.39",
     "co-body": "^6.0.0",
     "dotenv": "^7.0.0",
     "eventemitter3": "^4.0.0",
