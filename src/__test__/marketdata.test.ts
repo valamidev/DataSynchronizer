@@ -1,12 +1,11 @@
+require('dotenv').config();
 
-require("dotenv").config();
+process.env.logLevel = 'info';
 
-process.env.log_level = "info"
+import { MarketDataAPI } from '../marketdata/index';
 
-import { MarketDataAPI } from '../marketdata/index'
-
-test("Marketdata save", async () => {
-  let result = await MarketDataAPI.update_market_data("kucoin");
+test('Marketdata save', async () => {
+  const result = await MarketDataAPI.updateMarketData('kucoin');
 
   expect(result).toBeUndefined();
 });

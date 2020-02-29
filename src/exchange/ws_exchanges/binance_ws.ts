@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/camelcase */
 import { Emitter } from '../../emitter/emitter';
 
 // Binance things
@@ -9,7 +13,7 @@ const client = new Binance();
 // Binance things
 
 export const openSocket = (symbol: any) => {
-  const socket_trades = client.ws.aggTrades(symbol, (trade: any) => {
+  const socketTrades = client.ws.aggTrades(symbol, (trade: any) => {
     trade = {
       time: trade.eventTime,
       symbol: trade.symbol,
@@ -22,7 +26,7 @@ export const openSocket = (symbol: any) => {
     Emitter.emit('Trades', exchangeName, trade);
   });
 
-  const socket_orderbook = client.ws.depth(symbol, (depth: any) => {
+  const socketOrderbook = client.ws.depth(symbol, (depth: any) => {
     /*
       {
         eventType: 'depthUpdate',
@@ -53,8 +57,8 @@ export const openSocket = (symbol: any) => {
   });
 
   // Needed to close connection
-  return () => {
-    socket_trades();
-    socket_orderbook();
+  return (): void => {
+    socketTrades();
+    socketOrderbook();
   };
 };

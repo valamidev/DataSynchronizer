@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/camelcase */
 import { Emitter } from '../../emitter/emitter';
 
 // Kucoin things
@@ -9,7 +13,7 @@ const client = new KucoinAPI();
 // Kucoin things
 
 export const openSocket = (symbol: any) => {
-  const socket_trades = client.MarketMatches(symbol, (trade: any) => {
+  const socketTrades = client.MarketMatches(symbol, (trade: any) => {
     // Kucoin use ns for timestamp
 
     trade = {
@@ -24,7 +28,7 @@ export const openSocket = (symbol: any) => {
     Emitter.emit('Trades', exchangeName, trade);
   });
 
-  const socket_orderbook = client.MarketLevel2(symbol, (depth: any) => {
+  const socketOrderbook = client.MarketLevel2(symbol, (depth: any) => {
     // Kucoin use ns for timestamp
     /*
       sequenceStart: 1556425985882,
@@ -45,8 +49,8 @@ export const openSocket = (symbol: any) => {
   });
 
   // Needed to close connection
-  return () => {
-    socket_trades();
-    socket_orderbook();
+  return (): void => {
+    socketTrades();
+    socketOrderbook();
   };
 };

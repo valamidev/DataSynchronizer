@@ -1,24 +1,24 @@
 /* eslint-disable no-undef */
-require("dotenv").config()
+require('dotenv').config();
 
-import {Redis,Redis_pub} from "../redis/redis"
+import { Redis, RedisPub } from '../redis/redis';
 
-test("Redis Connection test", async () => {
-  Redis.set("foo_bar_test", "bar")
-  let result = await Redis.get("foo_bar_test")
-  Redis.del("foo_bar_test")
+test('Redis Connection test', async () => {
+  Redis.set('foo_bar_test', 'bar');
+  const result = await Redis.get('foo_bar_test');
+  Redis.del('foo_bar_test');
 
-  expect(result).toBe("bar")
-})
+  expect(result).toBe('bar');
+});
 
-test("Redis publish disabled test", async () => {
+test('Redis publish disabled test', async () => {
   expect(() => {
-    Redis.publish("news", "Hello world!")
-  }).toThrow()
-})
+    Redis.publish('news', 'Hello world!');
+  }).toThrow();
+});
 
-test("Redis subscribe disabled test", async () => {
+test('Redis subscribe disabled test', async () => {
   expect(() => {
-    Redis_pub.subscribe()
-  }).toThrow()
-})
+    RedisPub.subscribe();
+  }).toThrow();
+});

@@ -1,15 +1,15 @@
-import winston from 'winston'
+import winston from 'winston';
 
 const logsDir = './logs/';
 
-const logger_level = process.env.log_level || 'info';
+const loggerLevel = process.env.logLevel || 'info';
 
 export const logger = winston.createLogger({
-  level: logger_level,
+  level: loggerLevel,
   format: winston.format.json(),
   transports: [
     new winston.transports.Console({
-      level: logger_level,
+      level: loggerLevel,
       format: winston.format.simple(),
     }),
     new winston.transports.File({
@@ -18,5 +18,3 @@ export const logger = winston.createLogger({
     }),
   ],
 });
-
-

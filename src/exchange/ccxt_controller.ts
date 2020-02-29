@@ -1,45 +1,51 @@
-
-import {logger} from "../logger"
-import * as _ from "lodash"
-import * as ccxt from "ccxt"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { logger } from '../logger';
+import _ from 'lodash';
+import * as ccxt from 'ccxt';
 
 class ExchangeAPI {
-  exchanges:any[]
+  exchanges: any[];
   constructor() {
-    this.exchanges = []
+    this.exchanges = [];
   }
 
-  async get_marketdata(exchange:string) {
+  async getMarketdata(exchange: string): Promise<any> {
     try {
-      let API = this.load_exchange_api(exchange)
+      const API = this.loadExchangeAPI(exchange);
 
-      let marketdata = await API.loadMarkets()
+      const marketdata = await API.loadMarkets();
 
-      return marketdata
+      return marketdata;
     } catch (e) {
-      logger.error("CCXT marketdata error ", e)
+      logger.error('CCXT marketdata error ', e);
     }
   }
 
-  async get_pricetickers(exchange:string) {
+  async getPriceTickers(exchange: string): Promise<any> {
     try {
-      let API = this.load_exchange_api(exchange)
+      const API = this.loadExchangeAPI(exchange);
 
-      let pricetickers = await API.fetchTickers()
+      const pricetickers = await API.fetchTickers();
 
-      return pricetickers
+      return pricetickers;
     } catch (e) {
-      logger.error("CCXT marketdata error ", e)
+      logger.error('CCXT marketdata error ', e);
     }
   }
 
-  async get_candlestick(symbol:string, exchange:string, interval:string, since:any = undefined, limit:number = 100) {
+  async getCandlestick(
+    symbol: string,
+    exchange: string,
+    interval: string,
+    since: any = undefined,
+    limit = 100,
+  ): Promise<Array<[number, number, number, number, number, number]> | undefined> {
     try {
-      let API = this.load_exchange_api(exchange)
+      const API = this.loadExchangeAPI(exchange);
 
-      let candledata = await API.fetchOHLCV(symbol, interval, since, limit)
+      const candledata = await API.fetchOHLCV(symbol, interval, since, limit);
 
-      return candledata
+      return candledata;
 
       /*
       1504541580000, // UTC timestamp in milliseconds, integer
@@ -50,47 +56,45 @@ class ExchangeAPI {
         37.72941911    // (V)olume (in terms of the base currency), float 
       */
     } catch (e) {
-      logger.error("CCXT candlestick error ", e)
+      logger.error('CCXT candlestick error ', e);
     }
   }
 
   /* CCXT API STUFF */
 
-  load_exchange_api(exchange:string) {
+  loadExchangeAPI(exchange: string): any {
     try {
-      exchange = exchange.toLowerCase()
+      exchange = exchange.toLowerCase();
 
       // Check if CCXT API already loaded
-      let exchange_data = this.exchanges.find((e) => e.exchange == exchange)
+      let exchangeData = this.exchanges.find(e => e.exchange == exchange);
 
       // CCTX API load from buffer or add to the buffer
-      if (!exchange_data) {
-        exchange_data = this.init_new_exchanges(exchange)
+      if (!exchangeData) {
+        exchangeData = this.initNewExchanges(exchange);
       }
 
-      return exchange_data.api
+      return exchangeData.api;
     } catch (e) {
-      logger.error("CCXT load API error ", e)
+      logger.error('CCXT load API error ', e);
     }
   }
 
-  init_new_exchanges(exchange:string) {
-    exchange = exchange.toLowerCase()
+  initNewExchanges(exchange: string): any {
+    exchange = exchange.toLowerCase();
 
-    // @ts-ignore
     if (_.isObject(ccxt[exchange])) {
-      // @ts-ignore
-      let api = new ccxt[exchange]()
+      const api = new ccxt[exchange]();
 
-      this.exchanges.push({ exchange, api })
+      this.exchanges.push({ exchange, api });
 
-      return { exchange, api }
+      return { exchange, api };
     } else {
-      throw `Invalid Exchange ${exchange}`
+      throw `Invalid Exchange ${exchange}`;
     }
   }
 
   /* CCXT API STUFF */
 }
 
-export const CCXT_API = new ExchangeAPI()
+export const CCXT_API = new ExchangeAPI();

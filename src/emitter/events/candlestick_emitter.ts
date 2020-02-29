@@ -1,48 +1,52 @@
 'use strict';
 
-import {logger} from '../../logger'
-import {util} from '../../utils'
-import {Emitter} from '../emitter'
+import { logger } from '../../logger';
+import { util } from '../../utils';
+import { Emitter } from '../emitter';
 
-import DB_LAYER from '../../database/queries';
+import { DBQueries } from '../../database/queries';
+import { TicksOHLCV } from 'src/types/types';
 
-class Candlestick_emitter {
+class CandlestickEmitter {
   constructor() {
     // Event listeners
     logger.verbose('Candlestick Emitter started!');
 
-    Emitter.on('CandleUpdate', (exchange:string, interval:any, candle:any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Emitter.on('CandleUpdate', (exchange: string, interval: any, candle: any) => {
       setImmediate(() => {
-        this.candlestick_update_emitter(exchange, interval, candle);
+        this.candlestickUpdateEmitter(exchange, interval, candle);
       });
     });
   }
 
-  async candlestick_update_emitter(exchange:string, interval:any, candle:any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async candlestickUpdateEmitter(exchange: string, interval: any, candle: any): Promise<void> {
     try {
       // Final candles are saved into separated tables
       if (candle.isFinal == true) {
-        let table_name = util.candlestick_name(exchange, candle.symbol, interval);
+        const tableName = util.candlestickName(exchange, candle.symbol, interval);
 
-        this.update_ws(table_name, candle);
+        this.updateWS(tableName, candle);
       }
     } catch (e) {
       logger.error('Candlestick Websocket update error ', e);
     }
   }
 
-  async update_ws(table_name:string, candle:any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async updateWS(tableName: string, candle: any): Promise<void> {
     try {
       // Check if table exist
-      await DB_LAYER.candlestick_table_check(table_name);
+      await DBQueries.candlestickTableCheck(tableName);
 
-      let ohlc = [candle.startTime, candle.open, candle.high, candle.low, candle.close, candle.volume];
+      const OHLCV: TicksOHLCV[] = [[candle.startTime, candle.open, candle.high, candle.low, candle.close, candle.volume]];
 
-      await DB_LAYER.candlestick_replace(table_name, [ohlc]);
+      await DBQueries.candlestickReplace(tableName, OHLCV);
     } catch (e) {
       logger.error('', e);
     }
   }
 }
 
-module.exports = new Candlestick_emitter();
+module.exports = new CandlestickEmitter();

@@ -1,80 +1,80 @@
 'use strict';
 
-import {logger} from '../logger';
-import {CCXT_API} from '../exchange/ccxt_controller';
+import { logger } from '../logger';
+import { CCXT_API } from '../exchange/ccxt_controller';
 import * as _ from 'lodash';
-import {BaseDB} from '../database';
+import { BaseDB } from '../database';
 import { isArray } from 'util';
-
+import { RowDataPacket } from 'mysql2';
 
 class MarketDataClass {
-  exchanges:  any[];
-  update_frequency: number;
+  exchanges: string[];
+  updateFrequency: number;
   constructor() {
     this.exchanges = [];
-    this.update_frequency = 3600 * 1000; // in ms
+    this.updateFrequency = 3600 * 1000; // in ms
   }
 
-  async start(exchanges: any[]) {
+  async start(exchanges: string[]): Promise<void> {
     try {
       this.exchanges = exchanges;
 
-      await this.market_data_update_loop();
+      await this.updateLoop();
     } catch (e) {
       logger.error('MarketDatas start ', e);
     }
   }
 
-  async market_data_update_loop() {
+  async updateLoop(): Promise<void> {
     try {
-      let update_promises: any[] = [];
+      const updatePromises: Array<Promise<void>> = [];
 
       for (let i = 0; i < this.exchanges.length; i++) {
-        let exchange = this.exchanges[i];
+        const exchange = this.exchanges[i];
 
-        update_promises.push(this.update_market_data(exchange));
+        updatePromises.push(this.updateMarketData(exchange));
       }
 
-      if (update_promises.length > 0) {
+      if (updatePromises.length > 0) {
         logger.verbose(`Marketdata Update loop`);
-        await Promise.all(update_promises);
+        await Promise.all(updatePromises);
       }
     } catch (e) {
       logger.error('Marketdata Update ', e);
     } finally {
       setTimeout(() => {
-        this.market_data_update_loop();
-      }, this.update_frequency);
+        this.updateLoop();
+      }, this.updateFrequency);
     }
   }
 
-  async update_market_data(exchange: string) {
+  async updateMarketData(exchange: string): Promise<void> {
     // Looking after new tradepairs!
     try {
-      const market_data = await this.market_data_select(exchange);
-      const new_market_data = await CCXT_API.get_marketdata(exchange);
+      const marketData = await this.marketDataSelect(exchange);
+      const newMarketData = await CCXT_API.getMarketdata(exchange);
 
-      if (_.isObject(new_market_data)) {
+      if (_.isObject(newMarketData)) {
         // Add exchange into MarketDatas
-       const converted_new_market_data = Object.values(new_market_data).map(elem => {
+        const convertedNewMarketData = Object.values(newMarketData).map(elem => {
           elem.exchange = exchange;
 
           return elem;
         });
 
         // TODO: Better matching of stored and new market datas: new pairs etc.
-        if(!market_data){
-          await this.market_data_replace(converted_new_market_data);
+        if (!marketData) {
+          await this.marketDataReplace(convertedNewMarketData);
           logger.verbose(`New market data for ${exchange}`);
           return;
         }
 
-        if (converted_new_market_data.length !== (market_data as any[]).length) {
-          await this.market_data_replace(converted_new_market_data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (convertedNewMarketData.length !== (marketData as any[]).length) {
+          await this.marketDataReplace(convertedNewMarketData);
           logger.verbose(`New market data for ${exchange}`);
           return;
         }
-
       }
 
       return;
@@ -83,25 +83,25 @@ class MarketDataClass {
     }
   }
 
-  async market_data_select(exchange: string): Promise<any[] | undefined> {
+  async marketDataSelect(exchange: string): Promise<RowDataPacket[] | undefined> {
     try {
       const [rows] = await BaseDB.query('SELECT * FROM `market_datas` WHERE exchange = ?;', [exchange]);
 
-      if(!isArray(rows)){
-       throw new Error('Market data query failed, reason: not array')
+      if (!isArray(rows)) {
+        throw new Error('Market data query failed, reason: not array');
       }
-      
-      return rows;
 
+      return rows as RowDataPacket[];
     } catch (e) {
       logger.error('Error', e);
     }
   }
 
-  async market_data_replace(market_data: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async marketDataReplace(marketData: any[]): Promise<void> {
     try {
       // Stringify JSONs for database storage
-      market_data = market_data.map(e => {
+      marketData = marketData.map(e => {
         // Convert to simple array
         return [
           e.exchange,
@@ -124,7 +124,7 @@ class MarketDataClass {
 
       await BaseDB.query(
         'REPLACE INTO `market_datas` (`exchange`, `limits`, `precision_data`, `tierBased`, `percentage`, `taker`, `maker`, `id`, `symbol`, `baseId`, `quoteId`, `base`, `quote`, `active`, `info`) VALUES ?',
-        [market_data],
+        [marketData],
       );
 
       return;

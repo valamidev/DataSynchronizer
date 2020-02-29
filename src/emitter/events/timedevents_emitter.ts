@@ -1,23 +1,23 @@
-"use strict"
+'use strict';
 
-import {Emitter} from '../emitter'
+import { Emitter } from '../emitter';
 
-class TimedEvents_Emitter {
+class TimedEventsEmitter {
   constructor() {
     // Snapshot Heartbeat
-    const snapshot_heartbeat = Number(process.env.snapshot_heartbeat)
-    let last_snapshot = 0
+    const snapshotHeartbeat = Number(process.env.snapshotHeartbeat);
+    let lastSnapshot = 0;
 
     setInterval(() => {
-      let time = Date.now()
-      if (time > last_snapshot + snapshot_heartbeat) {
+      const time = Date.now();
+      if (time > lastSnapshot + snapshotHeartbeat) {
         // Calculate round time for snapshot match with Candle timers
-        last_snapshot = time - (time % snapshot_heartbeat)
-        Emitter.emit("OrderbookSnapshot", last_snapshot)
-        Emitter.emit("TradesCandlestickSnapshot", last_snapshot)
+        lastSnapshot = time - (time % snapshotHeartbeat);
+        Emitter.emit('OrderbookSnapshot', lastSnapshot);
+        Emitter.emit('TradesCandlestickSnapshot', lastSnapshot);
       }
-    }, 100)
+    }, 100);
   }
 }
 
-module.exports = new TimedEvents_Emitter()
+module.exports = new TimedEventsEmitter();

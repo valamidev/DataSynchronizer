@@ -9,24 +9,24 @@ interface SymbolCache {
   symbol: string;
 }
 
-let id_to_symbol_cache: SymbolCache[] = [];
+const idToSymbolCache: SymbolCache[] = [];
 
 export const TradepairQueries = {
   /* Database queries */
 
-  id_to_symbol: async (exchange: string, id: string) => {
+  idToSymbol: async (exchange: string, id: string): Promise<string | undefined> => {
     try {
-      const result = id_to_symbol_cache.find(e => e.exchange == exchange && e.id == id);
+      const result = idToSymbolCache.find(e => e.exchange == exchange && e.id == id);
 
       if (typeof result != 'undefined') {
         return result.symbol;
       } else {
         const [rows] = await BaseDB.query('SELECT id,symbol from `market_datas` WHERE exchange = ? AND id = ? LIMIT 1', [exchange, id]);
 
-        if ((rows as any[]).length === 1) {
+        if ((rows as RowDataPacket[]).length === 1) {
           const symbol = rows[0].symbol;
 
-          id_to_symbol_cache.push({ exchange, id, symbol });
+          idToSymbolCache.push({ exchange, id, symbol });
 
           return symbol;
         }
@@ -38,7 +38,7 @@ export const TradepairQueries = {
     }
   },
 
-  select_tradepairs_all: async (): Promise<any[] | undefined> => {
+  selectTradepairsAll: async (): Promise<RowDataPacket[] | undefined> => {
     try {
       // Warden timeout limit 10 minutes
       const time = Date.now() - 600 * 1000;
@@ -51,22 +51,22 @@ export const TradepairQueries = {
       );
 
       if (!rows || !isArray(rows)) {
-        return [];
+        return [] as RowDataPacket[];
       }
 
-      return rows;
+      return rows as RowDataPacket[];
     } catch (e) {
       logger.error('SQL error', e);
     }
   },
 
-  add_tradepair: async (exchange: string, symbol: string, id: string, asset: string, quote: string, is_warden: number = 0, time: number = 0) => {
+  addTradepair: async (exchange: string, symbol: string, id: string, asset: string, quote: string, isWarden = 0, time = 0): Promise<RowDataPacket[] | undefined> => {
     try {
       // Check existing before insert!
 
       await BaseDB.query(
         'INSERT INTO `tradepairs` (`exchange`, `symbol`, `id`, `asset`,`quote`,`is_warden`,`time`) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE time=VALUES(time);',
-        [exchange, symbol, id, asset, quote, is_warden, time],
+        [exchange, symbol, id, asset, quote, isWarden, time],
       );
 
       return;
@@ -75,9 +75,9 @@ export const TradepairQueries = {
     }
   },
 
-  select_tradepair_single: async (exchange: string, symbol: string) => {
+  selectTradepairSingle: async (exchange: string, symbol: string): Promise<RowDataPacket[] | undefined> => {
     try {
-      let row = await BaseDB.query('SELECT * FROM `tradepairs` where `exchange` = ? and `symbol` = ? LIMIT 1;', [exchange, symbol]);
+      const row = await BaseDB.query('SELECT * FROM `tradepairs` where `exchange` = ? and `symbol` = ? LIMIT 1;', [exchange, symbol]);
 
       return row[0][0];
     } catch (e) {

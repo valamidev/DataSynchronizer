@@ -1,20 +1,19 @@
 /* eslint-disable no-undef */
-"use strict"
-require("dotenv").config()
-process.env.log_level = "info"
+'use strict';
+require('dotenv').config();
+process.env.logLevel = 'info';
 
-import {TradepairQueries} from '../tradepairs/tradepairs'
+import { TradepairQueries } from '../tradepairs/tradepairs';
 
 // Add Binance exhcange
-test("Get BCHABC-ETH symbol", async () => {
-  let symbol = await TradepairQueries.id_to_symbol("kucoin", "BCHABC-ETH")
+test('Get BCHABC-ETH symbol', async () => {
+  const symbol = await TradepairQueries.idToSymbol('kucoin', 'BCHABC-ETH');
 
-  
-  let symbol_cache = ""
+  let symbolCache = '';
 
   for (let i = 0; i < 10; i++) {
-    symbol_cache = await TradepairQueries.id_to_symbol("kucoin", "BCHABC-ETH")
+    symbolCache = await TradepairQueries.idToSymbol('kucoin', 'BCHABC-ETH');
   }
 
-  expect(symbol == symbol_cache).toBe(true)
-})
+  expect(symbol == symbolCache).toBe(true);
+});

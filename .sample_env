@@ -34,10 +34,10 @@ REDIS_DB_ID = 0
 #
 # Time (ms), between snapshot Candlestick,Orderbook
 # Recommended: 60000 (1 minute)
-snapshot_heartbeat = 60000
+snapshotHeartbeat = 60000
 
 # Loglevel verbose,info
-log_level = info
+logLevel = info
 DEBUG_WORKER=false
 
 #
@@ -54,7 +54,7 @@ Warden = 1
 ################## Exchanges
 #
 # List of supportable exchanges with "," separated, read CCTX for supported exhcange list 
-exchange_list = binance,kucoin
+exchangeList = binance,kucoin
 
 #
 ################# Warden settings
@@ -62,11 +62,11 @@ exchange_list = binance,kucoin
 # Auto init tradepairs for data collection based on Volume desc, Quote and Quote limits should be match
 # Example:
 # quotes = BTC,ETH,USDT,BNB
-# quote_limits = 40,10,10,10
+# quoteLimits = 40,10,10,10
 #
-warden_exchanges_list = binance,kucoin
+wardenExchangesList = binance,kucoin
 quotes = BTC,ETH,USDT,BNB
-quote_limits = 40,10,10,10
+quoteLimits = 40,10,10,10
 
 
 #

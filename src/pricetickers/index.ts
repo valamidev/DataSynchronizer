@@ -1,63 +1,62 @@
-
-import * as _ from 'lodash'
-import { BaseDB } from '../database'
-import {CCXT_API} from '../exchange/ccxt_controller'
-import {logger} from '../logger'
-
+import _ from 'lodash';
+import { BaseDB } from '../database';
+import { CCXT_API } from '../exchange/ccxt_controller';
+import { logger } from '../logger';
 
 class PriceTickers {
-  exchanges: string[]
-  update_frequency: number
+  exchanges: string[];
+  updateFrequency: number;
   constructor() {
     this.exchanges = [];
-    this.update_frequency = 30 * 1000; // in ms
+    this.updateFrequency = 30 * 1000; // in ms
   }
 
-  async start(exchanges:string[]) {
+  async start(exchanges: string[]): Promise<void> {
     try {
       this.exchanges = exchanges;
 
-      await this.update_loop();
+      await this.updateLoop();
     } catch (e) {
       logger.error('PriceTickers start ', e);
     }
   }
 
-  async update_loop() {
+  async updateLoop(): Promise<void> {
     try {
-      let update_promises = [];
+      const updatePromises = [];
 
-      for(let exchange of this.exchanges) {
-        update_promises.push(this.update(exchange));
+      for (const exchange of this.exchanges) {
+        updatePromises.push(this.update(exchange));
       }
 
-      if (update_promises.length > 0) {
+      if (updatePromises.length > 0) {
         logger.verbose(`Marketdata Update loop`);
-        await Promise.all(update_promises);
+        await Promise.all(updatePromises);
       }
     } catch (e) {
       logger.error('Marketdata Update ', e);
     } finally {
       setTimeout(() => {
-        this.update_loop();
-      }, this.update_frequency);
+        this.updateLoop();
+      }, this.updateFrequency);
     }
   }
 
-  async update(exchange:string) {
+  async update(exchange: string): Promise<void> {
     // Looking after new tradepairs!
     try {
-      let price_tickers:any[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let priceTickers: any[] = [];
 
-      price_tickers = await CCXT_API.get_pricetickers(exchange);
+      priceTickers = await CCXT_API.getPriceTickers(exchange);
 
-      let time = Date.now();
+      const time = Date.now();
 
-      if (_.isObject(price_tickers) === false) {
+      if (_.isObject(priceTickers) === false) {
         return;
       }
       // Add exchange,time,quotevolume into PriceTickers
-      price_tickers = Object.values(price_tickers).map(elem => {
+      priceTickers = Object.values(priceTickers).map(elem => {
         elem.exchange = exchange;
         elem.timestamp = time;
 
@@ -70,10 +69,10 @@ class PriceTickers {
       });
 
       /* TODO remove tickers with undefinied values */
-      price_tickers = price_tickers.filter(elem => elem.high != undefined);
+      priceTickers = priceTickers.filter(elem => elem.high != undefined);
 
-      if (price_tickers.length > 0) {
-        await this.replace_db(price_tickers);
+      if (priceTickers.length > 0) {
+        await this.replaceDB(priceTickers);
       }
 
       return;
@@ -82,17 +81,18 @@ class PriceTickers {
     }
   }
 
-  async replace_db(price_tickers: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async replaceDB(priceTickers: any[]): Promise<void> {
     try {
       // Stringify JSONs for database storage
-      price_tickers = price_tickers.map(e => {
+      priceTickers = priceTickers.map(e => {
         // Convert to simple array
         return [e.exchange, e.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)];
       });
 
       await BaseDB.query(
         'REPLACE INTO `price_tickers` (`exchange`, `symbol`, `timestamp`, `high`, `low`, `bid`, `ask`, `last`, `change`, `percentage`, `baseVolume`, `quoteVolume`, `info`) VALUES ?',
-        [price_tickers],
+        [priceTickers],
       );
 
       return;
@@ -102,4 +102,4 @@ class PriceTickers {
   }
 }
 
-module.exports = new PriceTickers();
+export default new PriceTickers();

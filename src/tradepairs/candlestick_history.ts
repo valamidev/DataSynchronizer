@@ -1,119 +1,122 @@
 // Load Exchanges
-"use strict"
+'use strict';
 // Load Exchange APIs
-import * as _ from "lodash"
-import {CCXT_API} from "../exchange/ccxt_controller"
-import {logger} from "../logger"
+import _ from 'lodash';
+import { CCXT_API } from '../exchange/ccxt_controller';
+import { logger } from '../logger';
 
-const {util} = require("../utils")
-import DB_LAYER from "../database/queries"
+import { util } from '../utils';
+import { DBQueries } from '../database/queries';
+import { RowDataPacket } from 'mysql2';
+import { TicksOHLCV } from 'src/types/types';
 
+const ccxtCandleLimit = {
+  binance: 500,
+};
 
-const ccxt_candlelimit = {
-  binance: 500
-}
-
-const base_interval = 60
+const baseInterval = 60;
 
 class Candlestick {
-  exchange: any
-  symbol: string
-  history_limit: number
-  interval: number
-  intervalString: string
-  tableName: string
-  history_data: any[]
-  constructor(exchange:string, symbol:string, history_limit:number = 300) {
-    this.exchange = exchange
-    this.symbol = symbol
-    this.history_limit = history_limit
-    this.interval = base_interval
-    this.intervalString = util.interval_toString(this.interval)
-    this.tableName = util.candlestick_name(exchange, symbol, this.interval)
+  exchange: string;
+  symbol: string;
+  historyLimit: number;
+  interval: number;
+  intervalString: string;
+  tableName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  historyData: any[];
+  constructor(exchange: string, symbol: string, historyLimit = 300) {
+    this.exchange = exchange;
+    this.symbol = symbol;
+    this.historyLimit = historyLimit;
+    this.interval = baseInterval;
+    this.intervalString = util.intervalToString(this.interval);
+    this.tableName = util.candlestickName(exchange, symbol, this.interval);
 
-    this.history_data = []
+    this.historyData = [];
     // Check Table and Data integrity
   }
 
-  async start() {
+  async start(): Promise<void> {
     try {
-      await DB_LAYER.candlestick_table_check(this.tableName)
+      await DBQueries.candlestickTableCheck(this.tableName);
 
-      logger.verbose(`Candlestick history build start for: ${this.exchange}-${this.symbol}-${this.intervalString}`)
-      await this.init_build_history()
+      logger.verbose(`Candlestick history build start for: ${this.exchange}-${this.symbol}-${this.intervalString}`);
+      await this.initBuildHistory();
 
-      let candle_data = await DB_LAYER.candlestick_select_all(this.tableName)
+      const candleData = await DBQueries.candlestickSelectAll(this.tableName);
 
-      let integrity_check = util.candlestick_data_integrity(candle_data, this.interval)
+      const integrityCheck = util.candlestickDataIntegrityCheck(candleData as RowDataPacket[][], this.interval);
 
-      if (integrity_check.length > 0) {
-        logger.verbose(`Candlestick history data integrity error in ${this.exchange}-${this.symbol} ${integrity_check.length} times`)
+      if (Array.isArray(integrityCheck)) {
+        logger.verbose(`Candlestick history data integrity error in ${this.exchange}-${this.symbol} ${integrityCheck.length} times`);
       }
 
-      logger.verbose(`Candlestick history build finished for: ${this.exchange}-${this.symbol}-${this.intervalString}`)
+      logger.verbose(`Candlestick history build finished for: ${this.exchange}-${this.symbol}-${this.intervalString}`);
 
-      return "Done"
+      return;
     } catch (err) {
-      logger.error("Error", err)
-      return err
+      logger.error('Error', err);
+      return err;
     }
   }
 
-  async init_build_history(startTime = 0) {
+  async initBuildHistory(startTime = 0): Promise<void> {
     try {
       // Check first timestamp and go forward
       if (startTime == 0) {
-        startTime = Date.now() - this.history_limit * this.interval * 1000
+        startTime = Date.now() - this.historyLimit * this.interval * 1000;
       }
 
-      let ticks = await this.get_ticks(startTime)
+      const ticks = await this.getTicks(startTime);
 
       // Check history limit
-      let check_size = await DB_LAYER.candlestick_history_size(this.tableName)
+      const checkSize = await DBQueries.candlestickHistorySize(this.tableName);
 
-      if (check_size > this.history_limit) {
-        return
+      if (checkSize && checkSize > this.historyLimit) {
+        return;
       }
 
       if (Array.isArray(ticks)) {
         if (ticks.length == 1) {
-          return
+          return;
         }
 
-        await DB_LAYER.candlestick_replace(this.tableName, ticks)
-        startTime = ticks[ticks.length - 1][0]
-        logger.verbose(`Tick length: ${ticks.length}`)
+        await DBQueries.candlestickReplace(this.tableName, ticks as TicksOHLCV[]);
+        startTime = ticks[ticks.length - 1][0];
+        logger.verbose(`Tick length: ${ticks.length}`);
       } else {
-        startTime = startTime + ccxt_candlelimit[this.exchange] * this.interval * 1000
+        startTime = startTime + ccxtCandleLimit[this.exchange] * this.interval * 1000;
       }
 
-      logger.verbose(`Time: ${startTime}`)
+      logger.verbose(`Time: ${startTime}`);
 
-      await this.init_build_history(startTime)
+      await this.initBuildHistory(startTime);
     } catch (e) {
-      logger.error("Error", e)
+      logger.error('Error', e);
     }
   }
 
-  async get_ticks(startTime: number) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  async getTicks(startTime: number) {
     try {
-      let ticks:any[] = []
-
-      ticks = await CCXT_API.get_candlestick(this.symbol, this.exchange, this.intervalString, startTime, ccxt_candlelimit[this.exchange])
+      const ticks = await CCXT_API.getCandlestick(this.symbol, this.exchange, this.intervalString, startTime, ccxtCandleLimit[this.exchange]);
 
       // https://github.com/ccxt/ccxt/issues/2937
       // Last Candles can be incomplete
-      if (ticks.length > 0) {
-        if (Number(_.last(ticks)[0]) + this.interval * 1000 > _.now()) {
-          ticks.pop()
+      if (ticks && ticks.length > 0) {
+        if (ticks[ticks.length - 1] && ticks[ticks.length - 1][0]) {
+          if (ticks[ticks.length - 1][0] + this.interval * 1000 > _.now()) {
+            ticks.pop();
+          }
         }
       }
 
-      return ticks
+      return ticks;
     } catch (e) {
-      logger.error("", e)
+      logger.error('', e);
     }
   }
 }
 
-module.exports = Candlestick
+module.exports = Candlestick;

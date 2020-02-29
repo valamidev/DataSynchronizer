@@ -1,13 +1,14 @@
 //
-import CConverter, { OHLCV } from 'candlestick-convert';
+import CConverter, { OHLCV, Trade } from 'candlestick-convert';
 import { parentPort } from 'worker_threads';
 
 import { logger } from '../logger';
 
-import ExchangeDB from '../database/queries';
+import { DBQueries } from '../database/queries';
 import { TradepairQueries } from '../tradepairs/tradepairs';
 import { util } from '../utils';
 import { isArray } from 'util';
+import { TicksOHLCV } from 'src/types/types';
 
 const DEFAULT_CANDLE_INTERVAL = 60;
 
@@ -17,35 +18,35 @@ if (parentPort) {
     setImmediate(async () => {
       try {
         // Select all tradepairs
-        const tradepairs = await TradepairQueries.select_tradepairs_all();
+        const tradepairs = await TradepairQueries.selectTradepairsAll();
 
         if (isArray(tradepairs)) {
           for (const tradepair of tradepairs) {
             if (tradepair) {
               try {
-                const { exchange, symbol } = tradepair as any;
+                const { exchange, symbol } = tradepair;
 
                 // Table check
-                const candlestickTableName = util.candlestick_name(exchange, symbol, DEFAULT_CANDLE_INTERVAL);
+                const candlestickTableName = util.candlestickName(exchange, symbol, DEFAULT_CANDLE_INTERVAL);
 
-                await ExchangeDB.candlestick_table_check(candlestickTableName);
+                await DBQueries.candlestickTableCheck(candlestickTableName);
 
                 // Get last Candle time
-                const lastUpdateTime = await ExchangeDB.candlestick_lastTime(candlestickTableName);
+                const lastUpdateTime = await DBQueries.candlestickLastTime(candlestickTableName);
 
                 // Get Trades
-                const tradeTableName = util.trades_name(exchange, symbol);
+                const tradeTableName = util.tradesName(exchange, symbol);
 
-                const trades = await ExchangeDB.trades_select(tradeTableName, lastUpdateTime);
+                const trades = await DBQueries.tradesSelect(tradeTableName, lastUpdateTime);
 
                 // Avoid some trades error
                 if (Array.isArray(trades)) {
                   // Convert candles
-                  const candlesticks = CConverter.trade_to_candle(trades, DEFAULT_CANDLE_INTERVAL);
+                  const candlesticks = CConverter.trade_to_candle(trades as Trade[], DEFAULT_CANDLE_INTERVAL);
 
                   const candlestickArray = candlesticks.map((e: OHLCV) => [e.time, e.open, e.high, e.low, e.close, e.volume]);
 
-                  await ExchangeDB.candlestick_replace(candlestickTableName, candlestickArray);
+                  await DBQueries.candlestickReplace(candlestickTableName, candlestickArray as TicksOHLCV[]);
                 }
               } catch (e) {
                 logger.error('Worker thread error', e);

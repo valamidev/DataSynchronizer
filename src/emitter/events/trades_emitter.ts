@@ -1,47 +1,37 @@
-"use strict"
+import { util } from '../../utils';
+import { logger } from '../../logger';
+import { Emitter } from '../emitter';
 
-import {util} from '../../utils'
-import {logger} from '../../logger'
-import {Emitter} from '../emitter'
+import { TradepairQueries } from '../../tradepairs/tradepairs';
+import { DBQueries } from '../../database/queries';
 
+const tableNameCache: string[] = [];
 
-const {TradepairQueries} = require("../../tradepairs/tradepairs")
-const DB_LAYER = require("../../database/queries")
-
-let table_name_cache: any[] = []
-
-class Trades_emitter {
+class TradesEmitter {
   constructor() {
     // Event listeners
-    logger.verbose("Trade Emitter started!")
+    logger.verbose('Trade Emitter started!');
 
-    Emitter.on("Trades", (exchange:string, trade:any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Emitter.on('Trades', (exchange: string, trade: any) => {
       setImmediate(async () => {
         // Get CCXT standard symbol
-        let ccxt_symbol = await TradepairQueries.id_to_symbol(exchange, trade.symbol)
+        const ccxtSymbol = await TradepairQueries.idToSymbol(exchange, trade.symbol);
 
-        let table_name = util.trades_name(exchange, ccxt_symbol)
-        /*
-        {
-          time: 1564393265876 // in ms
-          symbol: 'BTC-USDT'
-          side: 'buy'/'sell'
-          quantity: '0.00171400'
-          price:'9469.48000000'
-          tradeId: 30 long string
+        if (ccxtSymbol) {
+          const tableName = util.tradesName(exchange, ccxtSymbol);
+
+          // Avoid unnecessary Table checks
+          if (tableNameCache.indexOf(tableName) == -1) {
+            await DBQueries.tradesTableCheck(tableName);
+            tableNameCache.push(tableName);
+          }
+
+          DBQueries.tradesReplace(tableName, trade);
         }
-        */
-
-        // Avoid unnecessary Table checks
-        if (table_name_cache.indexOf(table_name) == -1) {
-          await DB_LAYER.trades_table_check(table_name)
-          table_name_cache.push(table_name)
-        }
-
-        DB_LAYER.trades_replace(table_name, trade)
-      })
-    })
+      });
+    });
   }
 }
 
-module.exports = new Trades_emitter()
+module.exports = new TradesEmitter();

@@ -7,6 +7,7 @@ import { TradepairQueries } from '../tradepairs/tradepairs';
 
 import { openSocket as binanceWS } from '../exchange/ws_exchanges/binance_ws';
 import { openSocket as kucoinWS } from '../exchange/ws_exchanges/kucoin_ws';
+import { RowDataPacket } from 'mysql2';
 
 // Exchange Websockets
 const ExchangeWS = {
@@ -18,8 +19,8 @@ const ExchangeWS = {
 const watcherTimeout = 5 * 60 * 1000; // 5 minute
 
 class LivefeedAPI {
-  public tradepairs: any[];
-  public exchanges: any[];
+  public tradepairs: RowDataPacket[];
+  public exchanges: string[];
   public websocketAPI: {};
 
   constructor() {
@@ -28,11 +29,11 @@ class LivefeedAPI {
     this.websocketAPI = {};
   }
 
-  public async start(exchanges: string[]) {
+  public async start(exchanges: string[]): Promise<void> {
     try {
       this.exchanges = exchanges;
 
-      await this.tradepairs_watcher();
+      await this.tradepairsWatcher();
 
       logger.info('LiveFeed API started');
     } catch (e) {
@@ -40,21 +41,21 @@ class LivefeedAPI {
     }
   }
 
-  private async tradepairs_watcher() {
+  private async tradepairsWatcher(): Promise<void> {
     // Looking after new tradepairs!
     try {
-      const tradepairs = await TradepairQueries.select_tradepairs_all();
+      const tradepairs = await TradepairQueries.selectTradepairsAll();
 
       if (!tradepairs) {
         throw new Error('LiveFeed Tradepairs are empty');
       }
 
-      const new_symbols = tradepairs.map(elem => elem.symbol);
+      const newSymbols = tradepairs.map(elem => elem.symbol);
 
-      const old_symbols = this.tradepairs.map(elem => elem.symbol);
+      const oldSymbols = this.tradepairs.map(elem => elem.symbol);
 
       // There is no new tradepairs
-      if (isEqual(new_symbols, old_symbols) === true) {
+      if (isEqual(newSymbols, oldSymbols) === true) {
         return;
       } else {
         this.tradepairs = tradepairs;
@@ -66,7 +67,7 @@ class LivefeedAPI {
           this.websocketAPI[exchange]();
         }
         // Open Websockets
-        await this.open_websocket_candlestick(exchange);
+        await this.openWebsocketCandlestick(exchange);
 
         logger.info(`Load new websocket for ${exchange}`);
       }
@@ -74,12 +75,12 @@ class LivefeedAPI {
       logger.error('LiveFeed Tradepairs watcher error ', e);
     } finally {
       setTimeout(() => {
-        this.tradepairs_watcher();
+        this.tradepairsWatcher();
       }, watcherTimeout);
     }
   }
 
-  private async open_websocket_candlestick(exchange: any) {
+  private async openWebsocketCandlestick(exchange: string): Promise<void> {
     const websocketSymbolIds = [];
 
     for (const tradepair of this.tradepairs) {
@@ -92,4 +93,4 @@ class LivefeedAPI {
   }
 }
 
-module.exports = new LivefeedAPI();
+export default new LivefeedAPI();

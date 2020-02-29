@@ -1,101 +1,105 @@
-"use strict"
+'use strict';
 
-import {logger} from '../logger';
-import * as _ from "lodash"
-import {BaseDB} from "../database"
-import {TradepairQueries} from "../tradepairs/tradepairs"
-
-
+import { logger } from '../logger';
+import * as _ from 'lodash';
+import { BaseDB } from '../database';
+import { TradepairQueries } from '../tradepairs/tradepairs';
+import { RowDataPacket } from 'mysql2';
 
 /* Warden intelligent Symbol following system it help to follow new coins or unfollow in-active ones */
 
 class Warden {
-  warden_symbols: string[];
+  wardenSymbols: string[];
   exchanges: string[];
   quotes: string[];
-  quote_limits: number[];
+  quoteLimits: number[];
 
   constructor() {
-    this.warden_symbols = []
-    this.exchanges = []
-    this.quotes = []
-    this.quote_limits = []
+    this.wardenSymbols = [];
+    this.exchanges = [];
+    this.quotes = [];
+    this.quoteLimits = [];
   }
 
-  async start(exchanges: string[], quotes: string[], quote_limits: number[]) {
+  async start(exchanges: string[], quotes: string[], quoteLimits: number[]): Promise<void> {
     try {
-      this.exchanges = exchanges
+      this.exchanges = exchanges;
 
-      if (this.quotes.length != this.quote_limits.length) {
-        throw "Quotes and quotes limit are not defined correctly!"
+      if (this.quotes.length != this.quoteLimits.length) {
+        throw 'Quotes and quotes limit are not defined correctly!';
       }
 
-      this.quotes = quotes
-      this.quote_limits = quote_limits
+      this.quotes = quotes;
+      this.quoteLimits = quoteLimits;
 
-      await this.update_loop()
+      await this.updateLoop();
 
-      logger.verbose("Warden System started")
+      logger.verbose('Warden System started');
 
-      return
+      return;
     } catch (e) {
-      logger.error("Warden System ", e)
+      logger.error('Warden System ', e);
     }
   }
 
-  async update_loop() {
+  async updateLoop(): Promise<void> {
     try {
-      let update_promises = []
+      const updatePromises = [];
 
       for (let i = 0; i < this.exchanges.length; i++) {
-        const exchange = this.exchanges[i]
+        const exchange = this.exchanges[i];
 
         for (let j = 0; j < this.quotes.length; j++) {
-          const quote = this.quotes[j]
-          const limit = this.quote_limits[j]
+          const quote = this.quotes[j];
+          const limit = this.quoteLimits[j];
 
-          update_promises.push(this.select_symbols(exchange, quote, limit))
+          updatePromises.push(this.selectSymbols(exchange, quote, limit));
         }
       }
 
-      let results: any[] = await Promise.all(update_promises)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let results: any[] = await Promise.all(updatePromises);
 
-      results = _.flatten(results)
+      results = _.flatten(results);
 
       // Update Tradepairs
-      let time = Date.now()
+      const time = Date.now();
 
-      results.map(async (elem) => {
-        await TradepairQueries.add_tradepair(elem.exchange, elem.symbol, elem.id, elem.baseId, elem.quoteId, 1, time)
-      })
+      results.map(async elem => {
+        await TradepairQueries.addTradepair(elem.exchange, elem.symbol, elem.id, elem.baseId, elem.quoteId, 1, time);
+      });
+
+      return;
     } catch (e) {
-      logger.error("Warden update loop ", e)
+      logger.error('Warden update loop ', e);
     } finally {
       setTimeout(async () => {
-        this.update_loop()
-      }, 60 * 1000)
+        this.updateLoop();
+      }, 60 * 1000);
     }
   }
 
   /* Add Warden results into the Tradepairs */
 
   /* Database queries */
-  async select_symbols(exchange: string, quote: string, limit: number) {
+  async selectSymbols(exchange: string, quote: string, limit: number): Promise<RowDataPacket[] | undefined> {
     try {
-      const [rows] = await BaseDB.query(
-        "SELECT m.exchange, m.symbol, m.id ,m.baseId,m.quoteId FROM `market_datas` as m JOIN `price_tickers` as p ON m.exchange = p.exchange AND m.symbol = p.symbol WHERE m.active = 1 and m.exchange = ? and m.quoteId = ?  order by p.quoteVolume desc;",
-        [exchange, quote]
-      )
+      const [
+        rows,
+      ] = await BaseDB.query(
+        'SELECT m.exchange, m.symbol, m.id ,m.baseId,m.quoteId FROM `market_datas` as m JOIN `price_tickers` as p ON m.exchange = p.exchange AND m.symbol = p.symbol WHERE m.active = 1 and m.exchange = ? and m.quoteId = ?  order by p.quoteVolume desc;',
+        [exchange, quote],
+      );
 
-      if ((rows as any[]).length > 0) {
-        return _.take((rows as any[]), limit)
+      if ((rows as RowDataPacket[]).length > 0) {
+        return _.take(rows as RowDataPacket[], limit) as RowDataPacket[];
       }
 
-      return [];
+      return [] as RowDataPacket[];
     } catch (e) {
-      logger.error("Warden SQL error", e)
+      logger.error('Warden SQL error', e);
     }
   }
 }
 
-module.exports = new Warden()
+export default new Warden();
