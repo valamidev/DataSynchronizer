@@ -57,8 +57,14 @@ export const openSocket = (symbol: any) => {
   });
 
   // Needed to close connection
-  return (): void => {
-    socketTrades();
-    socketOrderbook();
+  return (): boolean => {
+    try {
+      socketTrades();
+      socketOrderbook();
+    } catch (err) {
+      return err;
+    }
+
+    return true;
   };
 };

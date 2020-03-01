@@ -59,17 +59,17 @@ class LivefeedAPI {
         return;
       } else {
         this.tradepairs = tradepairs;
-      }
 
-      for (const exchange of this.exchanges) {
-        if (typeof this.websocketAPI[exchange] !== 'undefined') {
-          logger.info(`Close old websocket ${exchange}`);
-          this.websocketAPI[exchange]();
+        for (const exchange of this.exchanges) {
+          if (typeof this.websocketAPI[exchange] !== 'undefined') {
+            logger.info(`Close old websocket ${exchange}`);
+            this.websocketAPI[exchange]();
+          }
+          // Open Websockets
+          await this.openWebsocketCandlestick(exchange);
+
+          logger.info(`Load new websocket for ${exchange}`);
         }
-        // Open Websockets
-        await this.openWebsocketCandlestick(exchange);
-
-        logger.info(`Load new websocket for ${exchange}`);
       }
     } catch (e) {
       logger.error('LiveFeed Tradepairs watcher error ', e);
@@ -89,7 +89,7 @@ class LivefeedAPI {
       }
     }
 
-    this.websocketAPI[exchange] = await ExchangeWS[exchange](websocketSymbolIds);
+    this.websocketAPI[exchange] = ExchangeWS[exchange](websocketSymbolIds);
   }
 }
 

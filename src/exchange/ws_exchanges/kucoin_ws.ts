@@ -14,10 +14,8 @@ const client = new KucoinAPI();
 
 export const openSocket = (symbol: any) => {
   const socketTrades = client.MarketMatches(symbol, (trade: any) => {
-    // Kucoin use ns for timestamp
-
     trade = {
-      time: Math.floor(trade.time / 10e5),
+      time: Math.floor(trade.time / 10e5), // Kucoin use ns for timestamp
       symbol: trade.symbol,
       side: trade.side,
       quantity: trade.size,
@@ -49,8 +47,15 @@ export const openSocket = (symbol: any) => {
   });
 
   // Needed to close connection
-  return (): void => {
-    socketTrades();
-    socketOrderbook();
+  return (): boolean => {
+    /*
+    try {
+      socketTrades();
+      socketOrderbook();
+    } catch (err) {
+      return err;
+    }
+    */
+    return true;
   };
 };

@@ -22,12 +22,20 @@ class TradesEmitter {
           const tableName = util.tradesName(exchange, ccxtSymbol);
 
           // Avoid unnecessary Table checks
-          if (tableNameCache.indexOf(tableName) == -1) {
-            await DBQueries.tradesTableCheck(tableName);
-            tableNameCache.push(tableName);
+          if (tableNameCache.indexOf(tableName) === -1) {
+            try {
+              await DBQueries.tradesTableCheck(tableName);
+              tableNameCache.push(tableName);
+            } catch (err) {
+              logger.error('Error', err);
+            }
           }
 
-          DBQueries.tradesReplace(tableName, trade);
+          try {
+            await DBQueries.tradesReplace(tableName, trade);
+          } catch (err) {
+            logger.error('Error', err);
+          }
         }
       });
     });
