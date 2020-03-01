@@ -62,11 +62,11 @@ exchangeList = binance,kucoin
 # Auto init tradepairs for data collection based on Volume desc, Quote and Quote limits should be match
 # Example:
 # quotes = BTC,ETH,USDT,BNB
-# quoteLimits = 40,10,10,10
+# quoteLimits = 3,1,1,1
 #
 wardenExchangesList = binance,kucoin
 quotes = BTC,ETH,USDT,BNB
-quoteLimits = 40,10,10,10
+quoteLimits = 3,1,1,1
 
 
 #

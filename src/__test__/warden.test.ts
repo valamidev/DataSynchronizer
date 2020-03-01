@@ -3,7 +3,7 @@ require('dotenv').config();
 
 process.env.logLevel = 'info';
 
-const Warden = require('../warden/index');
+import Warden from '../warden/index';
 
 test('Warden Select Symbols', async () => {
   const result = await Warden.selectSymbols('kucoin', 'BTC', 1);

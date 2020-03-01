@@ -27,7 +27,7 @@ export const DBQueries = {
 
   orderbookTableCheck: async (tableName: string): Promise<void> => {
     try {
-      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND tableName = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
+      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
 
       if ((rows as RowDataPacket[]).length != 1) {
         await CandleDB.query('CREATE TABLE `' + tableName + '` LIKE `orderbook_def`;');
@@ -51,7 +51,7 @@ export const DBQueries = {
 
   tradesTableCheck: async (tableName: string): Promise<void> => {
     try {
-      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND tableName = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
+      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
 
       if ((rows as RowDataPacket[]).length != 1) {
         await CandleDB.query('CREATE TABLE `' + tableName + '` LIKE `trades_def`;');
@@ -88,7 +88,7 @@ export const DBQueries = {
 
   candlestickTableCheck: async (tableName: string): Promise<void> => {
     try {
-      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE table_schema = ? AND tableName = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
+      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
 
       if ((rows as RowDataPacket[]).length != 1) {
         await CandleDB.query('CREATE TABLE `' + tableName + '` LIKE `candlestick_def`;');
