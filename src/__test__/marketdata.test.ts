@@ -4,8 +4,10 @@ process.env.logLevel = 'info';
 
 import { MarketDataAPI } from '../marketdata/index';
 
-test('Marketdata save', async () => {
-  const result = await MarketDataAPI.updateMarketData('kucoin');
+describe('MarketData', () => {
+  test('Marketdata save', async () => {
+    const result = await MarketDataAPI.updateMarketData('kucoin');
 
-  expect(result).toBeUndefined();
+    expect(result).toBeUndefined();
+  });
 });
