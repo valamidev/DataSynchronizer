@@ -1,6 +1,5 @@
 'use strict';
 
-import fs from 'fs';
 import { RowDataPacket } from 'mysql2';
 
 import { logger } from '../../logger';
