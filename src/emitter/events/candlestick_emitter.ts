@@ -5,7 +5,8 @@ import { util } from '../../utils';
 import { Emitter } from '../emitter';
 
 import { DBQueries } from '../../database/queries';
-import { TicksOHLCV } from 'src/types/types';
+import { TicksOHLCV } from '../../types/types';
+import { TableTemplatePath } from '../../database/queries/enums';
 
 class CandlestickEmitter {
   constructor() {
@@ -38,7 +39,9 @@ class CandlestickEmitter {
   async updateWS(tableName: string, candle: any): Promise<void> {
     try {
       // Check if table exist
-      await DBQueries.candlestickTableCheck(tableName);
+      if (!(await DBQueries.tableCheck(tableName))) {
+        await DBQueries.createNewTableFromTemplate(TableTemplatePath.Candlestick, tableName);
+      }
 
       const OHLCV: TicksOHLCV[] = [[candle.startTime, candle.open, candle.high, candle.low, candle.close, candle.volume]];
 

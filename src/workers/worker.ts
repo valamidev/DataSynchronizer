@@ -8,7 +8,8 @@ import { DBQueries } from '../database/queries';
 import { TradepairQueries } from '../tradepairs/tradepairs';
 import { util } from '../utils';
 import { isArray } from 'util';
-import { TicksOHLCV } from 'src/types/types';
+import { TicksOHLCV } from '../types/types';
+import { TableTemplatePath } from '../database/queries/enums';
 
 const DEFAULT_CANDLE_INTERVAL = 60;
 
@@ -29,7 +30,9 @@ if (parentPort) {
                 // Table check
                 const candlestickTableName = util.candlestickName(exchange, symbol, DEFAULT_CANDLE_INTERVAL);
 
-                await DBQueries.candlestickTableCheck(candlestickTableName);
+                if (!(await DBQueries.tableCheck(candlestickTableName))) {
+                  await DBQueries.createNewTableFromTemplate(TableTemplatePath.Candlestick, candlestickTableName);
+                }
 
                 // Get last Candle time
                 const lastUpdateTime = await DBQueries.candlestickLastTime(candlestickTableName);

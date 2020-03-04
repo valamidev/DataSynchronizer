@@ -4,8 +4,9 @@ import { Emitter } from '../emitter';
 
 import { TradepairQueries } from '../../tradepairs/tradepairs';
 import { DBQueries } from '../../database/queries';
+import { TableTemplatePath } from '../../database/queries/enums';
 
-const tableNameCache: string[] = [];
+const tableNameCache: Set<string> = new Set();
 
 class TradesEmitter {
   constructor() {
@@ -15,30 +16,39 @@ class TradesEmitter {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Emitter.on('Trades', (exchange: string, trade: any) => {
       setImmediate(async () => {
-        // Get CCXT standard symbol
-        const ccxtSymbol = await TradepairQueries.idToSymbol(exchange, trade.symbol);
+        try {
+          // Get CCXT standard symbol
+          const ccxtSymbol = await TradepairQueries.idToSymbol(exchange, trade.symbol);
 
-        if (ccxtSymbol) {
-          const tableName = util.tradesName(exchange, ccxtSymbol);
+          if (ccxtSymbol) {
+            const tableName = util.tradesName(exchange, ccxtSymbol);
 
-          // Avoid unnecessary Table checks
-          if (tableNameCache.indexOf(tableName) === -1) {
-            try {
-              await DBQueries.tradesTableCheck(tableName);
-              tableNameCache.push(tableName);
-            } catch (err) {
-              logger.error('Error', err);
+            // Use Set for Table name check cache
+            if (tableNameCache.has(tableName)) {
+              await DBQueries.tradesReplace(tableName, trade);
+              return;
             }
-          }
 
-          try {
-            await DBQueries.tradesReplace(tableName, trade);
-          } catch (err) {
-            logger.error('Error', err);
+            await this.createTable(tableName);
           }
+        } catch (err) {
+          logger.error('Error', err);
         }
       });
     });
+  }
+
+  async createTable(tableName: string): Promise<void> {
+    try {
+      if (await DBQueries.tableCheck(tableName)) {
+        tableNameCache.add(tableName);
+        return;
+      }
+
+      await DBQueries.createNewTableFromTemplate(TableTemplatePath.Trades, tableName);
+    } catch (err) {
+      logger.error('Error', err);
+    }
   }
 }
 

@@ -15,7 +15,7 @@ export const BaseDB = createPool({
   queueLimit: 0,
 });
 
-export const CandleDB = createPool({
+export const ExchangeDB = createPool({
   host: process.env.MYSQL_HOST_EXCHANGE,
   port: process.env.MYSQL_PORT_EXCHANGE === undefined ? 3306 : parseInt(process.env.MYSQL_PORT_EXCHANGE, 10),
   user: process.env.MYSQL_USER_EXCHANGE,

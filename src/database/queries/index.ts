@@ -1,13 +1,11 @@
 'use strict';
 
-import { logger } from '../../logger';
-import { CandleDB } from '../../database';
+import fs from 'fs';
 import { RowDataPacket } from 'mysql2';
-import { TicksOHLCV } from 'src/types/types';
 
-const { MYSQL_DB_EXCHANGE } = process.env;
-
-const exchangeDatabaseName = MYSQL_DB_EXCHANGE ?? 'stockml_exchange';
+import { logger } from '../../logger';
+import { ExchangeDB } from '../../database';
+import { TicksOHLCV } from '../../types/types';
 
 export const DBQueries = {
   /* Orderbooks */
@@ -17,7 +15,7 @@ export const DBQueries = {
     try {
       const data = [res.time, JSON.stringify(res.orderbook)];
 
-      await CandleDB.query('REPLACE INTO `' + tableName + '` (`time`, `orderbook`) VALUES ?;', [[data]]);
+      await ExchangeDB.query('REPLACE INTO `' + tableName + '` (`time`, `orderbook`) VALUES ?;', [[data]]);
 
       return;
     } catch (e) {
@@ -25,39 +23,15 @@ export const DBQueries = {
     }
   },
 
-  orderbookTableCheck: async (tableName: string): Promise<void> => {
-    try {
-      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
-
-      if ((rows as RowDataPacket[]).length != 1) {
-        await CandleDB.query('CREATE TABLE `' + tableName + '` LIKE `orderbook_def`;');
-      }
-    } catch (e) {
-      logger.error('Error', e);
-    }
-  },
-
   /* Trades */
 
   tradesSelect: async (tableName: string, time = 0): Promise<RowDataPacket[] | undefined> => {
     try {
-      const [rows] = await CandleDB.query('SELECT * FROM `' + tableName + '` WHERE time > ? ORDER BY `time` ASC;', [time]);
+      const [rows] = await ExchangeDB.query('SELECT * FROM `' + tableName + '` WHERE time > ? ORDER BY `time` ASC;', [time]);
 
       return rows as RowDataPacket[];
     } catch (e) {
       logger.error('SQL error', e);
-    }
-  },
-
-  tradesTableCheck: async (tableName: string): Promise<void> => {
-    try {
-      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
-
-      if ((rows as RowDataPacket[]).length != 1) {
-        await CandleDB.query('CREATE TABLE `' + tableName + '` LIKE `trades_def`;');
-      }
-    } catch (e) {
-      logger.error('Error', e);
     }
   },
 
@@ -76,7 +50,7 @@ export const DBQueries = {
       */
       const data = [res.time, res.side, res.quantity, res.price, res.tradeId];
 
-      await CandleDB.query('REPLACE INTO `' + tableName + '` (`time`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;', [[data]]);
+      await ExchangeDB.query('REPLACE INTO `' + tableName + '` (`time`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;', [[data]]);
 
       return;
     } catch (e) {
@@ -86,21 +60,9 @@ export const DBQueries = {
 
   /* Candlesticks */
 
-  candlestickTableCheck: async (tableName: string): Promise<void> => {
-    try {
-      const [rows] = await CandleDB.query('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1;', [exchangeDatabaseName, tableName]);
-
-      if ((rows as RowDataPacket[]).length != 1) {
-        await CandleDB.query('CREATE TABLE `' + tableName + '` LIKE `candlestick_def`;');
-      }
-    } catch (e) {
-      logger.error('Error', e);
-    }
-  },
-
   candlestickLastTime: async (tableName: string): Promise<number | undefined> => {
     try {
-      const [rows] = await CandleDB.query('SELECT time FROM `' + tableName + '` ORDER BY `time` DESC limit 1;');
+      const [rows] = await ExchangeDB.query('SELECT time FROM `' + tableName + '` ORDER BY `time` DESC limit 1;');
 
       if (rows[0]) {
         return rows[0].time;
@@ -116,7 +78,7 @@ export const DBQueries = {
   candlestickReplace: async (tableName: string, ticks: TicksOHLCV[]): Promise<void> => {
     try {
       if (ticks.length > 0) {
-        await CandleDB.query('REPLACE INTO `' + tableName + '` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;', [ticks]);
+        await ExchangeDB.query('REPLACE INTO `' + tableName + '` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;', [ticks]);
       }
     } catch (e) {
       logger.error('Error', e);
@@ -125,7 +87,7 @@ export const DBQueries = {
 
   candlestickSelectAll: async (tableName: string): Promise<RowDataPacket[] | undefined> => {
     try {
-      const [rows] = await CandleDB.query('SELECT * FROM `' + tableName + '` ORDER BY `time` ASC;');
+      const [rows] = await ExchangeDB.query('SELECT * FROM `' + tableName + '` ORDER BY `time` ASC;');
 
       return rows as RowDataPacket[];
     } catch (e) {
@@ -135,7 +97,7 @@ export const DBQueries = {
 
   candlestickHistorySize: async (tableName: string): Promise<number | undefined> => {
     try {
-      const [rows] = await CandleDB.query('SELECT count(*) as count FROM `' + tableName + '`;');
+      const [rows] = await ExchangeDB.query('SELECT count(*) as count FROM `' + tableName + '`;');
 
       if (rows[0]) {
         return rows[0].count;
@@ -144,6 +106,35 @@ export const DBQueries = {
       return 0;
     } catch (e) {
       logger.error('Error', e);
+    }
+  },
+
+  tableCheck: async (tableName: string): Promise<boolean> => {
+    try {
+      const [rows] = await ExchangeDB.query('SHOW TABLES LIKE ? ;', [tableName]);
+
+      if ((rows as RowDataPacket[]).length === 1) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      logger.error('Error', e);
+      return false;
+    }
+  },
+
+  createNewTableFromTemplate: async (templatePath: string, tableName: string): Promise<boolean> => {
+    try {
+      const quertTemplate = fs.readFileSync(templatePath, { encoding: 'utf8' });
+
+      await ExchangeDB.query(quertTemplate, [tableName]);
+
+      return true;
+    } catch (e) {
+      logger.error('Error', e);
+
+      return false;
     }
   },
 };

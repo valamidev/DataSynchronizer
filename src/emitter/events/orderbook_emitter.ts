@@ -9,6 +9,7 @@ import { OrderBookStore } from 'orderbook-synchronizer';
 import { TradepairQueries } from '../../tradepairs/tradepairs';
 import { DBQueries } from '../../database/queries';
 import { Redis, RedisPub } from '../../redis/redis';
+import { TableTemplatePath } from '../../database/queries/enums';
 
 const memoryLimit = 512;
 const Orderbooks = {};
@@ -76,7 +77,10 @@ class OrderbookEmitter {
             if (ccxtSymbol) {
               const tableName = util.orderbookName(exchange, ccxtSymbol);
 
-              await DBQueries.orderbookTableCheck(tableName);
+              if (!(await DBQueries.tableCheck(tableName))) {
+                await DBQueries.createNewTableFromTemplate(TableTemplatePath.Orderbook, tableName);
+              }
+
               await DBQueries.orderbookReplace(tableName, { time: snapshotTime, orderbook });
 
               // Store snapshot in redis for 600 sec
