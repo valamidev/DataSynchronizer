@@ -30,8 +30,9 @@ export const DBQueries = {
       const [rows] = await ExchangeDB.query('SELECT * FROM `' + tableName + '` WHERE time > ? ORDER BY `time` ASC;', [time]);
 
       return rows as RowDataPacket[];
-    } catch (e) {
-      logger.error('SQL error', e);
+    } catch (err) {
+      logger.verbose('SQL error', err);
+      return undefined;
     }
   },
 
@@ -124,11 +125,9 @@ export const DBQueries = {
     }
   },
 
-  createNewTableFromTemplate: async (templatePath: string, tableName: string): Promise<boolean> => {
+  createNewTableFromTemplate: async (templateQuery: string, tableName: string): Promise<boolean> => {
     try {
-      const quertTemplate = fs.readFileSync(templatePath, { encoding: 'utf8' });
-
-      await ExchangeDB.query(quertTemplate, [tableName]);
+      await ExchangeDB.query(templateQuery, [tableName]);
 
       return true;
     } catch (e) {

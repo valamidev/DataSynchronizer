@@ -4,7 +4,7 @@ import { Emitter } from '../emitter';
 
 import { TradepairQueries } from '../../tradepairs/tradepairs';
 import { DBQueries } from '../../database/queries';
-import { TableTemplatePath } from '../../database/queries/enums';
+import { TableTemplates } from '../../database/queries/enums';
 
 const tableNameCache: Set<string> = new Set();
 
@@ -45,7 +45,7 @@ class TradesEmitter {
         return;
       }
 
-      await DBQueries.createNewTableFromTemplate(TableTemplatePath.Trades, tableName);
+      await DBQueries.createNewTableFromTemplate(TableTemplates.Trades, tableName);
     } catch (err) {
       logger.error('Error', err);
     }

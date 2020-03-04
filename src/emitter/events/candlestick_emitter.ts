@@ -6,7 +6,7 @@ import { Emitter } from '../emitter';
 
 import { DBQueries } from '../../database/queries';
 import { TicksOHLCV } from '../../types/types';
-import { TableTemplatePath } from '../../database/queries/enums';
+import { TableTemplates } from '../../database/queries/enums';
 
 class CandlestickEmitter {
   constructor() {
@@ -40,7 +40,7 @@ class CandlestickEmitter {
     try {
       // Check if table exist
       if (!(await DBQueries.tableCheck(tableName))) {
-        await DBQueries.createNewTableFromTemplate(TableTemplatePath.Candlestick, tableName);
+        await DBQueries.createNewTableFromTemplate(TableTemplates.Candlestick, tableName);
       }
 
       const OHLCV: TicksOHLCV[] = [[candle.startTime, candle.open, candle.high, candle.low, candle.close, candle.volume]];

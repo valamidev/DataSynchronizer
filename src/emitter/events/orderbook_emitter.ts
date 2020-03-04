@@ -9,7 +9,7 @@ import { OrderBookStore } from 'orderbook-synchronizer';
 import { TradepairQueries } from '../../tradepairs/tradepairs';
 import { DBQueries } from '../../database/queries';
 import { Redis, RedisPub } from '../../redis/redis';
-import { TableTemplatePath } from '../../database/queries/enums';
+import { TableTemplates } from '../../database/queries/enums';
 
 const memoryLimit = 512;
 const Orderbooks = {};
@@ -78,7 +78,7 @@ class OrderbookEmitter {
               const tableName = util.orderbookName(exchange, ccxtSymbol);
 
               if (!(await DBQueries.tableCheck(tableName))) {
-                await DBQueries.createNewTableFromTemplate(TableTemplatePath.Orderbook, tableName);
+                await DBQueries.createNewTableFromTemplate(TableTemplates.Orderbook, tableName);
               }
 
               await DBQueries.orderbookReplace(tableName, { time: snapshotTime, orderbook });

@@ -17,10 +17,10 @@ const { Redis } = require("../index")
 
 
 Redis.subscribe("CandleUpdate", function(err, count) {
-  console.log("Redis pub/sub channel subscribed count", count)
+ 
 })
 
 Redis.on("message", function(channel, message) {
-  console.log("Receive message %s from channel %s", message, channel)
+  
 })
 */

@@ -9,7 +9,7 @@ import { util } from '../utils';
 import { DBQueries } from '../database/queries';
 import { RowDataPacket } from 'mysql2';
 import { TicksOHLCV } from '../types/types';
-import { TableTemplatePath } from '../database/queries/enums';
+import { TableTemplates } from '../database/queries/enums';
 
 const ccxtCandleLimit = {
   binance: 500,
@@ -41,7 +41,7 @@ class Candlestick {
   async start(): Promise<void> {
     try {
       if (!(await DBQueries.tableCheck(this.tableName))) {
-        await DBQueries.createNewTableFromTemplate(TableTemplatePath.Candlestick, this.tableName);
+        await DBQueries.createNewTableFromTemplate(TableTemplates.Candlestick, this.tableName);
       }
 
       logger.verbose(`Candlestick history build start for: ${this.exchange}-${this.symbol}-${this.intervalString}`);
