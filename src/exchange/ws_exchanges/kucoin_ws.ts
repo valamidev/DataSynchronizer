@@ -9,12 +9,13 @@ const exchangeName = 'kucoin';
 
 const KucoinAPI = require('kucoin-websocket-api');
 
-const client = new KucoinAPI();
 // Kucoin things
 
 export const openSocket = (symbol: any) => {
+  const client = new KucoinAPI();
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const socketTrades = client.MarketMatches(symbol, (trade: any) => {
+  client.MarketMatches(symbol, (trade: any) => {
     trade = {
       time: Math.floor(trade.time / 10e5), // Kucoin use ns for timestamp
       symbol: trade.symbol,
@@ -28,7 +29,7 @@ export const openSocket = (symbol: any) => {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const socketOrderbook = client.MarketLevel2(symbol, (depth: any) => {
+  client.MarketLevel2(symbol, (depth: any) => {
     // Kucoin use ns for timestamp
     /*
       sequenceStart: 1556425985882,
