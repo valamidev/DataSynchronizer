@@ -60,7 +60,7 @@ class OrderbookEmitter {
 
             const data = { ...OrderBookExchangeCache[exchange]._data[symbol] };
 
-            if (data) {
+            if (data?.best_ask && data?.best_bid) {
               await RedisPub.publish('OrderBookUpdate', JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }));
             }
           } catch (e) {
