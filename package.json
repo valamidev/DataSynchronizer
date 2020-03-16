@@ -4,8 +4,8 @@
   "description": "",
   "main": "./build/index.js",
   "scripts": {
-    "start": "node --experimental-worker ./build/index.js",
-    "debug": "tsc && node --experimental-worker --inspect=5858 -r ts-node/register ./src/index.ts",
+    "start": "node  ./build/index.js",
+    "dev": "tsc && node --inspect ./build/index.js",
     "test": "jest --config jestconfig.json",
     "prebuild": "rimraf build",
     "build": "tsc",
