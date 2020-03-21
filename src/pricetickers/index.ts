@@ -55,7 +55,7 @@ class PriceTickers {
       if (_.isObject(priceTickers) === false) {
         return;
       }
-      // Add exchange,time,quotevolume into PriceTickers
+      // Add exchange,time,quoteVolume into PriceTickers
       priceTickers = Object.values(priceTickers).map(elem => {
         elem.exchange = exchange;
         elem.timestamp = time;
@@ -68,8 +68,8 @@ class PriceTickers {
         return elem;
       });
 
-      /* TODO remove tickers with undefinied values */
-      priceTickers = priceTickers.filter(elem => elem.high != undefined);
+      /* TODO remove tickers with undefined values */
+      priceTickers = priceTickers.filter(elem => elem.high != undefined || typeof elem.symbol !== 'string');
 
       if (priceTickers.length > 0) {
         await this.replaceDB(priceTickers);
