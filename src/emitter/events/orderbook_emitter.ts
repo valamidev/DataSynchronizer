@@ -12,6 +12,7 @@ import { Redis, RedisPub } from '../../redis/redis';
 import { TableTemplates } from '../../database/queries/enums';
 
 const memoryLimit = 512;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const OrderBookExchangeCache: Map<string, any> = new Map();
 
 interface OrderBookDepth {

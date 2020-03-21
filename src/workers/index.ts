@@ -1,3 +1,3 @@
-import { controller } from './worker_controller';
+import { ThreadManager } from './worker_controller';
 
-controller.startThread();
+new ThreadManager();
