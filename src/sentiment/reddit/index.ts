@@ -4,6 +4,7 @@ import { sentimentUtil } from '../sentiment_util';
 import { logger } from '../../logger';
 import { BaseDB } from '../../database';
 import { RedditAPI } from './reddit_api';
+import { Sentiments } from '../sentiment';
 
 class SentimentReddit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,7 +16,7 @@ class SentimentReddit {
 
   async updateRedditLoop(): Promise<void> {
     try {
-      const DBReddits = await sentimentUtil.loadSentiments('reddit');
+      const DBReddits = await sentimentUtil.loadSentiments(Sentiments.reddit);
 
       if (DBReddits) {
         this.reddit = DBReddits.map(row => row.name);
@@ -36,7 +37,7 @@ class SentimentReddit {
   async getSubredditData(subreddit: string, time: number): Promise<void> {
     const posts = await RedditAPI.getSubredditTop(subreddit);
 
-    if (posts) {
+    if (posts?.forEach) {
       /*
          title, selftext, ups, num_comments,    
          */

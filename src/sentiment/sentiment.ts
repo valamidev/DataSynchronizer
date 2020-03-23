@@ -5,6 +5,11 @@ import { logger } from '../logger';
 import reddit from './reddit/';
 import twitter from './twitter';
 
+export enum Sentiments {
+  reddit = 'reddit',
+  twitter = 'twitter',
+}
+
 class SentimentAPI {
   async start(): Promise<void> {
     try {

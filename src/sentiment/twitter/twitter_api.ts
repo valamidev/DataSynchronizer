@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
-'use strict';
 
-//const node_twitter = require("twitter-node-client").Twitter;
 import { logger } from '../../logger';
 
-import twitterAPI from 'twitter';
 import Twitter from 'twitter';
 
 const config: Twitter.AccessTokenOptions = {
@@ -14,7 +11,7 @@ const config: Twitter.AccessTokenOptions = {
   access_token_secret: process?.env?.accessTokenSecret ?? '',
 };
 
-const twitter = new twitterAPI(config);
+const twitter = new Twitter(config);
 
 class TwitterAPIClass {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +36,6 @@ class TwitterAPIClass {
         q: search,
         count: 100,
         since_id: id,
-        exclude: ['replies', 'retweets'],
       });
 
       const tweets = searctResult.statuses;
