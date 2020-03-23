@@ -90,7 +90,6 @@ consumerKey =
 consumerSecret = 
 accessToken = 
 accessTokenSecret = 
-callBackUrl = 
 
 # Twitter api loop timeout, avoid rate limit! (in sec) (Recommend: 450)
 #
