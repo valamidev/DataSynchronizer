@@ -33,7 +33,7 @@
     "lodash": "^4.17.11",
     "mysql2": "^2.1.0",
     "node-binance-api": "^0.9.0",
-    "orderbook-synchronizer": "4.0.1",
+    "orderbook-synchronizer": "^4.0.11",
     "rimraf": "^3.0.2",
     "snoowrap": "^1.15.2",
     "twitter": "^1.7.1",
