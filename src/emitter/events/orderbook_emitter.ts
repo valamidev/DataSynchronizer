@@ -13,7 +13,7 @@ import { TableTemplates } from '../../database/queries/enums';
 
 const memoryLimit = 512;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const OrderBookExchangeCache: Map<string, any> = new Map();
+const OrderBookExchangeCache: Map<string, OrderBookStore> = new Map();
 
 interface OrderBookDepth {
   symbol: string;
@@ -39,7 +39,19 @@ class OrderbookEmitter {
 
         const { symbol, asks, bids } = depth;
 
-        if (OrderBookExchangeCache[exchange]._symbols.indexOf(symbol) === -1) {
+        if ((OrderBookExchangeCache[exchange] as OrderBookStore).hasOrderBook(symbol)) {
+          try {
+            OrderBookExchangeCache[exchange].updateOrderBook(symbol, asks, bids);
+
+            const data = { ...OrderBookExchangeCache[exchange].getOrderBook(symbol) };
+
+            if (data.best_ask && data.best_bid) {
+              await RedisPub.publish('OrderBookUpdate', JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }));
+            }
+          } catch (e) {
+            logger.error('Orderbook update error', e);
+          }
+        } else {
           try {
             const tableName = util.orderbookName(exchange, symbol);
             const orderbookSnapshot = await Redis.get(tableName);
@@ -47,25 +59,13 @@ class OrderbookEmitter {
             if (orderbookSnapshot !== null) {
               const parsedOrderbookSnapshot = JSON.parse(orderbookSnapshot);
 
-              if (parsedOrderbookSnapshot?.ask && parsedOrderbookSnapshot?.bid) {
+              if (parsedOrderbookSnapshot.ask && parsedOrderbookSnapshot.bid) {
                 OrderBookExchangeCache[exchange].updateOrderBook(symbol, parsedOrderbookSnapshot.ask, parsedOrderbookSnapshot.bid);
               }
             }
             OrderBookExchangeCache[exchange].updateOrderBook(symbol, asks, bids);
           } catch (e) {
             logger.error('Orderbook loading error', e);
-          }
-        } else {
-          try {
-            OrderBookExchangeCache[exchange].updateOrderBook(symbol, asks, bids);
-
-            const data = { ...OrderBookExchangeCache[exchange]._data[symbol] };
-
-            if (data.best_ask && data.best_bid) {
-              await RedisPub.publish('OrderBookUpdate', JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }));
-            }
-          } catch (e) {
-            logger.error('Orderbook update error', e);
           }
         }
       },
@@ -77,7 +77,7 @@ class OrderbookEmitter {
         const exchanges = Object.keys(OrderBookExchangeCache);
 
         for (const exchange of exchanges) {
-          const symbols = OrderBookExchangeCache[exchange]._symbols;
+          const symbols = OrderBookExchangeCache[exchange].getSymbolList();
 
           for (const symbol of symbols) {
             try {
