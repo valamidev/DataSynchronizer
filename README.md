@@ -1,10 +1,7 @@
 # DataSynchronizer
+[![DeepScan grade](https://deepscan.io/api/teams/6761/projects/8873/branches/113558/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=6761&pid=8873&bid=113558)
 
-DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment data aggregator tool.
-
-**Discord Chat:**
-
-- Join our chat: https://discord.gg/GsAdRP8
+DataSynchronizer is a powerful NodeJS written Cryptocurrency exchange / Sentiment data aggregator tool.
 
 <p align="center">
 <img  src="https://raw.githubusercontent.com/stockmlbot/DataSynchronizer/master/Readme/Readmepic.png">
@@ -12,7 +9,7 @@ DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment
 
 **Capabilities**
 
-- Fetch up to 100 Symbol(Kucoin API limitation) Candlestic, Trades, Orderbooks from Binance & Kucoin.
+- Fetch up to 100 Symbol(Kucoin API limitation) Candlestick, Trades, Orderbook from Binance & Kucoin.
 - Semi-automated seeking after new symbols or trending symbols.
 - Auto convert MarketLvl2 datas (trades) into Candlesticks 1m
 - Moderated fault tolerance, only auto-reconnecting Websockets are used.
@@ -32,7 +29,7 @@ DataSynchronizer is a powerful NodeJS writen Cryptocurrency exchange / Sentiment
 
 - MarketData: Collect information about available tradepairs and their informations.
 - Sentiment: Twitter/Reddit API fetcher.
-- Livefeed: Websocket manager for real-time datasources.
+- Livefeed: Websocket manager for real-time data sources.
 - PriceTicker: All symbol price information from exchanges.
 - Warden: Automated manager looking after newly added symbols and trending symbols.
 
