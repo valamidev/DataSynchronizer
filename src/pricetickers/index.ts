@@ -97,7 +97,7 @@ class PriceTickers {
 
       return;
     } catch (e) {
-      logger.error('Error', `Reason: ${e}, Data: ${priceTickers}`);
+      logger.error(`Reason: ${e.message}, Data: ${priceTickers}`);
     }
   }
 }
