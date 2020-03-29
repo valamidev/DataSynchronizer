@@ -83,22 +83,20 @@ class PriceTickers {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async replaceDB(priceTickers: any[]): Promise<void> {
-    try {
-      // Stringify JSON for database storage
-      priceTickers.map(e => {
-        // Convert to simple array
-        return [e.exchange, e.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)];
-      });
+    // Stringify JSON for database storage
+    priceTickers.forEach(async e => {
+      // Convert to simple array [[]]
+      const priceTicker = [[e.exchange, e.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)]];
 
-      await BaseDB.query(
-        'REPLACE INTO `price_tickers` (`exchange`, `symbol`, `timestamp`, `high`, `low`, `bid`, `ask`, `last`, `change`, `percentage`, `baseVolume`, `quoteVolume`, `info`) VALUES ?',
-        [priceTickers],
-      );
-
-      return;
-    } catch (e) {
-      logger.error(`Reason: ${e.message}, Data: ${priceTickers}`);
-    }
+      try {
+        await BaseDB.query(
+          'REPLACE INTO `price_tickers` (`exchange`, `symbol`, `timestamp`, `high`, `low`, `bid`, `ask`, `last`, `change`, `percentage`, `baseVolume`, `quoteVolume`, `info`) VALUES ?',
+          [priceTicker],
+        );
+      } catch (e) {
+        logger.error(`Reason: ${e.message}, Data: ${priceTicker}`);
+      }
+    });
   }
 }
 
