@@ -84,8 +84,8 @@ class PriceTickers {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async replaceDB(priceTickers: any[]): Promise<void> {
     try {
-      // Stringify JSONs for database storage
-      priceTickers = priceTickers.map(e => {
+      // Stringify JSON for database storage
+      priceTickers.map(e => {
         // Convert to simple array
         return [e.exchange, e.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)];
       });
@@ -97,7 +97,7 @@ class PriceTickers {
 
       return;
     } catch (e) {
-      logger.error('Error', e);
+      logger.error('Error', `Reason: ${e}, Data: ${priceTickers}`);
     }
   }
 }
