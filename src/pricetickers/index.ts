@@ -86,7 +86,7 @@ class PriceTickers {
     // Stringify JSON for database storage
     priceTickers.forEach(async e => {
       // Convert to simple array [[]]
-      const priceTicker = [[e.exchange, e.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)]];
+      const priceTicker = [[e.exchange, e.symbol || e.info.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)]];
 
       try {
         await BaseDB.query(
