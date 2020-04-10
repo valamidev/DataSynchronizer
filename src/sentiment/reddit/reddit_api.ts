@@ -1,9 +1,7 @@
-'use strict';
-
+import Snoowrap from 'snoowrap';
 import { logger } from '../../logger';
-import snoowrap from 'snoowrap';
 
-const redditAPI = new snoowrap({
+const redditAPI = new Snoowrap({
   userAgent: 'SentimentBoT',
   clientId: process.env.reddit_clientId,
   clientSecret: process.env.reddit_clientSecret,

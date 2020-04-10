@@ -1,5 +1,3 @@
-'use strict';
-
 import { sentimentUtil } from '../sentiment_util';
 import { logger } from '../../logger';
 import { BaseDB } from '../../database';
@@ -17,15 +15,15 @@ class SentimentTwitter {
       const DBtwitters = await sentimentUtil.loadSentiments('twitter');
 
       if (DBtwitters) {
-        this.twitter = DBtwitters.map(row => row.name);
+        this.twitter = DBtwitters.map((row) => row.name);
 
         const updatePromises: Array<Promise<void>> = [];
 
-        this.twitter.forEach(twitter => {
+        this.twitter.forEach((twitter) => {
           updatePromises.push(this.updateTwitter(twitter));
         });
 
-        //logger.info(`Sentiment Twitter Update, ${time_now}`);
+        // logger.info(`Sentiment Twitter Update, ${time_now}`);
         await Promise.all(updatePromises);
       }
     } catch (e) {
@@ -60,7 +58,10 @@ class SentimentTwitter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async saveTwitterResult(data: any): Promise<void> {
     try {
-      await BaseDB.query('REPLACE INTO `sentiment_twitter` (`time`, `created_at`, `asset`, `text`, `id`, `user`, `followers`, `listed`) VALUES ?;', [data]);
+      await BaseDB.query(
+        'REPLACE INTO `sentiment_twitter` (`time`, `created_at`, `asset`, `text`, `id`, `user`, `followers`, `listed`) VALUES ?;',
+        [data],
+      );
     } catch (e) {
       logger.error('SQL error', e);
     }
@@ -69,7 +70,11 @@ class SentimentTwitter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getLastTweet(asset: string): Promise<any | undefined> {
     try {
-      const [rows] = await BaseDB.query('SELECT id FROM `sentiment_twitter` WHERE asset = ?  ORDER BY `id` DESC limit 1;', [asset]);
+      const [
+        rows,
+      ] = await BaseDB.query('SELECT id FROM `sentiment_twitter` WHERE asset = ?  ORDER BY `id` DESC limit 1;', [
+        asset,
+      ]);
 
       return rows[0];
     } catch (e) {

@@ -1,5 +1,3 @@
-'use strict';
-
 import { Emitter } from '../../emitter/emitter';
 
 import { RedisPub } from '../redis';

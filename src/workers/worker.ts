@@ -2,12 +2,12 @@
 import CConverter, { OHLCV, Trade } from 'candlestick-convert';
 import { parentPort } from 'worker_threads';
 
+import { isArray } from 'util';
 import { logger } from '../logger';
 
 import { DBQueries } from '../database/queries';
 import { TradepairQueries } from '../tradepairs/tradepairs';
 import { util } from '../utils';
-import { isArray } from 'util';
 import { TicksOHLCV } from '../types/types';
 import { TableTemplates } from '../database/queries/enums';
 
@@ -15,7 +15,7 @@ const DEFAULT_CANDLE_INTERVAL = 60;
 
 if (parentPort) {
   // Convert Trades to Candlestick(base_candletime) and save them
-  parentPort.on('message', snapshotTime => {
+  parentPort.on('message', (snapshotTime) => {
     setImmediate(async () => {
       try {
         // Select all tradepairs
@@ -47,7 +47,14 @@ if (parentPort) {
                   // Convert candles
                   const candlesticks = CConverter.trade_to_candle(trades as Trade[], DEFAULT_CANDLE_INTERVAL);
 
-                  const candlestickArray = candlesticks.map((e: OHLCV) => [e.time, e.open, e.high, e.low, e.close, e.volume]);
+                  const candlestickArray = candlesticks.map((e: OHLCV) => [
+                    e.time,
+                    e.open,
+                    e.high,
+                    e.low,
+                    e.close,
+                    e.volume,
+                  ]);
 
                   await DBQueries.candlestickReplace(candlestickTableName, candlestickArray as TicksOHLCV[]);
                 }

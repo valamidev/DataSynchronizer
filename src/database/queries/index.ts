@@ -1,9 +1,7 @@
-'use strict';
-
 import { RowDataPacket } from 'mysql2';
 
 import { logger } from '../../logger';
-import { ExchangeDB } from '../../database';
+import { ExchangeDB } from '..';
 import { TicksOHLCV } from '../../types/types';
 
 export const DBQueries = {
@@ -14,7 +12,7 @@ export const DBQueries = {
     try {
       const data = [res.time, JSON.stringify(res.orderbook)];
 
-      await ExchangeDB.query('REPLACE INTO `' + tableName + '` (`time`, `orderbook`) VALUES ?;', [[data]]);
+      await ExchangeDB.query(`REPLACE INTO \`${tableName}\` (\`time\`, \`orderbook\`) VALUES ?;`, [[data]]);
 
       return;
     } catch (e) {
@@ -26,7 +24,9 @@ export const DBQueries = {
 
   tradesSelect: async (tableName: string, time = 0): Promise<RowDataPacket[] | undefined> => {
     try {
-      const [rows] = await ExchangeDB.query('SELECT * FROM `' + tableName + '` WHERE time > ? ORDER BY `time` ASC;', [time]);
+      const [rows] = await ExchangeDB.query(`SELECT * FROM \`${tableName}\` WHERE time > ? ORDER BY \`time\` ASC;`, [
+        time,
+      ]);
 
       return rows as RowDataPacket[];
     } catch (err) {
@@ -50,7 +50,10 @@ export const DBQueries = {
       */
       const data = [res.time, res.side, res.quantity, res.price, res.tradeId];
 
-      await ExchangeDB.query('REPLACE INTO `' + tableName + '` (`time`, `side`, `quantity`, `price`, `tradeId`) VALUES ?;', [[data]]);
+      await ExchangeDB.query(
+        `REPLACE INTO \`${tableName}\` (\`time\`, \`side\`, \`quantity\`, \`price\`, \`tradeId\`) VALUES ?;`,
+        [[data]],
+      );
 
       return;
     } catch (e) {
@@ -62,7 +65,7 @@ export const DBQueries = {
 
   candlestickLastTime: async (tableName: string): Promise<number | undefined> => {
     try {
-      const [rows] = await ExchangeDB.query('SELECT time FROM `' + tableName + '` ORDER BY `time` DESC limit 1;');
+      const [rows] = await ExchangeDB.query(`SELECT time FROM \`${tableName}\` ORDER BY \`time\` DESC limit 1;`);
 
       if (rows[0]) {
         return rows[0].time;
@@ -78,7 +81,10 @@ export const DBQueries = {
   candlestickReplace: async (tableName: string, ticks: TicksOHLCV[]): Promise<void> => {
     try {
       if (ticks.length > 0) {
-        await ExchangeDB.query('REPLACE INTO `' + tableName + '` (`time`, `open`, `high`, `low`, `close`, `volume`) VALUES ?;', [ticks]);
+        await ExchangeDB.query(
+          `REPLACE INTO \`${tableName}\` (\`time\`, \`open\`, \`high\`, \`low\`, \`close\`, \`volume\`) VALUES ?;`,
+          [ticks],
+        );
       }
     } catch (e) {
       logger.error('Error', e);
@@ -87,7 +93,7 @@ export const DBQueries = {
 
   candlestickSelectAll: async (tableName: string): Promise<RowDataPacket[] | undefined> => {
     try {
-      const [rows] = await ExchangeDB.query('SELECT * FROM `' + tableName + '` ORDER BY `time` ASC;');
+      const [rows] = await ExchangeDB.query(`SELECT * FROM \`${tableName}\` ORDER BY \`time\` ASC;`);
 
       return rows as RowDataPacket[];
     } catch (e) {
@@ -97,7 +103,7 @@ export const DBQueries = {
 
   candlestickHistorySize: async (tableName: string): Promise<number | undefined> => {
     try {
-      const [rows] = await ExchangeDB.query('SELECT count(*) as count FROM `' + tableName + '`;');
+      const [rows] = await ExchangeDB.query(`SELECT count(*) as count FROM \`${tableName}\`;`);
 
       if (rows[0]) {
         return rows[0].count;

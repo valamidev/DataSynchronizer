@@ -30,7 +30,7 @@ class PriceTickers {
       }
 
       if (updatePromises.length > 0) {
-        logger.verbose(`Marketdata Update loop`);
+        logger.verbose('Marketdata Update loop');
         await Promise.all(updatePromises);
       }
     } catch (e) {
@@ -56,12 +56,15 @@ class PriceTickers {
         return;
       }
       // Add exchange,time,quoteVolume into PriceTickers
-      priceTickers = Object.values(priceTickers).map(elem => {
+      priceTickers = Object.values(priceTickers).map((elem) => {
+        // eslint-disable-next-line no-param-reassign
         elem.exchange = exchange;
+        // eslint-disable-next-line no-param-reassign
         elem.timestamp = time;
 
         // Calculate quoteVolume where it is missing
-        if (elem.quoteVolume == undefined && elem.baseVolume > 0) {
+        if (elem.quoteVolume === undefined && elem.baseVolume > 0) {
+          // eslint-disable-next-line no-param-reassign
           elem.quoteVolume = elem.baseVolume * ((elem.high + elem.low) / 2);
         }
 
@@ -69,7 +72,7 @@ class PriceTickers {
       });
 
       /* TODO remove tickers with undefined values */
-      priceTickers = priceTickers.filter(elem => elem.high != undefined || typeof elem.symbol !== 'string');
+      priceTickers = priceTickers.filter((elem) => elem.high !== undefined || typeof elem.symbol !== 'string');
 
       if (priceTickers.length > 0) {
         await this.replaceDB(priceTickers);
@@ -84,17 +87,33 @@ class PriceTickers {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async replaceDB(priceTickers: any[]): Promise<void> {
     // Stringify JSON for database storage
-    priceTickers.forEach(async e => {
+    priceTickers.forEach(async (e) => {
       // Convert to simple array [[]]
-      const priceTicker = [[e.exchange, e.symbol, e.timestamp, e.high, e.low, e.bid, e.ask, e.last, e.change, e.percentage, e.baseVolume, e.quoteVolume, JSON.stringify(e.info)]];
+      const priceTicker = [
+        [
+          e.exchange,
+          e.symbol || e.info.symbol,
+          e.timestamp,
+          e.high,
+          e.low,
+          e.bid,
+          e.ask,
+          e.last,
+          e.change,
+          e.percentage,
+          e.baseVolume,
+          e.quoteVolume,
+          JSON.stringify(e.info),
+        ],
+      ];
 
       try {
         await BaseDB.query(
           'REPLACE INTO `price_tickers` (`exchange`, `symbol`, `timestamp`, `high`, `low`, `bid`, `ask`, `last`, `change`, `percentage`, `baseVolume`, `quoteVolume`, `info`) VALUES ?',
           [priceTicker],
         );
-      } catch (e) {
-        logger.error(`Reason: ${e.message}, Data: ${priceTicker}`);
+      } catch (err) {
+        logger.error(`Reason: ${err.message}, Data: ${priceTicker}`);
       }
     });
   }

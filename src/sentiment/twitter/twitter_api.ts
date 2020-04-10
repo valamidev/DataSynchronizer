@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
-import { logger } from '../../logger';
-
 import Twitter from 'twitter';
+import { logger } from '../../logger';
 
 const config: Twitter.AccessTokenOptions = {
   consumer_key: process?.env?.consumerKey ?? '',
@@ -44,7 +43,16 @@ class TwitterAPIClass {
       // Filter important fields for us
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tweets.forEach((tweet: any) => {
-        result.push([time, tweet.created_at, search, tweet.text, tweet.id, tweet.user.name, tweet.user.followers_count, tweet.user.listed_count]);
+        result.push([
+          time,
+          tweet.created_at,
+          search,
+          tweet.text,
+          tweet.id,
+          tweet.user.name,
+          tweet.user.followers_count,
+          tweet.user.listed_count,
+        ]);
       });
 
       return result;

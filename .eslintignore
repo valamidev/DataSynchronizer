@@ -4,3 +4,4 @@ logs
 types
 SQL
 *__test__
+jest.config.js

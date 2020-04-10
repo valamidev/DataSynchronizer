@@ -1,10 +1,8 @@
-'use strict';
-
+import _ from 'lodash';
+import { RowDataPacket } from 'mysql2';
 import { logger } from '../logger';
-import * as _ from 'lodash';
 import { BaseDB } from '../database';
 import { TradepairQueries } from '../tradepairs/tradepairs';
-import { RowDataPacket } from 'mysql2';
 
 /* Warden intelligent Symbol following system it help to follow new coins or unfollow in-active ones */
 
@@ -25,8 +23,8 @@ class Warden {
     try {
       this.exchanges = exchanges;
 
-      if (this.quotes.length != this.quoteLimits.length) {
-        throw 'Quotes and quotes limit are not defined correctly!';
+      if (this.quotes.length !== this.quoteLimits.length) {
+        throw new Error('Quotes and quotes limit are not defined correctly!');
       }
 
       this.quotes = quotes;
@@ -65,7 +63,7 @@ class Warden {
       // Update Tradepairs
       const time = Date.now();
 
-      results.map(async elem => {
+      results.map(async (elem) => {
         await TradepairQueries.addTradepair(elem.exchange, elem.symbol, elem.id, elem.baseId, elem.quoteId, 1, time);
       });
 

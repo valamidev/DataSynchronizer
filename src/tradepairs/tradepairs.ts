@@ -1,7 +1,7 @@
-import { logger } from '../logger';
-import { BaseDB } from '../database';
 import { RowDataPacket } from 'mysql2';
 import { isArray } from 'util';
+import { logger } from '../logger';
+import { BaseDB } from '../database';
 
 interface SymbolCache {
   exchange: string;
@@ -16,20 +16,22 @@ export const TradepairQueries = {
 
   idToSymbol: async (exchange: string, id: string): Promise<string | undefined> => {
     try {
-      const result = idToSymbolCache.find(e => e.exchange == exchange && e.id == id);
+      const result = idToSymbolCache.find((e) => e.exchange === exchange && e.id === id);
 
-      if (typeof result != 'undefined') {
+      if (typeof result !== 'undefined') {
         return result.symbol;
-      } else {
-        const [rows] = await BaseDB.query('SELECT id,symbol from `market_datas` WHERE exchange = ? AND id = ? LIMIT 1', [exchange, id]);
+      }
+      const [rows] = await BaseDB.query('SELECT id,symbol from `market_datas` WHERE exchange = ? AND id = ? LIMIT 1', [
+        exchange,
+        id,
+      ]);
 
-        if ((rows as RowDataPacket[]).length === 1) {
-          const symbol = rows[0].symbol;
+      if ((rows as RowDataPacket[]).length === 1) {
+        const { symbol } = rows[0];
 
-          idToSymbolCache.push({ exchange, id, symbol });
+        idToSymbolCache.push({ exchange, id, symbol });
 
-          return symbol;
-        }
+        return symbol;
       }
 
       throw new Error('Invalid symbol Id');
@@ -60,7 +62,15 @@ export const TradepairQueries = {
     }
   },
 
-  addTradepair: async (exchange: string, symbol: string, id: string, asset: string, quote: string, isWarden = 0, time = 0): Promise<RowDataPacket[] | undefined> => {
+  addTradepair: async (
+    exchange: string,
+    symbol: string,
+    id: string,
+    asset: string,
+    quote: string,
+    isWarden = 0,
+    time = 0,
+  ): Promise<RowDataPacket[] | undefined> => {
     try {
       // Check existing before insert!
 
@@ -77,7 +87,10 @@ export const TradepairQueries = {
 
   selectTradepairSingle: async (exchange: string, symbol: string): Promise<RowDataPacket[] | undefined> => {
     try {
-      const row = await BaseDB.query('SELECT * FROM `tradepairs` where `exchange` = ? and `symbol` = ? LIMIT 1;', [exchange, symbol]);
+      const row = await BaseDB.query('SELECT * FROM `tradepairs` where `exchange` = ? and `symbol` = ? LIMIT 1;', [
+        exchange,
+        symbol,
+      ]);
 
       return row[0][0];
     } catch (e) {
