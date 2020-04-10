@@ -17,13 +17,15 @@ enum threadStatus {
   ready = 'READY',
 }
 
-export class ThreadManager {
+class ThreadManager {
   private threadStatus: string;
   private workerThread: Worker | undefined;
 
   constructor() {
     this.threadStatus = threadStatus.stopped;
+  }
 
+  public start(): void {
     this.startThread();
     this.threadWatcher();
   }
@@ -78,3 +80,5 @@ export class ThreadManager {
     }
   }
 }
+
+export default new ThreadManager();

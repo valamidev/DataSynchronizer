@@ -1,3 +1,8 @@
+/* eslint-disable import/first */
+require('dotenv').config();
+require('./emitter'); // Eventemitter class
+require('./redis');
+
 import { logger } from './logger';
 
 import SentimentAPI from './sentiment/sentiment';
@@ -5,10 +10,6 @@ import LivefeedAPI from './livefeed/livefeed';
 import { MarketDataAPI } from './marketdata';
 import PriceTickersAPI from './pricetickers';
 import WardenClass from './warden';
-
-require('dotenv').config();
-require('./emitter'); // Eventemitter class
-require('./redis');
 
 // Load Dotenv variables
 const {
