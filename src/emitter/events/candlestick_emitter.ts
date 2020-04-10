@@ -1,5 +1,3 @@
-'use strict';
-
 import { logger } from '../../logger';
 import { util } from '../../utils';
 import { Emitter } from '../emitter';
@@ -25,7 +23,7 @@ class CandlestickEmitter {
   async candlestickUpdateEmitter(exchange: string, interval: any, candle: any): Promise<void> {
     try {
       // Final candles are saved into separated tables
-      if (candle.isFinal == true) {
+      if (candle.isFinal === true) {
         const tableName = util.candlestickName(exchange, candle.symbol, interval);
 
         this.updateWS(tableName, candle);
@@ -43,7 +41,9 @@ class CandlestickEmitter {
         await DBQueries.createNewTableFromTemplate(TableTemplates.Candlestick, tableName);
       }
 
-      const OHLCV: TicksOHLCV[] = [[candle.startTime, candle.open, candle.high, candle.low, candle.close, candle.volume]];
+      const OHLCV: TicksOHLCV[] = [
+        [candle.startTime, candle.open, candle.high, candle.low, candle.close, candle.volume],
+      ];
 
       await DBQueries.candlestickReplace(tableName, OHLCV);
     } catch (e) {

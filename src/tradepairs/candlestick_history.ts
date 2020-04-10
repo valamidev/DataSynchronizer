@@ -1,13 +1,13 @@
 // Load Exchanges
-'use strict';
+
 // Load Exchange APIs
 import _ from 'lodash';
+import { RowDataPacket } from 'mysql2';
 import { CCXT_API } from '../exchange/ccxt_controller';
 import { logger } from '../logger';
 
 import { util } from '../utils';
 import { DBQueries } from '../database/queries';
-import { RowDataPacket } from 'mysql2';
 import { TicksOHLCV } from '../types/types';
 import { TableTemplates } from '../database/queries/enums';
 
@@ -52,7 +52,9 @@ class Candlestick {
       const integrityCheck = util.candlestickDataIntegrityCheck(candleData as RowDataPacket[][], this.interval);
 
       if (Array.isArray(integrityCheck)) {
-        logger.verbose(`Candlestick history data integrity error in ${this.exchange}-${this.symbol} ${integrityCheck.length} times`);
+        logger.verbose(
+          `Candlestick history data integrity error in ${this.exchange}-${this.symbol} ${integrityCheck.length} times`,
+        );
       }
 
       logger.verbose(`Candlestick history build finished for: ${this.exchange}-${this.symbol}-${this.intervalString}`);
@@ -67,7 +69,8 @@ class Candlestick {
   async initBuildHistory(startTime = 0): Promise<void> {
     try {
       // Check first timestamp and go forward
-      if (startTime == 0) {
+      if (startTime === 0) {
+        // eslint-disable-next-line no-param-reassign
         startTime = Date.now() - this.historyLimit * this.interval * 1000;
       }
 
@@ -81,15 +84,17 @@ class Candlestick {
       }
 
       if (Array.isArray(ticks)) {
-        if (ticks.length == 1) {
+        if (ticks.length === 1) {
           return;
         }
 
         await DBQueries.candlestickReplace(this.tableName, ticks as TicksOHLCV[]);
+        // eslint-disable-next-line no-param-reassign , prefer-destructuring
         startTime = ticks[ticks.length - 1][0];
         logger.verbose(`Tick length: ${ticks.length}`);
       } else {
-        startTime = startTime + ccxtCandleLimit[this.exchange] * this.interval * 1000;
+        // eslint-disable-next-line no-param-reassign
+        startTime += ccxtCandleLimit[this.exchange] * this.interval * 1000;
       }
 
       logger.verbose(`Time: ${startTime}`);
@@ -103,7 +108,13 @@ class Candlestick {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async getTicks(startTime: number) {
     try {
-      const ticks = await CCXT_API.getCandlestick(this.symbol, this.exchange, this.intervalString, startTime, ccxtCandleLimit[this.exchange]);
+      const ticks = await CCXT_API.getCandlestick(
+        this.symbol,
+        this.exchange,
+        this.intervalString,
+        startTime,
+        ccxtCandleLimit[this.exchange],
+      );
 
       // https://github.com/ccxt/ccxt/issues/2937
       // Last Candles can be incomplete

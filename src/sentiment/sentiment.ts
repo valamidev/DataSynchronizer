@@ -1,9 +1,7 @@
-'use strict';
-
 import { logger } from '../logger';
 
-import reddit from './reddit/';
-import twitter from './twitter';
+import Reddit from './reddit';
+import Twitter from './twitter';
 
 export enum Sentiments {
   reddit = 'reddit',
@@ -13,25 +11,25 @@ export enum Sentiments {
 class SentimentAPI {
   async start(): Promise<void> {
     try {
-      await reddit.updateRedditLoop();
-      await twitter.updateTwitterLoop();
+      await Reddit.updateRedditLoop();
+      await Twitter.updateTwitterLoop();
 
       if (process?.env?.reddit_update_timeout) {
         setInterval(async () => {
-          reddit.updateRedditLoop();
+          Reddit.updateRedditLoop();
         }, parseInt(process.env.reddit_update_timeout) * 1000);
       }
 
       if (process?.env?.twitter_update_timeout) {
         setInterval(async () => {
-          twitter.updateTwitterLoop();
+          Twitter.updateTwitterLoop();
         }, parseInt(process.env.twitter_update_timeout) * 1000);
       }
 
       logger.info('Sentiment API stated');
       return;
-    } catch (e) {
-      logger.error('Sentiment start ', e);
+    } catch (err) {
+      logger.error('Sentiment start ', err);
     }
   }
 }

@@ -1,12 +1,12 @@
 {
   "name": "cryptocurrency-exchange-data-synchronizer",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
     "start": "node  ./build/index.js",
     "dev": "tsc && node --inspect ./build/index.js",
-    "test": "jest --config jestconfig.json",
+    "test": "jest",
     "prebuild": "rimraf build",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
@@ -15,7 +15,16 @@
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts}": "eslint --fix"
   },
   "keywords": [],
   "author": "",
@@ -34,7 +43,6 @@
     "mysql2": "^2.1.0",
     "node-binance-api": "^0.9.0",
     "orderbook-synchronizer": "^4.0.11",
-    "rimraf": "^3.0.2",
     "snoowrap": "^1.15.2",
     "twitter": "^1.7.1",
     "winston": "^3.2.1"
@@ -46,14 +54,24 @@
     "@types/node": "^12.12.26",
     "@types/request": "^2.48.4",
     "@types/twitter": "^1.7.0",
-    "@typescript-eslint/eslint-plugin": "^2.21.0",
-    "@typescript-eslint/parser": "^2.21.0",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
     "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^7.2.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^2.5.1",
+    "husky": "^4.2.3",
     "jest": "^24.9.0",
-    "prettier": "^1.18.2",
+    "lint-staged": "^10.1.1",
+    "prettier": "^2.0.2",
+    "rimraf": "^3.0.2",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.4.1",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.0"
   },
   "files": [
     "lib/**/*"

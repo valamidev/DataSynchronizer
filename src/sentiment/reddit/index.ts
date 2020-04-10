@@ -1,5 +1,3 @@
-'use strict';
-
 import { sentimentUtil } from '../sentiment_util';
 import { logger } from '../../logger';
 import { BaseDB } from '../../database';
@@ -19,12 +17,12 @@ class SentimentReddit {
       const DBReddits = await sentimentUtil.loadSentiments(Sentiments.reddit);
 
       if (DBReddits) {
-        this.reddit = DBReddits.map(row => row.name);
+        this.reddit = DBReddits.map((row) => row.name);
       }
 
       const updatePromises: Array<Promise<void>> = [];
 
-      this.reddit.forEach(reddit => {
+      this.reddit.forEach((reddit) => {
         updatePromises.push(this.getSubredditData(reddit, Date.now()));
       });
 
@@ -45,7 +43,7 @@ class SentimentReddit {
       let sumComments = 0;
       const titles: string[] = [];
 
-      posts.forEach(post => {
+      posts.forEach((post) => {
         titles.push(post.title);
 
         sumUPs += post.ups;
@@ -61,7 +59,10 @@ class SentimentReddit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async saveRedditResult(data: any): Promise<void> {
     try {
-      await BaseDB.query('INSERT INTO `sentiment_reddit` (`time`, `subreddit`, `sum_ups`, `sum_comments`, `titles`) VALUES ?;', [[data]]);
+      await BaseDB.query(
+        'INSERT INTO `sentiment_reddit` (`time`, `subreddit`, `sum_ups`, `sum_comments`, `titles`) VALUES ?;',
+        [[data]],
+      );
     } catch (e) {
       logger.error('SQL error', e);
     }

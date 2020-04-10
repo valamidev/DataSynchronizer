@@ -1,23 +1,32 @@
-'use strict';
-
-require('dotenv').config();
-
 import { logger } from './logger';
-require('./emitter'); // Eventemitter class
-require('./redis');
+
 import SentimentAPI from './sentiment/sentiment';
 import LivefeedAPI from './livefeed/livefeed';
 import { MarketDataAPI } from './marketdata';
 import PriceTickersAPI from './pricetickers';
 import WardenClass from './warden';
 
+require('dotenv').config();
+require('./emitter'); // Eventemitter class
+require('./redis');
+
 // Load Dotenv variables
-const { MarketData, Sentiment, Livefeed, PriceTicker, Warden, exchangeList, wardenExchangesList, quotes, quoteLimits } = process.env;
+const {
+  MarketData,
+  Sentiment,
+  Livefeed,
+  PriceTicker,
+  Warden,
+  exchangeList,
+  wardenExchangesList,
+  quotes,
+  quoteLimits,
+} = process.env;
 
 const exchanges = exchangeList !== undefined ? exchangeList.split(',') : [];
 const wardenExchanges = wardenExchangesList !== undefined ? wardenExchangesList.split(',') : [];
 const wardenQuotes = quotes !== undefined ? quotes.split(',') : [];
-const wardenQuoteLimits = quoteLimits !== undefined ? quoteLimits.split(',').map(elem => parseInt(elem)) : [];
+const wardenQuoteLimits = quoteLimits !== undefined ? quoteLimits.split(',').map((elem) => parseInt(elem)) : [];
 // Load Dotenv variables
 
 async function main(): Promise<void> {
@@ -48,7 +57,7 @@ async function main(): Promise<void> {
   logger.info('Startup finished');
 }
 
-main().catch(err => {
+main().catch((err) => {
   logger.error('Startup error', err);
   process.exit(1);
 });

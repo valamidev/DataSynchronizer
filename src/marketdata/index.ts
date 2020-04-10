@@ -1,11 +1,9 @@
-'use strict';
-
-import { logger } from '../logger';
-import { CCXT_API } from '../exchange/ccxt_controller';
-import * as _ from 'lodash';
-import { BaseDB } from '../database';
+import _ from 'lodash';
 import { isArray } from 'util';
 import { RowDataPacket } from 'mysql2';
+import { logger } from '../logger';
+import { CCXT_API } from '../exchange/ccxt_controller';
+import { BaseDB } from '../database';
 
 class MarketDataClass {
   exchanges: string[];
@@ -36,7 +34,7 @@ class MarketDataClass {
       }
 
       if (updatePromises.length > 0) {
-        logger.verbose(`Marketdata Update loop`);
+        logger.verbose('Marketdata Update loop');
         await Promise.all(updatePromises);
       }
     } catch (e) {
@@ -56,10 +54,8 @@ class MarketDataClass {
 
       if (_.isObject(newMarketData)) {
         // Add exchange into MarketDatas
-        const convertedNewMarketData = Object.values(newMarketData).map(elem => {
-          elem.exchange = exchange;
-
-          return elem;
+        const convertedNewMarketData = Object.values(newMarketData).map((elem) => {
+          return { ...elem, ...{ exchange } };
         });
 
         // TODO: Better matching of stored and new market datas: new pairs etc.
@@ -101,7 +97,7 @@ class MarketDataClass {
   async marketDataReplace(marketData: any[]): Promise<void> {
     try {
       // Stringify JSONs for database storage
-      marketData = marketData.map(e => {
+      const marketDataValues = marketData.map((e) => {
         // Convert to simple array
         return [
           e.exchange,
@@ -124,7 +120,7 @@ class MarketDataClass {
 
       await BaseDB.query(
         'REPLACE INTO `market_datas` (`exchange`, `limits`, `precision_data`, `tierBased`, `percentage`, `taker`, `maker`, `id`, `symbol`, `baseId`, `quoteId`, `base`, `quote`, `active`, `info`) VALUES ?',
-        [marketData],
+        [marketDataValues],
       );
 
       return;

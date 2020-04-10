@@ -16,7 +16,7 @@ export const openSocket = (symbol: any) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   client.MarketMatches(symbol, (trade: any) => {
-    trade = {
+    const tradePayload = {
       time: Math.floor(trade.time / 10e5), // Kucoin use ns for timestamp
       symbol: trade.symbol,
       side: trade.side,
@@ -25,7 +25,7 @@ export const openSocket = (symbol: any) => {
       tradeId: trade.tradeId,
     };
 
-    Emitter.emit('Trades', exchangeName, trade);
+    Emitter.emit('Trades', exchangeName, tradePayload);
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

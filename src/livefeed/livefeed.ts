@@ -1,13 +1,11 @@
-'use strict';
-
 import { isEqual } from 'lodash';
+import { RowDataPacket } from 'mysql2';
 import { logger } from '../logger';
 
 import { TradepairQueries } from '../tradepairs/tradepairs';
 
 import { openSocket as binanceWS } from '../exchange/ws_exchanges/binance_ws';
 import { openSocket as kucoinWS } from '../exchange/ws_exchanges/kucoin_ws';
-import { RowDataPacket } from 'mysql2';
 
 // Exchange Websockets
 const ExchangeWS = {
@@ -50,26 +48,25 @@ class LivefeedAPI {
         throw new Error('LiveFeed Tradepairs are empty');
       }
 
-      const newSymbols = tradepairs.map(elem => elem.symbol);
+      const newSymbols = tradepairs.map((elem) => elem.symbol);
 
-      const oldSymbols = this.tradepairs.map(elem => elem.symbol);
+      const oldSymbols = this.tradepairs.map((elem) => elem.symbol);
 
       // There is no new tradepairs
       if (isEqual(newSymbols, oldSymbols) === true) {
         return;
-      } else {
-        this.tradepairs = tradepairs;
+      }
+      this.tradepairs = tradepairs;
 
-        for (const exchange of this.exchanges) {
-          if (typeof this.websocketAPI[exchange] !== 'undefined') {
-            logger.info(`Close old websocket ${exchange}`);
-            this.websocketAPI[exchange]();
-          }
-          // Open Websockets
-          await this.openWebsocketCandlestick(exchange);
-
-          logger.info(`Load new websocket for ${exchange}`);
+      for (const exchange of this.exchanges) {
+        if (typeof this.websocketAPI[exchange] !== 'undefined') {
+          logger.info(`Close old websocket ${exchange}`);
+          this.websocketAPI[exchange]();
         }
+        // Open Websockets
+        await this.openWebsocketCandlestick(exchange);
+
+        logger.info(`Load new websocket for ${exchange}`);
       }
     } catch (e) {
       logger.error('LiveFeed Tradepairs watcher error ', e);

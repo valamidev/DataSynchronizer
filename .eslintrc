@@ -4,10 +4,40 @@
   },
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "airbnb-typescript",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "rules": {
     "no-console": "error",
-    "camelcase": 0
+    "camelcase": "off",
+    "import/prefer-default-export": "off",
+    "import/no-default-export": "off",
+    "no-bitwise": "off",
+    "no-plusplus": "off",
+    "radix": "off",
+    "import/no-cycle": "off",
+    "no-underscore-dangle": "off",
+    "consistent-return": "off",
+    "no-restricted-syntax": "off",
+    "no-await-in-loop": "off",
+    "no-return-assign": "warn",
+    "class-methods-use-this": "off",
+    "import/no-dynamic-require": "off",
+    "global-require": "off",
+    "lines-between-class-members": "off",
+    "array-element-newline": ["error", "consistent"],
+    "array-bracket-newline": ["error", "consistent"]
+  },
+  "settings": {
+    "react": {
+      "version": "999.999.999"
+    }
   }
 }

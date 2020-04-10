@@ -1,10 +1,7 @@
-'use strict';
-
+import { OrderBookStore } from 'orderbook-synchronizer';
 import { logger } from '../../logger';
 import { util } from '../../utils';
 import { Emitter } from '../emitter';
-
-import { OrderBookStore } from 'orderbook-synchronizer';
 
 import { TradepairQueries } from '../../tradepairs/tradepairs';
 import { DBQueries } from '../../database/queries';
@@ -31,6 +28,7 @@ class OrderbookEmitter {
     Emitter.on(
       'Orderbook',
       async (exchange: string, depth: OrderBookDepth): Promise<void> => {
+        // eslint-disable-next-line no-param-reassign
         exchange = exchange.toLowerCase();
 
         if (!OrderBookExchangeCache[exchange]) {
@@ -46,7 +44,10 @@ class OrderbookEmitter {
             const data = { ...OrderBookExchangeCache[exchange].getOrderBook(symbol) };
 
             if (data.best_ask && data.best_bid) {
-              await RedisPub.publish('OrderBookUpdate', JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }));
+              await RedisPub.publish(
+                'OrderBookUpdate',
+                JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }),
+              );
             }
           } catch (e) {
             logger.error('Orderbook update error', e);
@@ -60,7 +61,11 @@ class OrderbookEmitter {
               const parsedOrderbookSnapshot = JSON.parse(orderbookSnapshot);
 
               if (parsedOrderbookSnapshot.ask && parsedOrderbookSnapshot.bid) {
-                OrderBookExchangeCache[exchange].updateOrderBook(symbol, parsedOrderbookSnapshot.ask, parsedOrderbookSnapshot.bid);
+                OrderBookExchangeCache[exchange].updateOrderBook(
+                  symbol,
+                  parsedOrderbookSnapshot.ask,
+                  parsedOrderbookSnapshot.bid,
+                );
               }
             }
             OrderBookExchangeCache[exchange].updateOrderBook(symbol, asks, bids);

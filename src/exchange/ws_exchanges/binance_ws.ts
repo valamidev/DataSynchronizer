@@ -14,16 +14,16 @@ const client = new Binance();
 
 export const openSocket = (symbol: any) => {
   const socketTrades = client.ws.aggTrades(symbol, (trade: any) => {
-    trade = {
+    const tradePayload = {
       time: trade.eventTime,
       symbol: trade.symbol,
-      side: trade.maker == true ? 'sell' : 'buy',
+      side: trade.maker === true ? 'sell' : 'buy',
       quantity: trade.quantity,
       price: trade.price,
       tradeId: trade.tradeId,
     };
 
-    Emitter.emit('Trades', exchangeName, trade);
+    Emitter.emit('Trades', exchangeName, tradePayload);
   });
 
   const socketOrderbook = client.ws.depth(symbol, (depth: any) => {

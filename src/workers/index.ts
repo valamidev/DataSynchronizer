@@ -1,3 +1,4 @@
 import { ThreadManager } from './worker_controller';
 
-new ThreadManager();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const threadManager = new ThreadManager();
