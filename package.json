@@ -40,7 +40,7 @@
     "kucoin-websocket-api": "^0.2.3",
     "lodash": "^4.17.11",
     "mysql2": "^2.1.0",
-    "orderbook-synchronizer": "5.0.0",
+    "orderbook-synchronizer": "5.0.1",
     "snoowrap": "^1.15.2",
     "twitter": "^1.7.1",
     "winston": "^3.2.1"
