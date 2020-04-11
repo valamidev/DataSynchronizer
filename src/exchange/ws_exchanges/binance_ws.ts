@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/camelcase */
+import { Order } from 'orderbook-synchronizer/lib/types';
+import { EMITTER_EVENTS } from '../../constants';
 import { Emitter } from '../../emitter/emitter';
 
 // Binance things
@@ -44,16 +46,16 @@ export const openSocket = (symbol: any) => {
         ]
       }
     */
-    const asks = depth.askDepth.map((e: any) => {
-      return { price: e.price, size: e.quantity };
+    const asks: Order[] = depth.askDepth.map((elem: any) => {
+      return [elem.price, elem.quantity];
     });
-    const bids = depth.bidDepth.map((e: any) => {
-      return { price: e.price, size: e.quantity };
+    const bids: Order[] = depth.bidDepth.map((elem: any) => {
+      return [elem.price, elem.quantity];
     });
 
     const updateDepth = { symbol: depth.symbol, asks, bids };
 
-    Emitter.emit('Orderbook', exchangeName, updateDepth);
+    Emitter.emit(EMITTER_EVENTS.OrderBookUpdate, exchangeName, updateDepth);
   });
 
   // Needed to close connection

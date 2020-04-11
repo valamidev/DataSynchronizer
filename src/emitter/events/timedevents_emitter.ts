@@ -1,3 +1,4 @@
+import { EMITTER_EVENTS } from '../../constants';
 import { Emitter } from '../emitter';
 
 class TimedEventsEmitter {
@@ -11,8 +12,8 @@ class TimedEventsEmitter {
       if (time > lastSnapshot + snapshotHeartbeat) {
         // Calculate round time for snapshot match with Candle timers
         lastSnapshot = time - (time % snapshotHeartbeat);
-        Emitter.emit('OrderbookSnapshot', lastSnapshot);
-        Emitter.emit('TradesCandlestickSnapshot', lastSnapshot);
+        Emitter.emit(EMITTER_EVENTS.OrderBookSnapshot, lastSnapshot);
+        Emitter.emit(EMITTER_EVENTS.CandlestickSnapshot, lastSnapshot);
       }
     }, 100);
   }

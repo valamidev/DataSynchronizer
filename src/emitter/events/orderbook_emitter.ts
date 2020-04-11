@@ -1,4 +1,6 @@
 import { OrderBookStore } from 'orderbook-synchronizer';
+import { Order, OrderbookData } from 'orderbook-synchronizer/lib/types';
+import { EMITTER_EVENTS } from '../../constants';
 import { logger } from '../../logger';
 import { util } from '../../utils';
 import { Emitter } from '../emitter';
@@ -8,16 +10,14 @@ import { DBQueries } from '../../database/queries';
 import { Redis, RedisPub } from '../../redis/redis';
 import { TableTemplates } from '../../database/queries/enums';
 
-const memoryLimit = 512;
+const memoryLimit = 5000;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const OrderBookExchangeCache: Map<string, OrderBookStore> = new Map();
 
 interface OrderBookDepth {
   symbol: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  asks: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  bids: any[];
+  asks: Order[];
+  bids: Order[];
 }
 
 class OrderbookEmitter {
@@ -26,7 +26,7 @@ class OrderbookEmitter {
     logger.verbose('Orderbook Emitter started!');
 
     Emitter.on(
-      'Orderbook',
+      EMITTER_EVENTS.OrderBookUpdate,
       async (exchange: string, depth: OrderBookDepth): Promise<void> => {
         // eslint-disable-next-line no-param-reassign
         exchange = exchange.toLowerCase();
@@ -41,30 +41,32 @@ class OrderbookEmitter {
           try {
             OrderBookExchangeCache[exchange].updateOrderBook(symbol, asks, bids);
 
-            const data = { ...OrderBookExchangeCache[exchange].getOrderBook(symbol) };
+            const orderBookData: OrderbookData = { ...OrderBookExchangeCache[exchange].getOrderBook(symbol) };
 
-            if (data.best_ask && data.best_bid) {
+            if (orderBookData.asks[0]?.[0] && orderBookData.bids[0]?.[0]) {
+              // Publish best Ask and Bid price
               await RedisPub.publish(
                 'OrderBookUpdate',
-                JSON.stringify({ exchange, symbol, ask: data.best_ask, bid: data.best_bid }),
+                JSON.stringify({ exchange, symbol, ask: orderBookData.asks[0]?.[0], bid: orderBookData.bids[0]?.[0] }),
               );
             }
           } catch (e) {
             logger.error('Orderbook update error', e);
           }
         } else {
+          // Load Orderbook from Redis
           try {
             const tableName = util.orderbookName(exchange, symbol);
             const orderbookSnapshot = await Redis.get(tableName);
 
             if (orderbookSnapshot !== null) {
-              const parsedOrderbookSnapshot = JSON.parse(orderbookSnapshot);
+              const parsedOrderbookSnapshot: OrderbookData = JSON.parse(orderbookSnapshot);
 
-              if (parsedOrderbookSnapshot.ask && parsedOrderbookSnapshot.bid) {
+              if (parsedOrderbookSnapshot.asks && parsedOrderbookSnapshot.bids) {
                 OrderBookExchangeCache[exchange].updateOrderBook(
                   symbol,
-                  parsedOrderbookSnapshot.ask,
-                  parsedOrderbookSnapshot.bid,
+                  parsedOrderbookSnapshot.asks,
+                  parsedOrderbookSnapshot.bids,
                 );
               }
             }
@@ -77,7 +79,7 @@ class OrderbookEmitter {
     );
 
     Emitter.on(
-      'OrderbookSnapshot',
+      EMITTER_EVENTS.OrderBookSnapshot,
       async (snapshotTime: number): Promise<void> => {
         const exchanges = Object.keys(OrderBookExchangeCache);
 
@@ -86,7 +88,7 @@ class OrderbookEmitter {
 
           for (const symbol of symbols) {
             try {
-              const orderbook = { ...OrderBookExchangeCache[exchange].getOrderBook(symbol) };
+              const orderbook: OrderbookData = { ...OrderBookExchangeCache[exchange].getOrderBook(symbol) };
               // Get CCXT standard symbol
               const ccxtSymbol = await TradepairQueries.idToSymbol(exchange, symbol);
 

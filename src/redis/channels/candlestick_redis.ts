@@ -3,10 +3,8 @@ import { Emitter } from '../../emitter/emitter';
 import { RedisPub } from '../redis';
 
 // Broadcast final candle updates
-Emitter.on('CandleUpdateFinal', (exchange, interval, candle) => {
-  setImmediate(() => {
-    RedisPub.publish('CandleUpdateFinal', JSON.stringify({ exchange, interval, candle }));
-  });
+Emitter.on('CandleUpdateFinal', async (exchange, interval, candle) => {
+  await RedisPub.publish('CandleUpdateFinal', JSON.stringify({ exchange, interval, candle }));
 });
 
 /* Receive code */

@@ -2,6 +2,7 @@
 /* eslint-disable no-inner-declarations */
 
 import { Worker, isMainThread } from 'worker_threads';
+import { EMITTER_EVENTS } from '../constants';
 import { logger } from '../logger';
 import { Emitter } from '../emitter/emitter';
 
@@ -71,8 +72,8 @@ class ThreadManager {
       });
 
       // Transfer events into the worker thread
-      Emitter.on('TradesCandlestickSnapshot', (lastSnapshot) => {
-        logger.verbose('TradesCandlestick snapshot');
+      Emitter.on(EMITTER_EVENTS.CandlestickSnapshot, (lastSnapshot) => {
+        logger.verbose('Candlestick snapshot');
         if (this.workerThread && this.threadStatus === threadStatus.ready) {
           this.workerThread.postMessage(lastSnapshot);
         }
