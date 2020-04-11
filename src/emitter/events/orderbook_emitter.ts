@@ -10,7 +10,8 @@ import { DBQueries } from '../../database/queries';
 import { Redis, RedisPub } from '../../redis/redis';
 import { TableTemplates } from '../../database/queries/enums';
 
-const memoryLimit = 5000;
+const memoryLimit =
+  process.env.ORDERBOOK_SIZE_LIMIT === undefined ? 1024 : parseInt(process.env.ORDERBOOK_SIZE_LIMIT, 10);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const OrderBookExchangeCache: Map<string, OrderBookStore> = new Map();
 

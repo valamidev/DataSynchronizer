@@ -34,7 +34,9 @@ REDIS_DB_ID = 0
 #
 # Time (ms), between snapshot Candlestick,Orderbook
 # Recommended: 60000 (1 minute)
+#
 snapshotHeartbeat = 60000
+ORDERBOOK_SIZE_LIMIT = 1024
 
 # Loglevel verbose,info
 logLevel = info
