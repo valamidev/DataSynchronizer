@@ -6,7 +6,7 @@ import { RowDataPacket } from 'mysql2';
 import { CCXT_API } from '../exchange/ccxt_controller';
 import { logger } from '../logger';
 
-import { util } from '../utils';
+import { Utils } from '../utils';
 import { DBQueries } from '../database/queries';
 import { TicksOHLCV } from '../types/types';
 import { TableTemplates } from '../database/queries/enums';
@@ -31,8 +31,8 @@ class Candlestick {
     this.symbol = symbol;
     this.historyLimit = historyLimit;
     this.interval = baseInterval;
-    this.intervalString = util.intervalToString(this.interval);
-    this.tableName = util.candlestickName(exchange, symbol, this.interval);
+    this.intervalString = Utils.intervalToString(this.interval);
+    this.tableName = Utils.candlestickName(exchange, symbol, this.interval);
 
     this.historyData = [];
     // Check Table and Data integrity
@@ -49,7 +49,7 @@ class Candlestick {
 
       const candleData = await DBQueries.candlestickSelectAll(this.tableName);
 
-      const integrityCheck = util.candlestickDataIntegrityCheck(candleData as RowDataPacket[][], this.interval);
+      const integrityCheck = Utils.candlestickDataIntegrityCheck(candleData as RowDataPacket[][], this.interval);
 
       if (Array.isArray(integrityCheck)) {
         logger.verbose(

@@ -1,4 +1,4 @@
-export const util = {
+export const Utils = {
   // Intervals: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
   intervalToNumber: (string: string): number => {
     let number = 0;
@@ -90,8 +90,8 @@ export const util = {
   },
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  candlestickDataIntegrityCheck: (data: any[], invertval: number): boolean | any[] => {
-    const intervalInMsec = invertval * 1000; // millisec
+  candlestickDataIntegrityCheck: (data: any[], interval: number): boolean | any[] => {
+    const intervalInMsec = interval * 1000; // millisec
     if (data.length === 0) return false;
 
     const outages = [];
@@ -110,29 +110,22 @@ export const util = {
   tradesName: (exchange: string, symbol: string): string => {
     const cleanSymbol = symbol.replace('/', '').replace('-', '').replace('_', '');
 
-    const name = `${exchange}_${cleanSymbol}_trades`;
-
-    // Lowercase only
-    return name.toLowerCase();
+    return `${exchange}_${cleanSymbol}_trades`.toLowerCase();
   },
 
   orderbookName: (exchange: string, symbol: string): string => {
     const cleanSymbol = symbol.replace('/', '').replace('-', '').replace('_', '');
 
-    const name = `${exchange}_${cleanSymbol}_orderbook`;
-
-    // Lowercase only
-    return name.toLowerCase();
+    return `${exchange}_${cleanSymbol}_orderbook`.toLowerCase();
   },
 
   candlestickName: (exchange: string, symbol: string, interval: string | number): string => {
     const cleanSymbol = symbol.replace('/', '').replace('-', '').replace('_', '');
 
     if (typeof interval === 'number') {
-      return `${exchange}_${cleanSymbol}_${util.intervalToString(interval)}`.toLowerCase();
+      return `${exchange}_${cleanSymbol}_${Utils.intervalToString(interval)}`.toLowerCase();
     }
 
-    // Lowercase only
     return `${exchange}_${cleanSymbol}_${interval}`.toLowerCase();
   },
 };

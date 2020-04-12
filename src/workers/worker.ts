@@ -7,7 +7,7 @@ import { logger } from '../logger';
 
 import { DBQueries } from '../database/queries';
 import { TradepairQueries } from '../tradepairs/tradepairs';
-import { util } from '../utils';
+import { Utils } from '../utils';
 import { TicksOHLCV } from '../types/types';
 import { TableTemplates } from '../database/queries/enums';
 
@@ -28,7 +28,7 @@ if (parentPort) {
                 const { exchange, symbol } = tradepair;
 
                 // Table check
-                const candlestickTableName = util.candlestickName(exchange, symbol, DEFAULT_CANDLE_INTERVAL);
+                const candlestickTableName = Utils.candlestickName(exchange, symbol, DEFAULT_CANDLE_INTERVAL);
 
                 if (!(await DBQueries.tableCheck(candlestickTableName))) {
                   await DBQueries.createNewTableFromTemplate(TableTemplates.Candlestick, candlestickTableName);
@@ -38,7 +38,7 @@ if (parentPort) {
                 const lastUpdateTime = await DBQueries.candlestickLastTime(candlestickTableName);
 
                 // Get Trades
-                const tradeTableName = util.tradesName(exchange, symbol);
+                const tradeTableName = Utils.tradesName(exchange, symbol);
 
                 const trades = await DBQueries.tradesSelect(tradeTableName, lastUpdateTime);
 

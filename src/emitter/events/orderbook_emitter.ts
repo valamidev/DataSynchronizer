@@ -2,7 +2,7 @@ import { OrderBookStore } from 'orderbook-synchronizer';
 import { Order, OrderbookData } from 'orderbook-synchronizer/lib/types';
 import { EMITTER_EVENTS } from '../../constants';
 import { logger } from '../../logger';
-import { util } from '../../utils';
+import { Utils } from '../../utils';
 import { Emitter } from '../emitter';
 
 import { TradepairQueries } from '../../tradepairs/tradepairs';
@@ -57,7 +57,7 @@ class OrderbookEmitter {
         } else {
           // Load Orderbook from Redis
           try {
-            const tableName = util.orderbookName(exchange, symbol);
+            const tableName = Utils.orderbookName(exchange, symbol);
             const orderbookSnapshot = await Redis.get(tableName);
 
             if (orderbookSnapshot !== null) {
@@ -94,7 +94,7 @@ class OrderbookEmitter {
               const ccxtSymbol = await TradepairQueries.idToSymbol(exchange, symbol);
 
               if (ccxtSymbol) {
-                const tableName = util.orderbookName(exchange, ccxtSymbol);
+                const tableName = Utils.orderbookName(exchange, ccxtSymbol);
 
                 if (!(await DBQueries.tableCheck(tableName))) {
                   await DBQueries.createNewTableFromTemplate(TableTemplates.Orderbook, tableName);

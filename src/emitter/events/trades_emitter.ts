@@ -1,4 +1,4 @@
-import { util } from '../../utils';
+import { Utils } from '../../utils';
 import { logger } from '../../logger';
 import { Emitter } from '../emitter';
 
@@ -21,7 +21,7 @@ class TradesEmitter {
           const ccxtSymbol = await TradepairQueries.idToSymbol(exchange, trade.symbol);
 
           if (ccxtSymbol) {
-            const tableName = util.tradesName(exchange, ccxtSymbol);
+            const tableName = Utils.tradesName(exchange, ccxtSymbol);
 
             // Use Set for Table name check cache
             if (tableNameCache.has(tableName)) {

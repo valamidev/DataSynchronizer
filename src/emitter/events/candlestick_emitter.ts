@@ -1,5 +1,5 @@
 import { logger } from '../../logger';
-import { util } from '../../utils';
+import { Utils } from '../../utils';
 import { Emitter } from '../emitter';
 
 import { DBQueries } from '../../database/queries';
@@ -24,7 +24,7 @@ class CandlestickEmitter {
     try {
       // Final candles are saved into separated tables
       if (candle.isFinal === true) {
-        const tableName = util.candlestickName(exchange, candle.symbol, interval);
+        const tableName = Utils.candlestickName(exchange, candle.symbol, interval);
 
         this.updateWS(tableName, candle);
       }
