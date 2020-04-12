@@ -3,8 +3,13 @@ import _ from 'lodash';
 import * as ccxt from 'ccxt';
 import { logger } from '../logger';
 
+type CcxtInstance = {
+  exchangeName: string;
+  api: any;
+};
+
 class ExchangeAPI {
-  exchanges: any[];
+  exchanges: CcxtInstance[];
   constructor() {
     this.exchanges = [];
   }
@@ -61,20 +66,28 @@ class ExchangeAPI {
   }
 
   /* CCXT API STUFF */
+  _isExchangeLoaded(exchange: string): boolean {
+    const exchangeName = exchange.toLowerCase();
+
+    if (this.exchanges.find((e) => e.exchangeName === exchangeName)) {
+      return true;
+    }
+
+    return false;
+  }
 
   loadExchangeAPI(exchange: string): any {
     try {
       const exchangeName = exchange.toLowerCase();
 
       // Check if CCXT API already loaded
-      let exchangeData = this.exchanges.find((e) => e.exchange === exchangeName);
+      const exchangeData = this.exchanges.find((e) => e.exchangeName === exchangeName);
 
-      // CCTX API load from buffer or add to the buffer
-      if (!exchangeData) {
-        exchangeData = this.initNewExchanges(exchangeName);
+      if (exchangeData?.api) {
+        return exchangeData.api;
       }
 
-      return exchangeData.api;
+      return this.initNewExchanges(exchangeName).api;
     } catch (e) {
       logger.error('CCXT load API error ', e);
     }
@@ -86,7 +99,9 @@ class ExchangeAPI {
     if (_.isObject(ccxt[exchangeName])) {
       const api = new ccxt[exchangeName]();
 
-      this.exchanges.push({ exchangeName, api });
+      if (!this._isExchangeLoaded(exchange)) {
+        this.exchanges.push({ exchangeName, api });
+      }
 
       return { exchangeName, api };
     }

@@ -8,7 +8,10 @@ describe('CCXT Controller Test', () => {
   // Add Binance exhcange
   test('Add valid exchange', async () => {
     const exchange = CCXT_API.initNewExchanges('binance');
+    CCXT_API.initNewExchanges('binance');
+    CCXT_API.initNewExchanges('binance');
 
+    expect(CCXT_API.exchanges).toHaveLength(1);
     expect(exchange.api.tokenBucket).toBeDefined();
   });
 

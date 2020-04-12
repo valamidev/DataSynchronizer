@@ -30,11 +30,11 @@ class PriceTickers {
       }
 
       if (updatePromises.length > 0) {
-        logger.verbose('Marketdata Update loop');
+        logger.verbose('PriceTickers Update loop');
         await Promise.all(updatePromises);
       }
     } catch (e) {
-      logger.error('Marketdata Update ', e);
+      logger.error('PriceTickers Update loop', e);
     } finally {
       setTimeout(() => {
         this.updateLoop();
@@ -80,7 +80,7 @@ class PriceTickers {
 
       return;
     } catch (e) {
-      logger.error('Update_tradepairs ', e);
+      logger.error('PriceTickers Update ', e);
     }
   }
 
