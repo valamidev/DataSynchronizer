@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@types/ioredis": "4.14.9",
-    "@types/jest": "24.9.1",
+    "@types/jest": "25.2.3",
     "@types/lodash": "4.14.149",
     "@types/node": "12.12.29",
     "@types/request": "2.48.4",
