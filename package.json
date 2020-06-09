@@ -30,7 +30,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "binance-api-node": "^0.9.15",
+    "binance-api-node": "^0.10.0",
     "candlestick-convert": "^5.0.0",
     "ccxt": "^1.22.39",
     "dotenv": "^8.0.0",
