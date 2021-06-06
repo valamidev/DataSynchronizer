@@ -46,7 +46,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@types/ioredis": "4.14.9",
+    "@types/ioredis": "4.26.4",
     "@types/jest": "24.9.1",
     "@types/lodash": "4.14.149",
     "@types/node": "12.12.29",
